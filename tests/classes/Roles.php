@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\nibii\tests\classes;
 
-class Users extends \ntentan\nibii\RecordWrapper
+class Roles extends \ntentan\nibii\RecordWrapper
 {
     
 }

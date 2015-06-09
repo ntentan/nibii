@@ -7,7 +7,8 @@
         "ntentan/utils": "0.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.*"
+        "phpunit/phpunit": "4.*",
+        "phpunit/dbunit" : "1.*"
     },
     "license": "MIT",
     "authors": [

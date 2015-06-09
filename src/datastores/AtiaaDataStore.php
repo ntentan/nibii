@@ -12,6 +12,20 @@ abstract class AtiaaDataStore extends \ntentan\nibii\DataStore
         $this->settings['driver'] = $this->settings['datastore'];
         $this->db = \ntentan\atiaa\Driver::getConnection($this->settings);
     }
+    
+    public function save($model)
+    {
+        $data = $model->getData();
+        $fields = array_keys($data);
+        $quotedFields = [];
+        $rawValues = [];
+        foreach($fields as $field)
+        {
+            $quotedFields[] = $this->db->quoteIdentifier($field);
+            $rawValues[] = $data[$field];
+        }
+        $this->db->query("INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) . " (" . implode(", ", $quotedFields) . ") VALUES (?" . str_repeat(", ?", count($fields) - 1) . ")", $rawValues); 
+    }
 
     public function describe($table) 
     {
