@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\nibii\datastores;
+namespace ntentan\nibii\adapters;
 
-class MysqlDataStore extends AtiaaDataStore
+class MysqlAdapter extends \ntentan\nibii\DriverAdapter
 {
     protected function mapDataTypes($nativeType) 
     {

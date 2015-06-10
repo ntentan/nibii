@@ -4,7 +4,7 @@ namespace ntentan\nibii;
 class RecordWrapper
 {
     protected $table;
-    protected $datastore;
+    protected $adapter;
     private $description;
     private $data;
 
@@ -23,17 +23,17 @@ class RecordWrapper
         return \ntentan\utils\Text::deCamelize(end($nameParts));
     }
     
-    protected function getDataStore()
+    protected function getDataAdapter()
     {
-        $this->datastore = Nibii::getDefaultDatastoreInstance();
-        return $this->datastore;
+        $this->adapter = DriverAdapter::getDefaultInstance();
+        return $this->adapter;
     }
     
     public function getDescription()
     {
         if($this->description === null)
         {
-            $this->description = $this->getDataStore()->describe($this->table);
+            $this->description = $this->getDataAdapter()->describe($this->table);
         }
         return $this->description;
     }
@@ -46,7 +46,24 @@ class RecordWrapper
     
     public function save()
     {
-        return $this->getDataStore()->save($this);
+        return $this->getDataAdapter()->getQueryEngine()->insert($this);
+    }
+    
+    public static function getAll()
+    {
+        return $this->getDataAdapter()->getQueryEngine()->fetch();
+    }
+    
+    public function __call($name, $arguments) 
+    {
+        
+    }
+    
+    public function __callStatic($name, $arguments) 
+    {
+        $class = get_called_class();
+        $instance = new $class();
+        return $instance->__call($name, $arguments);
     }
     
     public function __set($name, $value) 
@@ -67,5 +84,12 @@ class RecordWrapper
     public function getData()
     {
         return $this->data;
+    }
+    
+    public static function fetch()
+    {
+        $class = get_called_class();
+        $instance = new $class();
+        return $instance->getDataAdapter()->getQueryEngine()->fetch();
     }
 }

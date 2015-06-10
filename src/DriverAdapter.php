@@ -1,9 +1,26 @@
 <?php
-namespace ntentan\nibii\datastores;
+namespace ntentan\nibii;
 
-abstract class AtiaaDataStore extends \ntentan\nibii\DataStore
+use ntentan\utils\Text;
+
+abstract class DriverAdapter
 {
-    protected $db;
+    protected $settings;
+    protected $data;
+    private static $defaultSettings;
+    private static $defaultInstance;
+    protected $db;    
+    protected $queryEngine;
+    
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
+    }
+    
+    public function setData($data)
+    {
+        $this->data = $data;
+    }    
     
     abstract protected function mapDataTypes($nativeType);
     
@@ -13,20 +30,6 @@ abstract class AtiaaDataStore extends \ntentan\nibii\DataStore
         $this->db = \ntentan\atiaa\Driver::getConnection($this->settings);
     }
     
-    public function save($model)
-    {
-        $data = $model->getData();
-        $fields = array_keys($data);
-        $quotedFields = [];
-        $rawValues = [];
-        foreach($fields as $field)
-        {
-            $quotedFields[] = $this->db->quoteIdentifier($field);
-            $rawValues[] = $data[$field];
-        }
-        $this->db->query("INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) . " (" . implode(", ", $quotedFields) . ") VALUES (?" . str_repeat(", ?", count($fields) - 1) . ")", $rawValues); 
-    }
-
     public function describe($table) 
     {
         $schema = reset($this->db->describeTable($table));
@@ -65,5 +68,36 @@ abstract class AtiaaDataStore extends \ntentan\nibii\DataStore
                 );
             }
         }
-    }    
+    } 
+    
+    /**
+     * Set the settings used for creating default datastores.
+     * @param array $settings
+     */
+    public static function setDefaultSettings($settings)
+    {
+        self::$defaultSettings = $settings;
+    }
+    
+    public static function getDefaultInstance()
+    {
+        if(self::$defaultInstance === null)
+        {
+            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['datastore']) . "Adapter";
+            self::$defaultInstance = new $class();
+            self::$defaultInstance->setSettings(self::$defaultSettings);
+            self::$defaultInstance->init();
+        }
+        return self::$defaultInstance;
+    }
+    
+    public function getQueryEngine()
+    {
+        if($this->queryEngine === null)
+        {
+            $this->queryEngine = new QueryEngine();
+            $this->queryEngine->setDriver($this->db);
+        }
+        return $this->queryEngine;
+    }
 }

@@ -5,7 +5,7 @@ class RecordWrapperTest extends \PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        \ntentan\nibii\Nibii::setDefaultDatastoreSettings(
+        \ntentan\nibii\DriverAdapter::setDefaultSettings(
             [
                 'datastore' => 'mysql',
                 'dbname' => 'ntentan_tests',
