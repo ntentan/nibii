@@ -24,7 +24,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $users = new \ntentan\nibii\tests\classes\Users();
         $datastore = getenv('NIBII_DATASTORE');
-        require "tests/expected/$datastore/users_description.php";
+        require __DIR__ . "/../expected/$datastore/users_description.php";
         $this->assertEquals($description, $users->getDescription());
     }
     
@@ -45,6 +45,27 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             ),
             $role->getData()
         );
+        $this->assertInstanceOf('\\ntentan\\nibii\\RecordWrapper', $role);
+        
+        $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches')->fetch();
+        $this->assertEquals(array (
+                array (
+                    'id' => '11',
+                    'name' => 'Matches',
+                ),
+            ),
+            $role->getData()
+        );
+        
+        $role = \ntentan\nibii\tests\classes\Roles::fetchWithName('Matches');
+        $this->assertEquals(array (
+                array (
+                    'id' => '11',
+                    'name' => 'Matches',
+                ),
+            ),
+            $role->getData()
+        );        
     }
 
     protected function getConnection() 
@@ -57,8 +78,10 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     {
         return $this->createArrayDataSet([
             'roles' => [
-                ['id' => 10, 'name' => 'Some test user']
-            ]
+                ['id' => 10, 'name' => 'Some test user'],
+                ['id' => 11, 'name' => 'Matches'],
+                ['id' => 12, 'name' => 'Rematch']
+            ],
         ]);
     }
     

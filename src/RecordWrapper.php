@@ -1,6 +1,8 @@
 <?php
 namespace ntentan\nibii;
 
+use ntentan\utils\Text;
+
 class RecordWrapper
 {
     protected $table;
@@ -34,7 +36,7 @@ class RecordWrapper
     {
         if($this->queryParameters == null)
         {
-            $this->queryParameters = new QueryParameters($this->adapter->getDriver(), $this->table);
+            $this->queryParameters = new QueryParameters($this->getDataAdapter()->getDriver(), $this->table);
         }
         return $this->queryParameters;
     }
@@ -65,7 +67,7 @@ class RecordWrapper
         return new $class();
     }
     
-    public static function fetch($id = null)
+    private function doFetch($id = null)
     {
         $instance = isset($this) ? $this : self::getInstance();
         $adapter = $instance->getDataAdapter();
@@ -82,12 +84,29 @@ class RecordWrapper
         
     public function __call($name, $arguments) 
     {
-        return call_user_method_array($name, $this->getDataAdapter(), $arguments);
+        if($name === 'fetch')
+        {
+            return call_user_func_array([$this, 'doFetch'], $arguments);
+        }
+        else if(preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches))
+        {
+            $this->getQueryParameters()->addFilter(Text::deCamelize($matches['variable']), $arguments);
+            return $this;
+        }
+        else if(preg_match("/(fetch)(First)?(With)(?<variable>[A-Za-z]+)/", $name, $matches))
+        {
+            $this->getQueryParameters()->addFilter(Text::deCamelize($matches['variable']), $arguments);
+            return $this->doFetch();
+        }
+        else
+        {
+            return call_user_func_array([$this->getDataAdapter(), $name], $arguments);
+        }
     }
     
     public static function __callStatic($name, $arguments) 
     {
-        return call_user_method_array($name, self::getInstance(), $arguments);
+        return call_user_func_array([self::getInstance(), $name], $arguments);
     }
     
     public function __set($name, $value) 
