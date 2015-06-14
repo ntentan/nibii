@@ -1,6 +1,8 @@
 <?php
 namespace ntentan\nibii\tests\cases;
 
+error_reporting(E_ALL);
+
 class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
 {
     public function setUp()

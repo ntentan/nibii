@@ -55,7 +55,8 @@ abstract class DriverAdapter
     
     public function describe($table) 
     {
-        $schema = reset($this->db->describeTable($table));
+        $schema = $this->db->describeTable($table);
+        $schema = reset($schema);
         $description = [
             'fields' => [],
             'primary_key' => [],
