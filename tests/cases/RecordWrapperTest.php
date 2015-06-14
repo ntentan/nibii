@@ -21,7 +21,8 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     public function testTableResolution()
     {
         $users = new \ntentan\nibii\tests\classes\Users();
-        require "tests/expected/{$_ENV['NIBII_DATASTORE']}/users_description.php";
+        $datastore = getenv('NIBII_DATASTORE');
+        require "tests/expected/$datastore/users_description.php";
         $this->assertEquals($description, $users->getDescription());
     }
     
