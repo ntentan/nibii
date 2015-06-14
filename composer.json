@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "ntentan/atiaa": "0.*",
-        "ntentan/utils": "0.*"
+        "ntentan/utils": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",

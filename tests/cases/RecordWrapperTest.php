@@ -1,18 +1,19 @@
 <?php
 namespace ntentan\nibii\tests\cases;
 
-class RecordWrapperTest extends \PHPUnit_Framework_TestCase
+class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
 {
-    public function setup()
+    public function setUp()
     {
+        parent::setUp();
         \ntentan\nibii\DriverAdapter::setDefaultSettings(
             [
-                'datastore' => 'mysql',
-                'dbname' => 'ntentan_tests',
-                'host' => 'localhost',
-                'user' => 'root',
-                'password' => 'root',
-                'file' => null
+                'datastore' => getenv('NIBII_DATASTORE'),
+                'host' => getenv('NIBII_HOST'),
+                'user' => getenv('NIBII_USER'),
+                'password' => getenv('NIBII_PASSWORD'),
+                'file' => getenv('NIBII_FILE'),
+                'dbname' => getenv("NIBII_DBNAME")
             ]
         );
     }
@@ -20,14 +21,46 @@ class RecordWrapperTest extends \PHPUnit_Framework_TestCase
     public function testTableResolution()
     {
         $users = new \ntentan\nibii\tests\classes\Users();
-        require "tests/fixtures/{$_ENV['NIBII_DATASTORE']}/users_description.php";
+        require "tests/expected/{$_ENV['NIBII_DATASTORE']}/users_description.php";
         $this->assertEquals($description, $users->getDescription());
     }
     
     public function testCreate()
     {
-        $role = \ntentan\nibii\tests\classes\Roles::getNew();
+        $role = \ntentan\nibii\tests\classes\Roles::createNew();
         $role->name = 'Super User';
         $role->save();
     }
+    
+    public function testFetch()
+    {
+        $role = \ntentan\nibii\tests\classes\Roles::fetch(10);
+        $this->assertEquals(
+            array(
+                'id' => '10',
+                'name' => 'Some test user',
+            ),
+            $role->getData()
+        );
+    }
+
+    protected function getConnection() 
+    {
+        $pdo = new \PDO(getenv('NIBII_PDO_DSN'), getenv('NIBII_USER'), getenv('NIBII_PASSWORD'));
+        return $this->createDefaultDBConnection($pdo, getenv('NIBII_DBNAME'));
+    }
+
+    protected function getDataSet() 
+    {
+        return $this->createArrayDataSet([
+            'roles' => [
+                ['id' => 10, 'name' => 'Some test user']
+            ]
+        ]);
+    }
+    
+    //protected function getSetUpOperation()
+    //{
+        //return \PHPUnit_Extensions_Database_Operation_Factory::DELETE_ALL();
+    //}
 }

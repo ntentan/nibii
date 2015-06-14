@@ -6,7 +6,8 @@ class RecordWrapper
     protected $table;
     protected $adapter;
     private $description;
-    private $data;
+    private $data = [];
+    private $queryParameters;
 
     public function __construct()
     {
@@ -29,6 +30,15 @@ class RecordWrapper
         return $this->adapter;
     }
     
+    protected function getQueryParameters()
+    {
+        if($this->queryParameters == null)
+        {
+            $this->queryParameters = new QueryParameters($this->adapter->getDriver(), $this->table);
+        }
+        return $this->queryParameters;
+    }
+    
     public function getDescription()
     {
         if($this->description === null)
@@ -38,7 +48,7 @@ class RecordWrapper
         return $this->description;
     }
     
-    public static function getNew()
+    public static function createNew()
     {
         $class = get_called_class();
         return new $class();
@@ -46,24 +56,38 @@ class RecordWrapper
     
     public function save()
     {
-        return $this->getDataAdapter()->getQueryEngine()->insert($this);
+        return $this->getDataAdapter()->insert($this);
     }
     
-    public static function getAll()
-    {
-        return $this->getDataAdapter()->getQueryEngine()->fetch();
-    }
-    
-    public function __call($name, $arguments) 
-    {
-        
-    }
-    
-    public function __callStatic($name, $arguments) 
+    private static function getInstance()
     {
         $class = get_called_class();
-        $instance = new $class();
-        return $instance->__call($name, $arguments);
+        return new $class();
+    }
+    
+    public static function fetch($id = null)
+    {
+        $instance = isset($this) ? $this : self::getInstance();
+        $adapter = $instance->getDataAdapter();
+        $parameters = $instance->getQueryParameters();
+        if($id !== null)
+        {
+            $description = $instance->getDescription();
+            $parameters->addFilter($description['primary_key'][0], [$id]);
+            $parameters->setFirstOnly(true);
+        }
+        $instance->data = $adapter->select($parameters);
+        return $instance;
+    }
+        
+    public function __call($name, $arguments) 
+    {
+        return call_user_method_array($name, $this->getDataAdapter(), $arguments);
+    }
+    
+    public static function __callStatic($name, $arguments) 
+    {
+        return call_user_method_array($name, self::getInstance(), $arguments);
     }
     
     public function __set($name, $value) 
@@ -84,12 +108,5 @@ class RecordWrapper
     public function getData()
     {
         return $this->data;
-    }
-    
-    public static function fetch()
-    {
-        $class = get_called_class();
-        $instance = new $class();
-        return $instance->getDataAdapter()->getQueryEngine()->fetch();
     }
 }

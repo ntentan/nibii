@@ -15,16 +15,19 @@ class QueryEngine
         $data = $model->getData();
         $fields = array_keys($data);
         $quotedFields = [];
-        $rawValues = [];
         foreach($fields as $field)
         {
             $quotedFields[] = $this->db->quoteIdentifier($field);
-            $rawValues[] = $data[$field];
         }
-        $this->db->query(
-            "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) . 
-            " (" . implode(", ", $quotedFields) . ") VALUES (?" . str_repeat(", ?", count($fields) - 1) . ")", 
-            $rawValues
-        ); 
+        return "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) . 
+            " (" . implode(", ", $quotedFields) . ") VALUES (?" . str_repeat(", ?", count($fields) - 1) . ")";
+    }
+    
+    public function select($parameters)
+    {
+        return sprintf(
+            "SELECT %s FROM %s%s", 
+            $parameters->getFields(), $parameters->getTable(), $parameters->getWhereClause()
+        );
     }
 }

@@ -30,6 +30,29 @@ abstract class DriverAdapter
         $this->db = \ntentan\atiaa\Driver::getConnection($this->settings);
     }
     
+    public function select($parameters)
+    {
+        $result = $this->db->query(
+            $this->getQueryEngine()->select($parameters), 
+            $parameters->getBoundData()
+        );
+        
+        if($parameters->getFirstOnly())
+        {
+            $result = reset($result);
+        }
+        
+        return $result;
+    }
+    
+    public function insert($record)
+    {
+        return $this->db->query(
+            $this->getQueryEngine()->insert($record), 
+            array_values($record->getData())
+        );
+    }
+    
     public function describe($table) 
     {
         $schema = reset($this->db->describeTable($table));
@@ -83,15 +106,22 @@ abstract class DriverAdapter
     {
         if(self::$defaultInstance === null)
         {
-            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['datastore']) . "Adapter";
-            self::$defaultInstance = new $class();
-            self::$defaultInstance->setSettings(self::$defaultSettings);
-            self::$defaultInstance->init();
+            if(self::$defaultSettings['datastore'])
+            {
+                $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['datastore']) . "Adapter";
+                self::$defaultInstance = new $class();
+                self::$defaultInstance->setSettings(self::$defaultSettings);
+                self::$defaultInstance->init();
+            }
+            else
+            {
+                throw new \Exception("No datastore specified");
+            }
         }
         return self::$defaultInstance;
     }
     
-    public function getQueryEngine()
+    private function getQueryEngine()
     {
         if($this->queryEngine === null)
         {
@@ -99,5 +129,10 @@ abstract class DriverAdapter
             $this->queryEngine->setDriver($this->db);
         }
         return $this->queryEngine;
+    }
+    
+    public function getDriver()
+    {
+        return $this->db;
     }
 }
