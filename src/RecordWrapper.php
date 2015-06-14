@@ -3,7 +3,7 @@ namespace ntentan\nibii;
 
 use ntentan\utils\Text;
 
-class RecordWrapper
+class RecordWrapper implements \ArrayAccess, \Countable
 {
     protected $table;
     protected $adapter;
@@ -32,6 +32,10 @@ class RecordWrapper
         return $this->adapter;
     }
     
+    /**
+     * 
+     * @return \ntentan\nibii\QueryParameters
+     */
     protected function getQueryParameters()
     {
         if($this->queryParameters == null)
@@ -88,14 +92,34 @@ class RecordWrapper
         {
             return call_user_func_array([$this, 'doFetch'], $arguments);
         }
+        else if($name === 'fetchFirst')
+        {
+            $this->getQueryParameters()->setFirstOnly(true);
+            return $this->doFetch();
+        }
+        else if($name === 'filter')
+        {
+            $this->getQueryParameters()->setFilter(FilterCompiler::compile($arguments[0]), $arguments[1]);
+            return $this;
+        }
+        else if($name === 'fields')
+        {
+            $this->getQueryParameters()->setFields($arguments);
+            return $this;
+        }
         else if(preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches))
         {
             $this->getQueryParameters()->addFilter(Text::deCamelize($matches['variable']), $arguments);
             return $this;
         }
-        else if(preg_match("/(fetch)(First)?(With)(?<variable>[A-Za-z]+)/", $name, $matches))
+        else if(preg_match("/(fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/", $name, $matches))
         {
-            $this->getQueryParameters()->addFilter(Text::deCamelize($matches['variable']), $arguments);
+            $parameters = $this->getQueryParameters();
+            $parameters->addFilter(Text::deCamelize($matches['variable']), $arguments);
+            if($matches['first'] === 'First')
+            {
+                $parameters->setFirstOnly(true);
+            }
             return $this->doFetch();
         }
         else
@@ -127,5 +151,37 @@ class RecordWrapper
     public function getData()
     {
         return $this->data;
+    }
+
+    public function offsetExists($offset) 
+    {
+        return isset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset) 
+    {
+        return $this->data[$offset];
+    }
+
+    public function offsetSet($offset, $value) 
+    {
+        $this->data[$offset] = $value;
+    }
+
+    public function offsetUnset($offset) 
+    {
+        unset($this->data[$offset]);
+    }
+
+    public function count($mode = 'COUNT_NORMAL') 
+    {
+        if(@reset(array_keys($this->data)) === 0)
+        {
+            return count($this->data);
+        }
+        else
+        {
+            return 1;
+        }
     }
 }

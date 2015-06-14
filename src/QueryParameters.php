@@ -41,6 +41,11 @@ class QueryParameters
         return $fields;
     }
     
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
+    }
+    
     public function getTable()
     {
         return $this->table;
@@ -67,10 +72,16 @@ class QueryParameters
         }
         else
         {
-            $this->whereClause .= "{$field} IN (?" . str_repeat('?', $numValues - 1) . ')';
+            $this->whereClause .= "{$field} IN (?" . str_repeat(', ?', $numValues - 1) . ')';
             $this->boundData += $values;
         }
         $this->and = ' AND ';
+    }
+    
+    public function setRawFilter($filter, $values)
+    {
+        $this->whereClause .= "{$this->and}($filter)" ;
+        $this->boundData += $values;
     }
     
     public function setFirstOnly($firstOnly)
