@@ -6,7 +6,7 @@ php:
  - "hhvm"
 
 env:
- - NIBII_DRIVER=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root'
+ - NIBII_DATASTORE=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root'
 
 
 matrix:
@@ -14,12 +14,12 @@ matrix:
   - php: "7"
  include:
   - php: "5.6"
-    env: NIBII_DRIVER=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root' COVERAGE=yes
+    env: NIBII_DATASTORE=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root' COVERAGE=yes
   
 before_script:
  - composer install --prefer-dist
- - if [ "$NIBII_DRIVER" = "mysql" ]; then mysql -e 'create database nibii_test;'; fi
- - if [ "$NIBII_DRIVER" = "mysql" ]; then mysql nibii_test < tests/databases/mysql.sql; fi
+ - if [ "$NIBII_DATASTORE" = "mysql" ]; then mysql -e 'create database nibii_test;'; fi
+ - if [ "$NIBII_DATASTORE" = "mysql" ]; then mysql nibii_test < tests/databases/mysql.sql; fi
 
 services:
  - mysql
