@@ -99,7 +99,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
         }
         else if($name === 'filter')
         {
-            $this->getQueryParameters()->setFilter(FilterCompiler::compile($arguments[0]), $arguments[1]);
+            $this->getQueryParameters()->setRawFilter(FilterCompiler::compile(array_shift($arguments)), $arguments);
             return $this;
         }
         else if($name === 'fields')
@@ -152,6 +152,11 @@ class RecordWrapper implements \ArrayAccess, \Countable
     {
         return $this->data;
     }
+    
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
 
     public function offsetExists($offset) 
     {
@@ -160,7 +165,14 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function offsetGet($offset) 
     {
-        return $this->data[$offset];
+        if(is_numeric($offset))
+        {
+            return $this->wrap($offset);
+        }
+        else
+        {
+            return $this->data[$offset];
+        }
     }
 
     public function offsetSet($offset, $value) 
@@ -183,5 +195,12 @@ class RecordWrapper implements \ArrayAccess, \Countable
         {
             return 1;
         }
+    }
+    
+    private function wrap($offset)
+    {
+        $newInstance = clone $this;
+        $newInstance->setData($this->data[$offset]);
+        return $newInstance;
     }
 }

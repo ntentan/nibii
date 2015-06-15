@@ -80,7 +80,7 @@ class QueryParameters
     
     public function setRawFilter($filter, $values)
     {
-        $this->whereClause .= "{$this->and}($filter)" ;
+        $this->whereClause .= "{$this->and}$filter" ;
         $this->boundData += $values;
     }
     

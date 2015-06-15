@@ -145,6 +145,23 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertArrayHasKey('id', $role);
         $this->assertArrayHasKey('name', $role);
         $this->assertArrayNotHasKey('other', $role);
+        
+        $users = \ntentan\nibii\tests\classes\Users::fetch();
+        $this->assertEquals(2, count($users));
+        $this->assertEquals(1, count($users[0]));
+        
+        $users = \ntentan\nibii\tests\classes\Users::fields('id', 'username')->filterByUsername('james')->fetchFirst();
+        $this->assertEquals(1, count($users));
+        $this->assertArrayNotHasKey('firstname', $users);
+        $this->assertArrayHasKey('username', $users);
+        $this->assertArrayHasKey('id', $users);
+    }
+    
+    public function testFilterCompiler()
+    {
+        $user = \ntentan\nibii\tests\classes\Users::filter('username = ?', 'james')->fetchFirst();
+        $this->assertEquals(1, count($user));
+        $this->assertEquals('james', $user->username);        
     }
 
     protected function getConnection() 
