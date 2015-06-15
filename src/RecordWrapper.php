@@ -85,27 +85,33 @@ class RecordWrapper implements \ArrayAccess, \Countable
         $instance->data = $adapter->select($parameters);
         return $instance;
     }
+    
+    private function doFetchFirst()
+    {
+        $this->getQueryParameters()->setFirstOnly(true);
+        return $this->doFetch();        
+    }
+    
+    private function doFilter()
+    {
+        $arguments = func_get_args();
+        $this->getQueryParameters()->setRawFilter(FilterCompiler::compile(array_shift($arguments)), $arguments);
+        return $this;        
+    }
+    
+    private function doFields()
+    {
+        $arguments = func_get_args();
+        $this->getQueryParameters()->setFields($arguments);
+        return $this;     
+    }
         
     public function __call($name, $arguments) 
     {
-        if($name === 'fetch')
+        if(array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields']) !== false)
         {
-            return call_user_func_array([$this, 'doFetch'], $arguments);
-        }
-        else if($name === 'fetchFirst')
-        {
-            $this->getQueryParameters()->setFirstOnly(true);
-            return $this->doFetch();
-        }
-        else if($name === 'filter')
-        {
-            $this->getQueryParameters()->setRawFilter(FilterCompiler::compile(array_shift($arguments)), $arguments);
-            return $this;
-        }
-        else if($name === 'fields')
-        {
-            $this->getQueryParameters()->setFields($arguments);
-            return $this;
+            $method = "do{$name}";
+            return call_user_func_array([$this, $method], $arguments);
         }
         else if(preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches))
         {
