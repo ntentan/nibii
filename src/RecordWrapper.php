@@ -95,7 +95,19 @@ class RecordWrapper implements \ArrayAccess, \Countable
     private function doFilter()
     {
         $arguments = func_get_args();
-        $this->getQueryParameters()->setRawFilter(FilterCompiler::compile(array_shift($arguments)), $arguments);
+        if(count($arguments) == 2 && is_array($arguments[1]))
+        {
+            $filter = $arguments[0];
+            $bind = $arguments[1];
+        }
+        else
+        {
+            $filter = array_shift($arguments);
+            $bind = $arguments;
+        }
+        $this->getQueryParameters()->setRawFilter(
+            FilterCompiler::compile($filter), $bind
+        );
         return $this;        
     }
     

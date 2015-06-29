@@ -1,6 +1,12 @@
 <?php
 namespace ntentan\nibii;
 
+/**
+ * Safely compiles SQL conditions to ensure that a portable interface is provided
+ * through which conditions can be specified accross database platforms. Also 
+ * the FilterCompiler ensures that raw data is never passed through queries. 
+ * This is done in order to minimize injection errors. 
+ */
 class FilterCompiler
 {
     private static $lookahead;
@@ -8,7 +14,6 @@ class FilterCompiler
     private static $filter;
     private static $tokens = array(
         'equals' => '\=',
-        'bind_param' => '\?|:[a-z][a-z0-9\_]+',
         'number' => '[0-9]+',
         'between' => 'between\b',
         'in' => 'in\b',
@@ -27,6 +32,7 @@ class FilterCompiler
         'multiply' => '\*',
         'function' => '[a-zA-Z][a-zA-Z0-9\_]*\s*\(',
         'identifier' => '[a-zA-Z][a-zA-Z0-9\.\_\:]*\b',
+        'bind_param' => '\?|\:[a-z_][a-z0-9\_]+',
         'obracket' => '\(',
         'cbracket' => '\)',
         'comma' => ','
@@ -49,7 +55,7 @@ class FilterCompiler
         $expression = self::parseExpression();
         if(self::$token !== false)
         {
-            throw new Exception("Unexpected '" . self::$token . "' in filter [$filter]");
+            throw new FilterCompilerException("Unexpected '" . self::$token . "' in filter [$filter]");
         }
         $parsed = self::renderExpression($expression);
         return $parsed;
@@ -71,7 +77,7 @@ class FilterCompiler
     {
         if($token != self::$lookahead)
         {
-            throw new Exception("Expected $token but found " . self::$lookahead);
+            throw new FilterCompilerException("Expected $token but found " . self::$lookahead);
         }
     }
     
@@ -231,7 +237,7 @@ class FilterCompiler
         
         if(self::$token === false && strlen(self::$filter) > 0)
         {
-            throw new Exception("Unexpected character [" . self::$filter[0] . "] begining " . self::$filter . ".");
+            throw new FilterCompilerException("Unexpected character [" . self::$filter[0] . "] begining " . self::$filter . ".");
         }
     }
     

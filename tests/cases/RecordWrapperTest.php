@@ -161,7 +161,14 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $user = \ntentan\nibii\tests\classes\Users::filter('username = ?', 'james')->fetchFirst();
         $this->assertEquals(1, count($user));
-        $this->assertEquals('james', $user->username);        
+        $this->assertEquals('james', $user->username); 
+        
+        $user = \ntentan\nibii\tests\classes\Users::filter('username = :username', [':username' => 'james'])->fetchFirst();
+        $this->assertEquals(1, count($user));
+        $this->assertEquals('james', $user->username);                
+        
+        $user = \ntentan\nibii\tests\classes\Users::filter('username = ? or (role_id in(? , ?)', 'james', '10', '11')->fetch();
+        $this->assertEquals(2, count($user));
     }
 
     protected function getConnection() 
