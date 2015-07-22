@@ -18,7 +18,7 @@ matrix:
     env: NIBII_DATASTORE=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root' COVERAGE=yes
   - php: "5.6"
     env: NIBII_DATASTORE=postgresql NIBII_HOST=localhost NIBII_USER=postgres NIBII_DBNAME=nibii_test NIBII_PDO_DSN='pgsql:host=localhost;dbname=nibii_test;user=root' COVERAGE=yes
-exclude:
+ exclude:
   - php: "hhvm"
     env: NIBII_DATASTORE=postgresql NIBII_HOST=localhost NIBII_USER=postgres NIBII_DBNAME=nibii_test NIBII_PDO_DSN='pgsql:host=localhost;dbname=nibii_test;user=postgres'
 
