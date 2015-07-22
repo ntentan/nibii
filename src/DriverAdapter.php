@@ -8,7 +8,12 @@ abstract class DriverAdapter
     protected $settings;
     protected $data;
     private static $defaultSettings;
-    private static $defaultInstance;
+    private static $defaultInstance = null;
+    
+    /**
+     *
+     * @var \ntentan\atiaa\Driver
+     */
     protected $db;    
     protected $queryEngine;
     
@@ -29,6 +34,14 @@ abstract class DriverAdapter
         $this->settings['driver'] = $this->settings['datastore'];
         unset($this->settings['datastore']);
         $this->db = \ntentan\atiaa\Driver::getConnection($this->settings);
+        
+        try{
+            $this->db->getPDO()->setAttribute(\PDO::ATTR_AUTOCOMMIT, false);
+        }
+        catch(\PDOException $e)
+        {
+            
+        }
     }
     
     public function select($parameters)
@@ -133,8 +146,21 @@ abstract class DriverAdapter
         return $this->queryEngine;
     }
     
+    /**
+     * 
+     * @return \ntentan\atiaa\Driver
+     */
     public function getDriver()
     {
         return $this->db;
+    }
+    
+    public static function reset()
+    {
+        if(self::$defaultInstance !== null)
+        {
+            self::$defaultInstance->getDriver()->disconnect();
+        }
+        self::$defaultInstance = null;
     }
 }

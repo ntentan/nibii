@@ -20,6 +20,11 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         );
     }
     
+    public function tearDown() 
+    {
+        \ntentan\nibii\DriverAdapter::reset();
+    }
+    
     public function testTableResolution()
     {
         $users = new \ntentan\nibii\tests\classes\Users();
@@ -33,7 +38,10 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
         $role = \ntentan\nibii\tests\classes\Roles::createNew();
         $role->name = 'Super User';
+        $this->assertArrayNotHasKey('id', $role->getData());
         $role->save();
+        $this->assertArrayHasKey('id', $role->getData());
+        $this->assertTrue(is_numeric($role->getData()['id']));
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
         $queryTable = $this->getConnection()->createQueryTable(
             'roles', 'SELECT name FROM roles ORDER BY name'
@@ -91,7 +99,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             $role->getData()
         );
         $this->assertInstanceOf('\\ntentan\\nibii\\RecordWrapper', $role);
-        //$this->assertInternalType('int', $role->getData()['id']);
+        $this->assertInternalType('int', $role->getData()['id']);
         
         $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches')->fetchFirst();
         $this->assertEquals(

@@ -26,6 +26,10 @@ class RecordWrapper implements \ArrayAccess, \Countable
         return \ntentan\utils\Text::deCamelize(end($nameParts));
     }
     
+    /**
+     * 
+     * @return \ntentan\nibii\DriverAdapter
+     */
     protected function getDataAdapter()
     {
         $this->adapter = DriverAdapter::getDefaultInstance();
@@ -62,7 +66,15 @@ class RecordWrapper implements \ArrayAccess, \Countable
     
     public function save()
     {
-        return $this->getDataAdapter()->insert($this);
+        $this->getDescription();
+        $this->getDataAdapter()->getDriver()->beginTransaction();
+        $this->getDataAdapter()->insert($this);
+        if(count($this->getDescription()['primary_key']) == 1)
+        {
+            $this->data[$this->getDescription()['primary_key'][0]] = 
+                $this->getDataAdapter()->getDriver()->getLastInsertId();
+        }
+        $this->getDataAdapter()->getDriver()->commit();
     }
     
     private static function getInstance()
