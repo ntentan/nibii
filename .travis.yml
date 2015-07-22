@@ -24,7 +24,7 @@ before_script:
  - if [ "$NIBII_DATASTORE" = "mysql" ]; then mysql -e 'create database nibii_test;'; fi
  - if [ "$NIBII_DATASTORE" = "mysql" ]; then mysql nibii_test < tests/databases/mysql.sql; fi
  - if [ "$NIBII_DATASTORE" = "postgresql" ]; then psql -c 'create database nibii_test;' -U postgres; fi
- - if [ "$NIBII_DATASTORE" = "postgresql" ]; then psql -f tests/databases/postgresql.sql -U postgres -d ntentan_tests; fi
+ - if [ "$NIBII_DATASTORE" = "postgresql" ]; then psql -f tests/databases/postgresql.sql -U postgres -d nibii_test; fi
 
 services:
  - mysql
