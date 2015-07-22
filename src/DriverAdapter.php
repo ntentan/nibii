@@ -27,6 +27,7 @@ abstract class DriverAdapter
     public function init() 
     {
         $this->settings['driver'] = $this->settings['datastore'];
+        unset($this->settings['datastore']);
         $this->db = \ntentan\atiaa\Driver::getConnection($this->settings);
     }
     
