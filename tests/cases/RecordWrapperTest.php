@@ -30,21 +30,24 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     
     public function testCreate()
     {
-        $this->assertEquals(3, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
         $role = \ntentan\nibii\tests\classes\Roles::createNew();
         $role->name = 'Super User';
         $role->save();
-        $this->assertEquals(4, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
         $queryTable = $this->getConnection()->createQueryTable(
             'roles', 'SELECT name FROM roles ORDER BY name'
         );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'roles' => [
+                    ['name' => 'Another test role'],
                     ['name' => 'Matches'],
+                    ['name' => 'More test roles'],
                     ['name' => 'Rematch'],
                     ['name' => 'Some test user'],
                     ['name' => 'Super User'],
+                    ['name' => 'Test role'],
                 ]
             ])->getTable('roles'), 
             $queryTable
@@ -53,21 +56,24 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     
     public function testCreate2()
     {
-        $this->assertEquals(3, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
         $role = \ntentan\nibii\tests\classes\Roles::createNew();
         $role['name'] = 'Super User';
         $role->save();
-        $this->assertEquals(4, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
         $queryTable = $this->getConnection()->createQueryTable(
             'roles', 'SELECT name FROM roles ORDER BY name'
         );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'roles' => [
+                    ['name' => 'Another test role'],
                     ['name' => 'Matches'],
+                    ['name' => 'More test roles'],
                     ['name' => 'Rematch'],
                     ['name' => 'Some test user'],
                     ['name' => 'Super User'],
+                    ['name' => 'Test role'],
                 ]
             ])->getTable('roles'), 
             $queryTable
@@ -168,7 +174,15 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals('james', $user->username);                
         
         $user = \ntentan\nibii\tests\classes\Users::filter('username = ? or (role_id in(? , ?)', 'james', '10', '11')->fetch();
+        
+        $user = \ntentan\nibii\tests\classes\Users::filter('role_id between 10 and 13')->fetch();
         $this->assertEquals(2, count($user));
+        
+        $user = \ntentan\nibii\tests\classes\Users::filter('password = md5(?)', 'password')->fetch();
+        $this->assertEquals(1, count($user));        
+        
+        $role = \ntentan\nibii\tests\classes\Roles::filter('name = concat(cast(? as char), cast(? as char))', 'Test ', 'role')->fetch();
+        $this->assertEquals(1, count($role));                       
     }
 
     protected function getConnection() 
@@ -183,11 +197,14 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             'roles' => [
                 ['id' => 10, 'name' => 'Some test user'],
                 ['id' => 11, 'name' => 'Matches'],
-                ['id' => 12, 'name' => 'Rematch']
+                ['id' => 12, 'name' => 'Rematch'],
+                ['id' => 13, 'name' => 'Test role'],
+                ['id' => 14, 'name' => 'Another test role'],
+                ['id' => 15, 'name' => 'More test roles']
             ],
             'users' => [
                 ['id' => 1, 'username' => 'james', 'role_id' => 10, 'firstname' => 'James', 'lastname' => 'Ainooson', 'status' => 1, 'password' => 'somehashedstring', 'email' => 'james@nibii.test'],
-                ['id' => 2, 'username' => 'fiifi', 'role_id' => 11, 'firstname' => 'Fiifi', 'lastname' => 'Antobra', 'status' => 2, 'password' => 'somehashedstring', 'email' => 'fiifi@nibii.test']
+                ['id' => 2, 'username' => 'fiifi', 'role_id' => 11, 'firstname' => 'Fiifi', 'lastname' => 'Antobra', 'status' => 2, 'password' => md5('password'), 'email' => 'fiifi@nibii.test']
             ]
         ]);
     }

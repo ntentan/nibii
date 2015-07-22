@@ -15,6 +15,8 @@ class FilterCompiler
     private static $tokens = array(
         'equals' => '\=',
         'number' => '[0-9]+',
+        'cast' => 'cast\b',
+        'as' => 'as\b',
         'between' => 'between\b',
         'in' => 'in\b',
         'like' => 'like\b',
@@ -63,31 +65,33 @@ class FilterCompiler
     
     private static function renderExpression($expression)
     {
-        if(is_string($expression))
+        if(is_array($expression))
         {
-            return $expression;
+            $expression = self::renderExpression($expression['left']) . " {$expression['opr']} " . self::renderExpression($expression['right']);
         }
-        else if(is_array($expression))
-        {
-            return "(" . self::renderExpression($expression['left']) . " {$expression['opr']} " . self::renderExpression($expression['right']) . ")";
-        }
+        return $expression;
     }
     
-    private static function match($token)
+    private static function match($tokens)
     {
-        if($token != self::$lookahead)
+        if(is_string($tokens))
         {
-            throw new FilterCompilerException("Expected $token but found " . self::$lookahead);
+            $tokens = [$tokens];
+        }
+        if(array_search(self::$lookahead, $tokens) === false)
+        {
+            throw new FilterCompilerException("Expected " . implode(' or ', $tokens) .  " but found " . self::$lookahead);
         }
     }
     
     private static function parseBetween()
     {
-        self::match('bind_param');
+        self::match(['bind_param', 'number']);
         $left = self::$token;
         self::getToken();
         self::match('and');
         self::getToken();
+        self::match(['bind_param', 'number']);
         $right = self::$token;    
         self::getToken();
         return "$left AND $right";
@@ -128,18 +132,13 @@ class FilterCompiler
         $size = 0;
         do{
             $size++;
-            $parameters .= self::parseExpression();
+            $parameters .= self::renderExpression(self::parseExpression());
             if(self::$lookahead == 'comma')
             {
                 self::getToken();
                 $parameters .= ", ";
             }
             else if(self::$lookahead == 'cbracket')
-            {
-                self::getToken();
-                break;
-            }
-            else
             {
                 break;
             }
@@ -148,30 +147,56 @@ class FilterCompiler
         return $parameters;
     }
     
+    private static function parseCast()
+    {
+        $return = 'cast(';
+        self::getToken();
+        self::match('obracket');
+        self::getToken();
+        $return .= self::renderExpression(self::parseExpression());
+        self::match('as');
+        $return .= ' as ';
+        self::getToken();
+        self::match('identifier');
+        $return .= self::$token;
+        self::getToken();
+        self::match('cbracket');
+        $return .= ')';
+        return $return;
+    }
+    
+    private static function parseFunction()
+    {
+        $name = self::$token;
+        self::getToken();
+        $parameters = self::parseFunctionParams();
+        return "$name$parameters)";        
+    }
+    
     private static function parseFactor()
     {
         $return = null;
         switch(self::$lookahead)
         {
+            case 'cast':
+                $return = self::parseCast();
+                break;
             case 'function':
-                $name = self::$token;
-                self::getToken();
-                $parameters = self::parseFunctionParams();
-                $return = "$name($parameters)";
+                $return = self::parseFunction();
                 break;
             case 'identifier':
             case 'bind_param':
             case 'number':
                 $return = self::$token;
-                self::getToken();
                 break;
             case 'obracket':
                 self::getToken();
                 $expression = self::parseExpression();  
                 $return = self::renderExpression($expression);
-                self::getToken();
                 break;
         }
+        
+        self::getToken();
         
         return $return;
     }
