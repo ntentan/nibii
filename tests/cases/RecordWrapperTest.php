@@ -179,10 +179,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals(2, count($user));
         
         $user = \ntentan\nibii\tests\classes\Users::filter('password = md5(?)', 'password')->fetch();
-        $this->assertEquals(1, count($user));        
-        
-        $role = \ntentan\nibii\tests\classes\Roles::filter('name = concat(cast(? as char), cast(? as char))', 'Test ', 'role')->fetch();
-        $this->assertEquals(1, count($role));                       
+        $this->assertEquals(1, count($user));                           
     }
 
     protected function getConnection() 
