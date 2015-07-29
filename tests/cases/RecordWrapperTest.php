@@ -38,10 +38,10 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
         $role = \ntentan\nibii\tests\classes\Roles::createNew();
         $role->name = 'Super User';
-        $this->assertArrayNotHasKey('id', $role->getData());
+        $this->assertArrayNotHasKey('id', $role->toArray());
         $role->save();
-        $this->assertArrayHasKey('id', $role->getData());
-        $this->assertTrue(is_numeric($role->getData()['id']));
+        $this->assertArrayHasKey('id', $role->toArray());
+        $this->assertTrue(is_numeric($role->toArray()['id']));
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
         $queryTable = $this->getConnection()->createQueryTable(
             'roles', 'SELECT name FROM roles ORDER BY name'
@@ -96,10 +96,10 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                 'id' => 10,
                 'name' => 'Some test user',
             ),
-            $role->getData()
+            $role->toArray()
         );
         $this->assertInstanceOf('\\ntentan\\nibii\\RecordWrapper', $role);
-        $this->assertTrue(is_numeric($role->getData()['id']));
+        $this->assertTrue(is_numeric($role->toArray()['id']));
         
         $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches')->fetchFirst();
         $this->assertEquals(
@@ -107,7 +107,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                 'id' => 11,
                 'name' => 'Matches',
             ),
-            $role->getData()
+            $role->toArray()
         );        
         
         $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches')->fetch();
@@ -117,7 +117,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                     'name' => 'Matches',
                 ),
             ),
-            $role->getData()
+            $role->toArray()
         );
         
         $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches', 'Rematch')->fetch();
@@ -131,7 +131,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                     'name' => 'Rematch',
                 )
             ),
-            $role->getData()
+            $role->toArray()
         );        
         
         $role = \ntentan\nibii\tests\classes\Roles::fetchWithName('Matches');
@@ -141,7 +141,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                     'name' => 'Matches',
                 ),
             ),
-            $role->getData()
+            $role->toArray()
         );      
         
         $role = \ntentan\nibii\tests\classes\Roles::fetchFirstWithName('Matches');
@@ -150,7 +150,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                 'id' => 11,
                 'name' => 'Matches',
             ),
-            $role->getData()
+            $role->toArray()
         );  
         
         $this->assertEquals(1, count($role));

@@ -13,14 +13,16 @@ class QueryEngine
     public function insert($model)
     {
         $data = $model->getData();
-        $fields = array_keys($data);
+        $fields = array_keys($data[0]);
         $quotedFields = [];
+        $valueFields = [];
         foreach($fields as $field)
         {
             $quotedFields[] = $this->db->quoteIdentifier($field);
+            $valueFields[] = ":{$field}";
         }
         return "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) . 
-            " (" . implode(", ", $quotedFields) . ") VALUES (?" . str_repeat(", ?", count($fields) - 1) . ")";
+            " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")";
     }
     
     public function select($parameters)

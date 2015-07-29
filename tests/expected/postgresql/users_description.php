@@ -88,4 +88,5 @@ $description = array (
   'unique_keys' => 
   array (
   ),
+  'auto_primary_key' => true
 );
