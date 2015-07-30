@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "d8fea95feb59c9cc655f51004da5167eda3c83dc"
+                "reference": "c31b7aeed1312013d464be1e7374e6af6aa9413d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/d8fea95feb59c9cc655f51004da5167eda3c83dc",
-                "reference": "d8fea95feb59c9cc655f51004da5167eda3c83dc",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/c31b7aeed1312013d464be1e7374e6af6aa9413d",
+                "reference": "c31b7aeed1312013d464be1e7374e6af6aa9413d",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2015-07-22 15:43:17"
+            "time": "2015-07-29 19:58:08"
         },
         {
             "name": "ntentan/utils",
@@ -53,12 +53,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "fa16860a3de845948d01027c4c1b3a86a2fd8961"
+                "reference": "b761a72884e7639c7e302c2f8fb60c1e52827073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/fa16860a3de845948d01027c4c1b3a86a2fd8961",
-                "reference": "fa16860a3de845948d01027c4c1b3a86a2fd8961",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/b761a72884e7639c7e302c2f8fb60c1e52827073",
+                "reference": "b761a72884e7639c7e302c2f8fb60c1e52827073",
                 "shasum": ""
             },
             "require-dev": {
@@ -81,7 +81,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2015-07-29 14:23:16"
+            "time": "2015-07-30 11:22:01"
         }
     ],
     "packages-dev": [
