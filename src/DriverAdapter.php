@@ -83,8 +83,15 @@ abstract class DriverAdapter
             $description['fields'][$field] = [
                 'type' => $this->mapDataTypes($details['type']),
                 'required' => !$details['nulls'],
+                'default' => $details['default'],
                 'name' => $field
             ];
+            if(isset($details['default'])) {
+                $description['fields'][$field]['default'] = $details['default'];
+            }
+            if(isset($details['length'])) {
+                $description['fields'][$field]['length'] = $details['length'];
+            }
         }
         
         $this->appendConstraints($description, $schema['primary_key'], 'primary_key', true);

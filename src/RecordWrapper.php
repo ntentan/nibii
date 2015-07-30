@@ -12,6 +12,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
     private $description;
     private $data = [];
     private $queryParameters;
+    private $invalidFields;
 
     public function __construct()
     {
@@ -61,14 +62,23 @@ class RecordWrapper implements \ArrayAccess, \Countable
     {
         $description = $this->getDescription();
         $validator = \ntentan\utils\Validator::getInstance();
+        $pk = null;
         $rules = [];
         
-        foreach($description['fields'] as $field) {
+        
+        if($description['auto_primary_key']) {
+            $pk = $description['primary_key'][0];
+        }
+        
+        foreach($description['fields'] as $name => $field) {
             $fieldRules = [];
-            if($field['required']) {
+            if($field['required'] && $name != $pk && $field['default'] === null) {
                 $fieldRules[] = 'required';
             }
-            $rules[$field['name']] = $fieldRules;
+            if($field['type'] === 'integer' || $field['type'] === 'double') {
+                $fieldRules[] = 'numeric';
+            }
+            $rules[$name] = $fieldRules;
         }
         
         $validator->setRules($rules);
@@ -93,15 +103,20 @@ class RecordWrapper implements \ArrayAccess, \Countable
             }
         }
         
+        if($valid === false) {
+            $valid = $validator->getInvalidFields();
+        }
+        
         return $valid;
     }
 
     public function save()
     {
-        $data = [];
+        $invalidFields = [];
         $data = $this->getData();
         $this->getDataAdapter()->initInsert($this);  
         $primaryKey = null;
+        $succesful = true;
         
         if (count($this->getDescription()['primary_key']) == 1) {
             $primaryKey = $this->getDescription()['primary_key'][0];
@@ -110,25 +125,34 @@ class RecordWrapper implements \ArrayAccess, \Countable
         $this->getDataAdapter()->getDriver()->beginTransaction();                
         foreach($data as $i => $datum) {
             
-            if($this->validate($datum)) {
+            $validity = $this->validate($datum);
+            if($validity === true) {
                 $this->getDataAdapter()->insert($datum);
                 if($primaryKey) {
                     $data[$i][$primaryKey] = $this->getDataAdapter()->getDriver()->getLastInsertId();
                 }
             } else {
-                $this->getDataAdapter()->getDriver()->rollback();
-                return false;
+                $invalidFields[$i] = $validity;
+                $succesful = false;
             }
         }
         
-        if($this->hasMultipleData()) {
-            $this->data = $data;
+        if($succesful) {
+            if($this->hasMultipleData()) {
+                $this->data = $data;
+            } else {
+                $this->data = $data[0];
+            }
+            $this->getDataAdapter()->getDriver()->commit();
         } else {
-            $this->data = $data[0];
+            if($this->hasMultipleData()) {
+                $this->invalidFields = $invalidFields;
+            } else {
+                $this->invalidFields = $invalidFields[0];
+            }
         }
         
-        $this->getDataAdapter()->getDriver()->commit();
-        return true;
+        return $succesful;
     }
 
     private static function getInstance()
@@ -227,7 +251,11 @@ class RecordWrapper implements \ArrayAccess, \Countable
     
     private function hasMultipleData()
     {
-        return is_numeric(array_keys($this->data)[0]);
+        if(count($this->data) > 0) {
+            return is_numeric(array_keys($this->data)[0]);
+        } else {
+            return false;
+        }
     }
     
     public function getData()
@@ -288,5 +316,9 @@ class RecordWrapper implements \ArrayAccess, \Countable
         $newInstance->setData($this->data[$offset]);
         return $newInstance;
     }
-
+    
+    public function getInvalidFields() 
+    {
+        return $this->invalidFields;
+    }
 }
