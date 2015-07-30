@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `othernames` varchar(255) DEFAULT NULL,
-  `status` int(11) DEFAULT '2' NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '2',
   `email` varchar(255) NOT NULL,
   `phone` varchar(64) DEFAULT NULL,
   `office` int(11) DEFAULT NULL,

@@ -35,7 +35,7 @@ CREATE TABLE users (
     firstname character varying(255) NOT NULL,
     lastname character varying(255) NOT NULL,
     othernames character varying(255) DEFAULT NULL::character varying,
-    status integer DEFAULT 2 NOT NULL,
+    status integer NOT NULL DEFAULT 2,
     email character varying(255) NOT NULL,
     phone character varying(64) DEFAULT NULL::character varying,
     office integer,
