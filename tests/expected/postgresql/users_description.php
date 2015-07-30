@@ -58,7 +58,7 @@ $description = array (
     array (
       'type' => 'string',
       'required' => false,
-      'default' => 'Ofori',
+      'default' => null,
       'name' => 'othernames',
       'length' => 255,
     ),
