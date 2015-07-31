@@ -4,6 +4,13 @@ namespace ntentan\nibii;
 
 use ntentan\utils\Text;
 
+/**
+ * A DriverAdaptr is a generic database adapter. 
+ * This adapter implements a lot of its operations through the atiaa library. 
+ * Driver specific implementation of this class only handle the conversion of
+ * data types from the native datatypes of the database to the generic types
+ * used in the nibii library.
+ */
 abstract class DriverAdapter
 {
 
@@ -14,7 +21,7 @@ abstract class DriverAdapter
     private $insertQuery;
 
     /**
-     *
+     * An instance of an atiaa driver.
      * @var \ntentan\atiaa\Driver
      */
     protected $db;
@@ -30,6 +37,13 @@ abstract class DriverAdapter
         $this->data = $data;
     }
 
+    /**
+     * Convert datatypes from the database system's native type to a generic type
+     * supported by nibii.
+     * 
+     * @param string $nativeType The native datatype
+     * @return string The generic datatype for use in nibii.
+     */
     abstract protected function mapDataTypes($nativeType);
 
     public function init()
@@ -42,7 +56,7 @@ abstract class DriverAdapter
         try {
             $this->db->getPDO()->setAttribute(\PDO::ATTR_AUTOCOMMIT, false);
         } catch (\PDOException $e) {
-            
+            // Just do nothing for drivers which do not allow turning off autocommit
         }
     }
 

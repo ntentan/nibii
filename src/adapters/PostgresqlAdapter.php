@@ -3,6 +3,13 @@ namespace ntentan\nibii\adapters;
 
 class PostgresqlAdapter extends \ntentan\nibii\DriverAdapter
 {
+    /**
+     * Convert from postgresqls native type to a generic type accepted in the
+     * atiaa library.
+     * @param string $nativeType
+     * @return string
+     * @throws \Exception
+     */
     protected function mapDataTypes($nativeType) 
     {
         switch($nativeType)

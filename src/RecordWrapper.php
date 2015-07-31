@@ -95,7 +95,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
     {
         $valid = true;
         $validator = $this->getValidator();
-        $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getDataAsArray();
+        $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();
         
         foreach($data as $datum) {
             if(!$validator->validate($datum)) {
@@ -303,7 +303,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function count($mode = 'COUNT_NORMAL')
     {
-        if (@reset(array_keys($this->data)) === 0) {
+        if (array_keys($this->data)[0] === 0) {
             return count($this->data);
         } else {
             return 1;
