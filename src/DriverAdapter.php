@@ -37,6 +37,7 @@ abstract class DriverAdapter
         $this->settings['driver'] = $this->settings['datastore'];
         unset($this->settings['datastore']);
         $this->db = \ntentan\atiaa\Driver::getConnection($this->settings);
+        $this->db->setCleanDefaults(true);
 
         try {
             $this->db->getPDO()->setAttribute(\PDO::ATTR_AUTOCOMMIT, false);

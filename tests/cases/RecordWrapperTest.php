@@ -189,7 +189,6 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $user = \ntentan\nibii\tests\classes\Users::createNew();
         $response = $user->save();
         $this->assertEquals(false, $response);
-        var_dump($user->getInvalidFields());
         $this->assertEquals(
             array (
                 'email' => 

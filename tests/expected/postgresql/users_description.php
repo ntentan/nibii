@@ -22,7 +22,7 @@ $description = array (
     array (
       'type' => 'integer',
       'required' => true,
-      'default' => 'users_id_seq',
+      'default' => NULL,
       'name' => 'id',
     ),
     'is_admin' => 
@@ -58,7 +58,7 @@ $description = array (
     array (
       'type' => 'string',
       'required' => false,
-      'default' => null,
+      'default' => NULL,
       'name' => 'othernames',
       'length' => 255,
     ),
@@ -108,5 +108,5 @@ $description = array (
   'unique_keys' => 
   array (
   ),
-  'auto_primary_key' => false,
+  'auto_primary_key' => true,
 );
