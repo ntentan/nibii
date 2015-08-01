@@ -8,7 +8,6 @@ class RecordWrapper implements \ArrayAccess, \Countable
 {
 
     protected $table;
-    protected $adapter;
     private $description;
     private $data = [];
     private $queryParameters;
@@ -34,20 +33,12 @@ class RecordWrapper implements \ArrayAccess, \Countable
      */
     protected function getDataAdapter()
     {
-        $this->adapter = DriverAdapter::getDefaultInstance();
-        return $this->adapter;
+        return DriverAdapter::getDefaultInstance();
     }
-
-    /**
-     * 
-     * @return \ntentan\nibii\QueryParameters
-     */
-    protected function getQueryParameters()
+    
+    protected function getDriver()
     {
-        if ($this->queryParameters == null) {
-            $this->queryParameters = new QueryParameters($this->getDataAdapter()->getDriver(), $this->table);
-        }
-        return $this->queryParameters;
+        return $this->getDataAdapter()->getDriver();
     }
 
     public function getDescription()
@@ -109,47 +100,88 @@ class RecordWrapper implements \ArrayAccess, \Countable
         
         return $valid;
     }
+    
+    private function assignValue(&$property, $value)
+    {
+        if($this->hasMultipleData()) {
+            $property = $value;
+        } else {
+            $property = $value[0];
+        }        
+    }
+    
+    private function saveRecord($datum, $primaryKey)
+    {
+        $status = [
+            'success' => true,
+            'pk_assigned' => null,
+            'invalid_fields' => []
+        ];
+        
+        $validity = $this->validate($datum);
+        $primaryKeySet = false;
+        
+        if($validity !== true) {
+            $status['invalid_fields'] = $validity;
+            $status['success'] = false;
+            return $status;
+        }
+            
+        foreach($primaryKey as $keyField) {
+            if(!isset($datum[$keyField])) {
+                break;
+            }
+            if($datum[$keyField] !== '' && $datum[$keyField] !== null) {
+                $primaryKeySet = true;
+                break;
+            }
+        }
+
+        if($primaryKeySet) {
+            $this->getDataAdapter()->update($datum);
+        } else {
+            $this->getDataAdapter()->insert($datum);
+            $status['pk_assigned'] = $this->getDriver()->getLastInsertId();
+        }
+        
+        return $status;    
+    }
 
     public function save()
     {
         $invalidFields = [];
         $data = $this->getData();
-        $this->getDataAdapter()->initInsert($this);  
-        $primaryKey = null;
+        $this->getDataAdapter()->setModel($this);  
+        $primaryKey = $this->getDescription()['primary_key'];
+        $singlePrimaryKey = null;
         $succesful = true;
         
-        if (count($this->getDescription()['primary_key']) == 1) {
-            $primaryKey = $this->getDescription()['primary_key'][0];
+        if (count($primaryKey) == 1) {
+            $singlePrimaryKey = $primaryKey[0];
         }
         
-        $this->getDataAdapter()->getDriver()->beginTransaction();                
+        $this->getDriver()->beginTransaction();  
+        
         foreach($data as $i => $datum) {
+            $status = $this->saveRecord($datum, $primaryKey);
             
-            $validity = $this->validate($datum);
-            if($validity === true) {
-                $this->getDataAdapter()->insert($datum);
-                if($primaryKey) {
-                    $data[$i][$primaryKey] = $this->getDataAdapter()->getDriver()->getLastInsertId();
-                }
-            } else {
-                $invalidFields[$i] = $validity;
+            if(!$status['success']) {
                 $succesful = false;
+                $invalidFields[$i] = $status['invalid_fields'];
+                $this->getDriver()->rollback();
+                continue;
+            }
+            
+            if($singlePrimaryKey) {
+                $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
             }
         }
         
         if($succesful) {
-            if($this->hasMultipleData()) {
-                $this->data = $data;
-            } else {
-                $this->data = $data[0];
-            }
-            $this->getDataAdapter()->getDriver()->commit();
+            $this->assignValue($this->data, $data);
+            $this->getDriver()->commit();
         } else {
-            if($this->hasMultipleData()) {
-                $this->invalidFields = $invalidFields;
-            } else {
-                $this->invalidFields = $invalidFields[0];
-            }
+            $this->assignValue($this->invalidFields, $invalidFields);
         }
         
         return $succesful;
@@ -321,4 +353,16 @@ class RecordWrapper implements \ArrayAccess, \Countable
     {
         return $this->invalidFields;
     }
+    
+    /**
+     * 
+     * @return \ntentan\nibii\QueryParameters
+     */
+    public function getQueryParameters()
+    {
+        if ($this->queryParameters == null) {
+            $this->queryParameters = new QueryParameters($this->getDriver(), $this->table);
+        }
+        return $this->queryParameters;
+    }    
 }

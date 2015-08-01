@@ -19,6 +19,8 @@ abstract class DriverAdapter
     private static $defaultSettings;
     private static $defaultInstance = null;
     private $insertQuery;
+    private $updateQuery;
+    private $modelInstance;
 
     /**
      * An instance of an atiaa driver.
@@ -73,14 +75,30 @@ abstract class DriverAdapter
         return $result;
     }
 
-    public function initInsert($model)
+    private function initInsert()
     {
-        $this->insertQuery = $this->getQueryEngine()->insert($model);
+        $this->insertQuery = $this->getQueryEngine()->insert($this->modelInstance);
+    }
+    
+    private function initUpdate()
+    {
+        $this->updateQuery = $this->getQueryEngine()->update($this->modelInstance);
     }
 
     public function insert($record)
     {
+        if($this->insertQuery === null) {
+            $this->initInsert();
+        }
         return $this->db->query($this->insertQuery, $record);
+    }
+    
+    public function update($record)
+    {
+        if($this->updateQuery === null) {
+            $this->initUpdate();
+        }
+        return $this->db->query($this->updateQuery, $record);
     }
 
     public function describe($table)
@@ -153,6 +171,10 @@ abstract class DriverAdapter
         return self::$defaultInstance;
     }
 
+    /**
+     * 
+     * @return \ntentan\nibii\QueryEngine
+     */
     private function getQueryEngine()
     {
         if ($this->queryEngine === null) {
@@ -177,6 +199,11 @@ abstract class DriverAdapter
             self::$defaultInstance->getDriver()->disconnect();
         }
         self::$defaultInstance = null;
+    }
+    
+    public function setModel($model)
+    {
+        $this->modelInstance = $model;
     }
 
 }

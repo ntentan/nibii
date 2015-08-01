@@ -45,9 +45,11 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertArrayHasKey('id', $role->toArray());
         $this->assertTrue(is_numeric($role->toArray()['id']));
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
+        
         $queryTable = $this->getConnection()->createQueryTable(
-                'roles', 'SELECT name FROM roles ORDER BY name'
+            'roles', 'SELECT name FROM roles ORDER BY name'
         );
+        
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'roles' => [
@@ -70,9 +72,11 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $role['name'] = 'Super User';
         $this->assertEquals(true, $role->save());
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
+        
         $queryTable = $this->getConnection()->createQueryTable(
-                'roles', 'SELECT name FROM roles ORDER BY name'
+            'roles', 'SELECT name FROM roles ORDER BY name'
         );
+        
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'roles' => [
@@ -217,6 +221,24 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
                 ),
             ),
             $user->getInvalidFields()
+        );
+    }
+    
+    public function testUpdate()
+    {
+        $user = \ntentan\nibii\tests\classes\Users::fetchFirstWithId(1);
+        $user->username = 'jamie';
+        $user->save();
+        $queryTable = $this->getConnection()->createQueryTable(
+            'users', 'SELECT username FROM users WHERE id = 1'
+        );        
+        $this->assertTablesEqual(
+            $this->createArrayDataSet([
+                'users' => [
+                    ['username' => 'jamie']
+                ]
+            ])->getTable('users'),
+            $queryTable
         );
     }
 
