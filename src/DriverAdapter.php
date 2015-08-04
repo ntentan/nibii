@@ -65,7 +65,7 @@ abstract class DriverAdapter
     public function select($parameters)
     {
         $result = $this->db->query(
-                $this->getQueryEngine()->select($parameters), $parameters->getBoundData()
+                $this->getQueryEngine()->getSelectQuery($parameters), $parameters->getBoundData()
         );
 
         if ($parameters->getFirstOnly()) {
@@ -77,12 +77,12 @@ abstract class DriverAdapter
 
     private function initInsert()
     {
-        $this->insertQuery = $this->getQueryEngine()->insert($this->modelInstance);
+        $this->insertQuery = $this->getQueryEngine()->getInsertQuery($this->modelInstance);
     }
     
     private function initUpdate()
     {
-        $this->updateQuery = $this->getQueryEngine()->update($this->modelInstance);
+        $this->updateQuery = $this->getQueryEngine()->getUpdateQuery($this->modelInstance);
     }
 
     public function insert($record)
@@ -104,7 +104,7 @@ abstract class DriverAdapter
     public function bulkUpdate($data, $parameters)
     {
         return $this->db->query(
-            $this->getQueryEngine()->bulkUpdate($data, $parameters),
+            $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters),
             array_merge($data, $parameters->getBoundData())
         );
     }
@@ -112,7 +112,7 @@ abstract class DriverAdapter
     public function delete($parameters)
     {
         return $this->db->query(
-            $this->getQueryEngine()->delete($parameters),
+            $this->getQueryEngine()->getDeleteQuery($parameters),
             $parameters->getBoundData()
         );
     }

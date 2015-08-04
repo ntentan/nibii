@@ -2,16 +2,14 @@
 
 namespace ntentan\nibii;
 
-use ntentan\utils\Text;
-
 class RecordWrapper implements \ArrayAccess, \Countable
 {
 
     protected $table;
     private $description;
     private $data = [];
-    private $queryParameters;
     private $invalidFields;
+    private $dynamicOperations;
 
     public function __construct()
     {
@@ -25,6 +23,14 @@ class RecordWrapper implements \ArrayAccess, \Countable
         $class = new \ReflectionClass($this);
         $nameParts = explode("\\", $class->getName());
         return \ntentan\utils\Text::deCamelize(end($nameParts));
+    }
+    
+    private function getDynamicOperations()
+    {
+        if($this->dynamicOperations === null) {
+            $this->dynamicOperations = new DynamicOperations($this, $this->getDataAdapter());
+        }
+        return $this->dynamicOperations;
     }
 
     /**
@@ -194,15 +200,6 @@ class RecordWrapper implements \ArrayAccess, \Countable
         
         return $succesful;
     }
-    
-    public function doUpdate($data)
-    {
-        $instance = isset($this) ? $this : self::getInstance();
-        $instance->getDriver()->beginTransaction();
-        $parameters = $instance->getQueryParameters();
-        $instance->getDataAdapter()->bulkUpdate($data, $parameters);
-        $instance->getDriver()->commit();
-    }
 
     private static function getInstance()
     {
@@ -210,90 +207,10 @@ class RecordWrapper implements \ArrayAccess, \Countable
         return new $class();
     }
 
-    private function doFetch($id = null)
-    {
-        $instance = isset($this) ? $this : self::getInstance();
-        $adapter = $instance->getDataAdapter();
-        $parameters = $instance->getQueryParameters();
-        if ($id !== null) {
-            $description = $instance->getDescription();
-            $parameters->addFilter($description['primary_key'][0], [$id]);
-            $parameters->setFirstOnly(true);
-        }
-        $instance->data = $adapter->select($parameters);
-        return $instance;
-    }
-    
-    private function deleteItem($primaryKey, $data)
-    {   
-        if($this->isPrimaryKeySet($primaryKey, $data)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    private function doDelete()
-    {
-        $instance = isset($this) ? $this : self::getInstance();
-        $instance->getDriver()->beginTransaction();
-        $parameters = $instance->getQueryParameters(false);
-        
-        if($parameters === null) {
-            $primaryKey = $this->getDescription()['primary_key'];
-            $parameters = $instance->getQueryParameters();
-            $data = $this->getData();
-            $keys = [];
-            
-            foreach($data as $datum) {
-                if($this->deleteItem($primaryKey, $datum)) {
-                    $keys[] = $datum[$primaryKey];
-                }
-            }
-            
-            $parameters->addFilter($primaryKey[0], $keys);
-            $instance->getDataAdapter()->delete($parameters);
-        } else {
-            $instance->getDataAdapter()->delete($parameters);            
-        }
-        
-        $instance->getDriver()->commit();
-    }
-
-    private function doFetchFirst()
-    {
-        $this->getQueryParameters()->setFirstOnly(true);
-        return $this->doFetch();
-    }
-
-    private function doFilter()
-    {
-        $arguments = func_get_args();
-        if (count($arguments) == 2 && is_array($arguments[1])) {
-            $filter = $arguments[0];
-            $bind = $arguments[1];
-        } else {
-            $filter = array_shift($arguments);
-            $bind = $arguments;
-        }
-        $filterCompiler = new FilterCompiler();
-        $this->getQueryParameters()->setRawFilter(
-            $filterCompiler->compile($filter), 
-            $filterCompiler->rewriteBoundData($bind)
-        );
-        return $this;
-    }
-
-    private function doFields()
-    {
-        $arguments = func_get_args();
-        $this->getQueryParameters()->setFields($arguments);
-        return $this;
-    }
-
     public function __call($name, $arguments)
     {
-        if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update', 'delete']) !== false) {
+        return $this->getDynamicOperations()->perform($name, $arguments);
+        /*if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update', 'delete']) !== false) {
             $method = "do{$name}";
             return call_user_func_array([$this, $method], $arguments);
         } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {
@@ -308,7 +225,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
             return $this->doFetch();
         } else {
             return call_user_func_array([$this->getDataAdapter(), $name], $arguments);
-        }
+        }*/
     }
 
     public static function __callStatic($name, $arguments)
@@ -407,17 +324,5 @@ class RecordWrapper implements \ArrayAccess, \Countable
     public function getInvalidFields() 
     {
         return $this->invalidFields;
-    }
-    
-    /**
-     * 
-     * @return \ntentan\nibii\QueryParameters
-     */
-    private function getQueryParameters($instantiate = true)
-    {
-        if ($this->queryParameters === null && $instantiate) {
-            $this->queryParameters = new QueryParameters($this->getDriver(), $this->table);
-        }
-        return $this->queryParameters;
-    }    
+    }   
 }

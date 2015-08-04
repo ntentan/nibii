@@ -12,7 +12,7 @@ class QueryEngine
         $this->db = $driver;
     }
 
-    public function insert($model)
+    public function getInsertQuery($model)
     {
         $data = $model->getData();
         $fields = array_keys($data[0]);
@@ -28,7 +28,7 @@ class QueryEngine
             " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")";
     }
     
-    public function bulkUpdate($data, $parameters)
+    public function getBulkUpdateQuery($data, $parameters)
     {
         $updateData = [];
         foreach($data as $field => $value) {
@@ -43,7 +43,7 @@ class QueryEngine
         );
     }
 
-    public function update($model)
+    public function getUpdateQuery($model)
     {
         $data = $model->getData();
         $fields = array_keys($data[0]);
@@ -67,7 +67,7 @@ class QueryEngine
             " WHERE " . implode(' AND ', $conditions);
     }
 
-    public function select($parameters)
+    public function getSelectQuery($parameters)
     {   
         return sprintf(
             "SELECT %s FROM %s%s", 
@@ -77,7 +77,7 @@ class QueryEngine
         );
     }
     
-    public function delete($parameters)
+    public function getDeleteQuery($parameters)
     {
         return sprintf(
             "DELETE FROM %s%s",
