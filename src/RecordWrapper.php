@@ -49,6 +49,18 @@ class RecordWrapper implements \ArrayAccess, \Countable
         return $this->description;
     }
     
+    private function getFieldRules($field, $pk)
+    {
+        $fieldRules = [];
+        if($field['required'] && $field['name'] != $pk && $field['default'] === null) {
+            $fieldRules[] = 'required';
+        }
+        if($field['type'] === 'integer' || $field['type'] === 'double') {
+            $fieldRules[] = 'numeric';
+        }      
+        return $fieldRules;
+    }
+    
     protected function getValidator()
     {
         $description = $this->getDescription();
@@ -62,14 +74,8 @@ class RecordWrapper implements \ArrayAccess, \Countable
         }
         
         foreach($description['fields'] as $name => $field) {
-            $fieldRules = [];
-            if($field['required'] && $name != $pk && $field['default'] === null) {
-                $fieldRules[] = 'required';
-            }
-            if($field['type'] === 'integer' || $field['type'] === 'double') {
-                $fieldRules[] = 'numeric';
-            }
-            $rules[$name] = $fieldRules;
+
+            $rules[$name] = $this->getFieldRules($field, $pk);
         }
         
         $validator->setRules($rules);
