@@ -27,6 +27,21 @@ class QueryEngine
         return "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) .
             " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")";
     }
+    
+    public function bulkUpdate($data, $parameters)
+    {
+        $updateData = [];
+        foreach($data as $field => $value) {
+            $updateData[] = "{$this->db->quoteIdentifier($field)} = :$field";
+        }
+        
+        return sprintf(
+            "UPDATE %s SET %s %s",
+            $parameters->getTable(),
+            implode(', ', $updateData),
+            $parameters->getWhereClause()
+        );
+    }
 
     public function update($model)
     {
@@ -53,7 +68,7 @@ class QueryEngine
     }
 
     public function select($parameters)
-    {
+    {   
         return sprintf(
             "SELECT %s FROM %s%s", 
             $parameters->getFields(), 

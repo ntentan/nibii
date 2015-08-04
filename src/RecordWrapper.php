@@ -186,6 +186,15 @@ class RecordWrapper implements \ArrayAccess, \Countable
         
         return $succesful;
     }
+    
+    public function doUpdate($data)
+    {
+        $this->getDriver()->beginTransaction();
+        $instance = isset($this) ? $this : self::getInstance();
+        $parameters = $instance->getQueryParameters();
+        $instance->getDataAdapter()->bulkUpdate($data, $parameters);
+        $this->getDriver()->commit();
+    }
 
     private static function getInstance()
     {
@@ -223,8 +232,10 @@ class RecordWrapper implements \ArrayAccess, \Countable
             $filter = array_shift($arguments);
             $bind = $arguments;
         }
+        $filterCompiler = new FilterCompiler();
         $this->getQueryParameters()->setRawFilter(
-                FilterCompiler::compile($filter), $bind
+            $filterCompiler->compile($filter), 
+            $filterCompiler->rewriteBoundData($bind)
         );
         return $this;
     }
@@ -238,7 +249,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __call($name, $arguments)
     {
-        if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields']) !== false) {
+        if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update']) !== false) {
             $method = "do{$name}";
             return call_user_func_array([$this, $method], $arguments);
         } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {

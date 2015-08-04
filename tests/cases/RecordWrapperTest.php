@@ -2,6 +2,9 @@
 
 namespace ntentan\nibii\tests\cases;
 
+use ntentan\nibii\tests\classes\Users;
+use ntentan\nibii\tests\classes\Roles;
+
 error_reporting(E_ALL);
 
 class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
@@ -29,7 +32,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testTableResolution()
     {
-        $users = new \ntentan\nibii\tests\classes\Users();
+        $users = new Users();
         $datastore = getenv('NIBII_DATASTORE');
         require __DIR__ . "/../expected/$datastore/users_description.php";
         $this->assertEquals($description, $users->getDescription());
@@ -38,7 +41,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     public function testCreate()
     {
         $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
-        $role = \ntentan\nibii\tests\classes\Roles::createNew();
+        $role = Roles::createNew();
         $role->name = 'Super User';
         $this->assertArrayNotHasKey('id', $role->toArray());
         $this->assertEquals(true, $role->save());
@@ -68,7 +71,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     public function testCreate2()
     {
         $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
-        $role = \ntentan\nibii\tests\classes\Roles::createNew();
+        $role = Roles::createNew();
         $role['name'] = 'Super User';
         $this->assertEquals(true, $role->save());
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
@@ -94,7 +97,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFetch()
     {
-        $role = \ntentan\nibii\tests\classes\Roles::fetch(10);
+        $role = Roles::fetch(10);
         $this->assertEquals(
             array(
                 'id' => 10,
@@ -104,7 +107,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf('\\ntentan\\nibii\\RecordWrapper', $role);
         $this->assertTrue(is_numeric($role->toArray()['id']));
 
-        $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches')->fetchFirst();
+        $role = Roles::filterByName('Matches')->fetchFirst();
         $this->assertEquals(
             array(
                 'id' => 11,
@@ -112,7 +115,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             ), $role->toArray()
         );
 
-        $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches')->fetch();
+        $role = Roles::filterByName('Matches')->fetch();
         $this->assertEquals(array(
                 array(
                     'id' => 11,
@@ -121,7 +124,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             ), $role->toArray()
         );
 
-        $role = \ntentan\nibii\tests\classes\Roles::filterByName('Matches', 'Rematch')->fetch();
+        $role = Roles::filterByName('Matches', 'Rematch')->fetch();
         $this->assertEquals(array(
                 array(
                     'id' => 11,
@@ -134,7 +137,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             ), $role->toArray()
         );
 
-        $role = \ntentan\nibii\tests\classes\Roles::fetchWithName('Matches');
+        $role = Roles::fetchWithName('Matches');
         $this->assertEquals(array(
                 array(
                     'id' => 11,
@@ -143,7 +146,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             ), $role->toArray()
         );
 
-        $role = \ntentan\nibii\tests\classes\Roles::fetchFirstWithName('Matches');
+        $role = Roles::fetchFirstWithName('Matches');
         $this->assertEquals(
             array(
                 'id' => 11,
@@ -158,11 +161,11 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertArrayHasKey('name', $role);
         $this->assertArrayNotHasKey('other', $role);
 
-        $users = \ntentan\nibii\tests\classes\Users::fetch();
-        $this->assertEquals(2, count($users));
+        $users = Users::fetch();
+        $this->assertEquals(3, count($users));
         $this->assertEquals(1, count($users[0]));
 
-        $users = \ntentan\nibii\tests\classes\Users::fields('id', 'username')->filterByUsername('james')->fetchFirst();
+        $users = Users::fields('id', 'username')->filterByUsername('james')->fetchFirst();
         $this->assertEquals(1, count($users));
         $this->assertArrayNotHasKey('firstname', $users);
         $this->assertArrayHasKey('username', $users);
@@ -171,26 +174,26 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFilterCompiler()
     {
-        $user = \ntentan\nibii\tests\classes\Users::filter('username = ?', 'james')->fetchFirst();
+        $user = Users::filter('username = ?', 'james')->fetchFirst();
         $this->assertEquals(1, count($user));
         $this->assertEquals('james', $user->username);
 
-        $user = \ntentan\nibii\tests\classes\Users::filter('username = :username', [':username' => 'james'])->fetchFirst();
+        $user = Users::filter('username = :username', [':username' => 'james'])->fetchFirst();
         $this->assertEquals(1, count($user));
         $this->assertEquals('james', $user->username);
 
-        $user = \ntentan\nibii\tests\classes\Users::filter('username = ? or (role_id in(? , ?)', 'james', '10', '11')->fetch();
+        $user = Users::filter('username = ? or (role_id in(? , ?)', 'james', '10', '11')->fetch();
 
-        $user = \ntentan\nibii\tests\classes\Users::filter('role_id between 10 and 13')->fetch();
-        $this->assertEquals(2, count($user));
+        $user = Users::filter('role_id between 10 and 13')->fetch();
+        $this->assertEquals(3, count($user));
 
-        $user = \ntentan\nibii\tests\classes\Users::filter('password = md5(?)', 'password')->fetch();
+        $user = Users::filter('password = md5(?)', 'password')->fetch();
         $this->assertEquals(1, count($user));
     }
 
     public function testValidation()
     {
-        $user = \ntentan\nibii\tests\classes\Users::createNew();
+        $user = Users::createNew();
         $response = $user->save();
         $this->assertEquals(false, $response);
         $this->assertEquals(
@@ -226,7 +229,7 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     
     public function testUpdate()
     {
-        $user = \ntentan\nibii\tests\classes\Users::fetchFirstWithId(1);
+        $user = Users::fetchFirstWithId(1);
         $user->username = 'jamie';
         $user->save();
         $queryTable = $this->getConnection()->createQueryTable(
@@ -241,6 +244,61 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             $queryTable
         );
     }
+    
+    public function testBulkUpdate()
+    {
+        Users::update(['role_id' => 15]);
+        
+        $queryTable = $this->getConnection()->createQueryTable(
+            'users', 'SELECT role_id FROM users'
+        );        
+        $this->assertTablesEqual(
+            $this->createArrayDataSet([
+                'users' => [
+                    ['role_id' => 15],
+                    ['role_id' => 15],
+                    ['role_id' => 15]
+                ]
+            ])->getTable('users'),
+            $queryTable
+        );
+    }
+    
+    public function testBulkUpdate2()
+    {
+        Users::filterByRoleId(11, 12)->update(['role_id' => 15]);
+        $queryTable = $this->getConnection()->createQueryTable(
+            'users', 'SELECT role_id FROM users ORDER BY role_id'
+        );        
+        $this->assertTablesEqual(
+            $this->createArrayDataSet([
+                'users' => [
+                    ['role_id' => 10],
+                    ['role_id' => 15],
+                    ['role_id' => 15]
+                ]
+            ])->getTable('users'),
+            $queryTable
+        );
+    }
+    
+    public function testBulkUpdate3()
+    {
+        Users::filter('id < ?', 3)->update(['role_id' => 15]);
+        $queryTable = $this->getConnection()->createQueryTable(
+            'users', 'SELECT role_id FROM users ORDER BY role_id'
+        );        
+        $this->assertTablesEqual(
+            $this->createArrayDataSet([
+                'users' => [
+                    ['role_id' => 12],
+                    ['role_id' => 15],
+                    ['role_id' => 15]
+                ]
+            ])->getTable('users'),
+            $queryTable
+        );
+    }    
 
     protected function getConnection()
     {
@@ -261,7 +319,8 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             ],
             'users' => [
                 ['id' => 1, 'username' => 'james', 'role_id' => 10, 'firstname' => 'James', 'lastname' => 'Ainooson', 'status' => 1, 'password' => 'somehashedstring', 'email' => 'james@nibii.test'],
-                ['id' => 2, 'username' => 'fiifi', 'role_id' => 11, 'firstname' => 'Fiifi', 'lastname' => 'Antobra', 'status' => 2, 'password' => md5('password'), 'email' => 'fiifi@nibii.test']
+                ['id' => 2, 'username' => 'fiifi', 'role_id' => 11, 'firstname' => 'Fiifi', 'lastname' => 'Antobra', 'status' => 2, 'password' => md5('password'), 'email' => 'fiifi@nibii.test'],
+                ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame', 'lastname' => 'Nyarko', 'status' => 2, 'password' => 'coolthings', 'email' => 'knyarko@nibii.test']
             ]
         ]);
     }
@@ -270,5 +329,4 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
     {
         return $this->getOperations()->CLEAN_INSERT(TRUE);
     }
-
 }

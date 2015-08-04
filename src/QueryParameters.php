@@ -59,15 +59,24 @@ class QueryParameters
     {
         $this->whereClause .= $this->and;
         $numValues = count($values);
+        $startIndex = count($this->boundData);
         if($numValues === 1)
         {
-            $this->whereClause .= "{$field} = ?";
-            $this->boundData[] = reset($values);
+            $key = "filter_{$startIndex}";
+            $this->whereClause .= "{$field} = :$key";
+            $this->boundData[$key] = reset($values);
         }
         else
         {
-            $this->whereClause .= "{$field} IN (?" . str_repeat(', ?', $numValues - 1) . ')';
-            $this->boundData += $values;
+            $this->whereClause .= "{$field} IN (";
+            $comma = '';
+            for($i = 0; $i < $numValues; $i++) {
+                $key = "filter_" . ($startIndex + $i);
+                $this->whereClause .= "$comma:$key";
+                $this->boundData[$key] = $values[$i];
+                $comma = ' ,';
+            }
+            $this->whereClause .= ")";
         }
         $this->and = ' AND ';
     }

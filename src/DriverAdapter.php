@@ -100,6 +100,14 @@ abstract class DriverAdapter
         }
         return $this->db->query($this->updateQuery, $record);
     }
+    
+    public function bulkUpdate($data, $parameters)
+    {
+        return $this->db->query(
+            $this->getQueryEngine()->bulkUpdate($data, $parameters),
+            array_merge($data, $parameters->getBoundData())
+        );
+    }
 
     public function describe($table)
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace ntentan\nibii;
 
 /**
@@ -9,10 +10,11 @@ namespace ntentan\nibii;
  */
 class FilterCompiler
 {
-    private static $lookahead;
-    private static $token;
-    private static $filter;
-    private static $tokens = array(
+
+    private $lookahead;
+    private $token;
+    private $filter;
+    private $tokens = array(
         'equals' => '\=',
         'number' => '[0-9]+',
         'cast' => 'cast\b',
@@ -34,14 +36,14 @@ class FilterCompiler
         'multiply' => '\*',
         'function' => '[a-zA-Z][a-zA-Z0-9\_]*\s*\(',
         'identifier' => '[a-zA-Z][a-zA-Z0-9\.\_\:]*\b',
-        'bind_param' => '\?|\:[a-z_][a-z0-9\_]+',
+        'named_bind_param' => '\:[a-z_][a-z0-9\_]+',
+        'position_bind_param' => '\\?',
         'obracket' => '\(',
         'cbracket' => '\)',
         'comma' => ','
     );
-    
-    private static $operators = array(
-        array('between', 'or' /*, 'like'*/),
+    private $operators = array(
+        array('between', 'or' /* , 'like' */),
         array('and'),
         array('not'),
         array('equals', 'greater', 'less', 'greater_or_equal', 'less_or_equal', 'not_equal', 'is'),
@@ -50,227 +52,222 @@ class FilterCompiler
         array('multiply')
     );
     
-    public static function compile($filter)
+    private $numPositions = 0;
+
+    public function compile($filter)
     {
-        self::$filter = $filter;
-        self::getToken();
-        $expression = self::parseExpression();
-        if(self::$token !== false)
-        {
-            throw new FilterCompilerException("Unexpected '" . self::$token . "' in filter [$filter]");
+        $this->filter = $filter;
+        $this->getToken();
+        $expression = $this->parseExpression();
+        if ($this->token !== false) {
+            throw new FilterCompilerException("Unexpected '" . $this->token . "' in filter [$filter]");
         }
-        $parsed = self::renderExpression($expression);
+        $parsed = $this->renderExpression($expression);
         return $parsed;
     }
-    
-    private static function renderExpression($expression)
+
+    private function renderExpression($expression)
     {
-        if(is_array($expression))
-        {
-            $expression = self::renderExpression($expression['left']) . " {$expression['opr']} " . self::renderExpression($expression['right']);
+        if (is_array($expression)) {
+            $expression = $this->renderExpression($expression['left']) . " {$expression['opr']} " . $this->renderExpression($expression['right']);
         }
         return $expression;
     }
-    
-    private static function match($tokens)
+
+    private function match($tokens)
     {
-        if(is_string($tokens))
-        {
+        if (is_string($tokens)) {
             $tokens = [$tokens];
         }
-        if(array_search(self::$lookahead, $tokens) === false)
-        {
-            throw new FilterCompilerException("Expected " . implode(' or ', $tokens) .  " but found " . self::$lookahead);
+        if (array_search($this->lookahead, $tokens) === false) {
+            throw new FilterCompilerException("Expected " . implode(' or ', $tokens) . " but found " . $this->lookahead);
         }
     }
-    
-    private static function parseBetween()
+
+    private function parseBetween()
     {
-        self::match(['bind_param', 'number']);
-        $left = self::$token;
-        self::getToken();
-        self::match('and');
-        self::getToken();
-        self::match(['bind_param', 'number']);
-        $right = self::$token;    
-        self::getToken();
+        $this->match(['named_bind_param', 'number', 'position_bind_param']);
+        $left = $this->token;
+        $this->getToken();
+        $this->match('and');
+        $this->getToken();
+        $this->match(['named_bind_param', 'number', 'position_bind_param']);
+        $right = $this->token;
+        $this->getToken();
         return "$left AND $right";
     }
-    
-    private static function parseIn()
+
+    private function parseIn()
     {
         $expression = "(";
-        self::match('obracket');
-        self::getToken();
-        
-        do{
-            $expression .= self::parseExpression();
-            if(self::$lookahead === 'comma')
-            {
+        $this->match('obracket');
+        $this->getToken();
+
+        do {
+            $expression .= $this->parseExpression();
+            if ($this->lookahead === 'comma') {
                 $expression .= ',';
-                self::getToken();
+                $this->getToken();
                 continue;
-            }
-            else
-            {
+            } else {
                 break;
             }
-        }
-        while(true);
-        
-        self::match('cbracket');
-        
-        self::getToken();
-        
+        } while (true);
+
+        $this->match('cbracket');
+
+        $this->getToken();
+
         $expression .= ')';
         return $expression;
     }
 
-    private static function parseFunctionParams()
+    private function parseFunctionParams()
     {
         $parameters = '';
         $size = 0;
-        do{
+        do {
             $size++;
-            $parameters .= self::renderExpression(self::parseExpression());
-            if(self::$lookahead == 'comma')
-            {
-                self::getToken();
+            $parameters .= $this->renderExpression($this->parseExpression());
+            if ($this->lookahead == 'comma') {
+                $this->getToken();
                 $parameters .= ", ";
-            }
-            else if(self::$lookahead == 'cbracket')
-            {
+            } else if ($this->lookahead == 'cbracket') {
                 break;
             }
-        }
-        while($size < 100);
+        } while ($size < 100);
         return $parameters;
     }
-    
-    private static function parseCast()
+
+    private function parseCast()
     {
         $return = 'cast(';
-        self::getToken();
-        self::match('obracket');
-        self::getToken();
-        $return .= self::renderExpression(self::parseExpression());
-        self::match('as');
+        $this->getToken();
+        $this->match('obracket');
+        $this->getToken();
+        $return .= $this->renderExpression($this->parseExpression());
+        $this->match('as');
         $return .= ' as ';
-        self::getToken();
-        self::match('identifier');
-        $return .= self::$token;
-        self::getToken();
-        self::match('cbracket');
+        $this->getToken();
+        $this->match('identifier');
+        $return .= $this->token;
+        $this->getToken();
+        $this->match('cbracket');
         $return .= ')';
         return $return;
     }
-    
-    private static function parseFunction()
+
+    private function parseFunction()
     {
-        $name = self::$token;
-        self::getToken();
-        $parameters = self::parseFunctionParams();
-        return "$name$parameters)";        
+        $name = $this->token;
+        $this->getToken();
+        $parameters = $this->parseFunctionParams();
+        return "$name$parameters)";
     }
-    
-    private static function parseFactor()
+
+    private function parseFactor()
     {
         $return = null;
-        switch(self::$lookahead)
-        {
+        switch ($this->lookahead) {
             case 'cast':
-                $return = self::parseCast();
+                $return = $this->parseCast();
                 break;
             case 'function':
-                $return = self::parseFunction();
+                $return = $this->parseFunction();
                 break;
             case 'identifier':
-            case 'bind_param':
+            case 'named_bind_param':
             case 'number':
-                $return = self::$token;
+                $return = $this->token;
+                break;
+            case 'position_bind_param':
+                $return = ":filter_bind_" . (++$this->numPositions);
                 break;
             case 'obracket':
-                self::getToken();
-                $expression = self::parseExpression();  
-                $return = self::renderExpression($expression);
+                $this->getToken();
+                $expression = $this->parseExpression();
+                $return = $this->renderExpression($expression);
                 break;
         }
-        
-        self::getToken();
-        
+
+        $this->getToken();
+
         return $return;
     }
-    
-    private static function parseRightExpression($level, $opr)
+
+    private function parseRightExpression($level, $opr)
     {
-        switch($opr)
-        {
-            case 'between': return self::parseBetween();
-            case 'in': return self::parseIn();
-            default: return self::parseExpression($level);
+        switch ($opr) {
+            case 'between': return $this->parseBetween();
+            case 'in': return $this->parseIn();
+            default: return $this->parseExpression($level);
         }
     }
-    
-    private static function parseExpression($level = 0)
+
+    private function parseExpression($level = 0)
     {
-        if($level === count(self::$operators))
-        {
-            return self::parseFactor();
+        if ($level === count($this->operators)) {
+            return $this->parseFactor();
+        } else {
+            $expression = $this->parseExpression($level + 1);
         }
-        else
-        {
-            $expression = self::parseExpression($level + 1);
-        }
-        
-        while(self::$token != false)
-        {
-            if(array_search(self::$lookahead, self::$operators[$level]) !== false)
-            {
+
+        while ($this->token != false) {
+            if (array_search($this->lookahead, $this->operators[$level]) !== false) {
                 $left = $expression;
-                $opr = self::$token;
-                self::getToken();
-                $right = self::parseRightExpression($level + 1, strtolower($opr));
+                $opr = $this->token;
+                $this->getToken();
+                $right = $this->parseRightExpression($level + 1, strtolower($opr));
                 $expression = array(
                     'left' => $left,
                     'opr' => $opr,
                     'right' => $right
                 );
+            } else {
+                break;
+            }
+        }
+
+        return $expression;
+    }
+
+    private function getToken()
+    {
+        $this->eatWhite();
+        $this->token = false;
+        foreach ($this->tokens as $token => $regex) {
+            if (preg_match("/^$regex/i", $this->filter, $matches)) {
+                $this->filter = substr($this->filter, strlen($matches[0]));
+                $this->lookahead = $token;
+                $this->token = $matches[0];
+                break;
+            }
+        }
+
+        if ($this->token === false && strlen($this->filter) > 0) {
+            throw new FilterCompilerException("Unexpected character [" . $this->filter[0] . "] begining " . $this->filter . ".");
+        }
+    }
+
+    private function eatWhite()
+    {
+        if (preg_match("/^\s*/", $this->filter, $matches)) {
+            $this->filter = substr($this->filter, strlen($matches[0]));
+        }
+    }
+    
+    public function rewriteBoundData($data) {
+        $rewritten = [];
+        foreach($data as $key => $value) {
+            if(is_numeric($key))
+            {
+                $rewritten["filter_bind_" . ($key + 1)] = $value;
             }
             else
             {
-                break;
+                $rewritten[$key] = $value;
             }
         }
-        
-        return $expression;
-    }
-    
-    private static function getToken()
-    {
-        self::eatWhite();
-        self::$token = false;
-        foreach(self::$tokens as $token => $regex)
-        {
-            if(preg_match("/^$regex/i", self::$filter, $matches))
-            {
-                self::$filter = substr(self::$filter, strlen($matches[0]));
-                self::$lookahead = $token;
-                self::$token = $matches[0];
-                break;
-            }
-        }
-        
-        if(self::$token === false && strlen(self::$filter) > 0)
-        {
-            throw new FilterCompilerException("Unexpected character [" . self::$filter[0] . "] begining " . self::$filter . ".");
-        }
-    }
-    
-    private static function eatWhite()
-    {
-        if(preg_match("/^\s*/", self::$filter, $matches))
-        {
-            self::$filter = substr(self::$filter, strlen($matches[0]));
-        }
+        return $rewritten;
     }
 }
