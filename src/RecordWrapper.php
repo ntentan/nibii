@@ -2,6 +2,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\utils\General;
+
 class RecordWrapper implements \ArrayAccess, \Countable
 {
 
@@ -14,24 +16,13 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __construct()
     {
-        if ($this->table === null) {
-            $this->table = $this->getDefaultTable();
-        }
-    }
-
-    protected function getDefaultTable()
-    {
-        $class = new \ReflectionClass($this);
-        $nameParts = explode("\\", $class->getName());
-        return \ntentan\utils\Text::deCamelize(end($nameParts));
-    }
-    
-    private function getDynamicOperations()
-    {
-        if($this->dynamicOperations === null) {
-            $this->dynamicOperations = new DynamicOperations($this, $this->getDataAdapter());
-        }
-        return $this->dynamicOperations;
+        General::factory(
+            $this->table, function() {
+                $class = new \ReflectionClass($this);
+                $nameParts = explode("\\", $class->getName());
+                return \ntentan\utils\Text::deCamelize(end($nameParts));
+            }
+        );
     }
 
     /**
@@ -55,14 +46,6 @@ class RecordWrapper implements \ArrayAccess, \Countable
         }
         return $this->description;
     }
-    
-    protected function getValidator()
-    {
-        if($this->validator === null) {
-            $this->validator = new Validator($this->getDescription());
-        }
-        return $this->validator;
-    }
 
     public static function createNew()
     {
@@ -73,7 +56,11 @@ class RecordWrapper implements \ArrayAccess, \Countable
     public function validate()
     {
         $valid = true;
-        $validator = $this->getValidator();
+        $validator = General::factory($this->validator, 
+            function() {
+                return new Validator($this->getDescription());
+            }
+        );
         $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();
         
         foreach($data as $datum) {
@@ -185,7 +172,11 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __call($name, $arguments)
     {
-        return $this->getDynamicOperations()->perform($name, $arguments);
+        return General::factory($this->dynamicOperations, 
+            function() {
+                return new DynamicOperations($this, $this->getDataAdapter());
+            }
+        )->perform($name, $arguments);
     }
 
     public static function __callStatic($name, $arguments)
