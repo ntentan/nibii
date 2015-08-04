@@ -10,6 +10,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
     private $data = [];
     private $invalidFields;
     private $dynamicOperations;
+    private $validator;
 
     public function __construct()
     {
@@ -55,37 +56,12 @@ class RecordWrapper implements \ArrayAccess, \Countable
         return $this->description;
     }
     
-    private function getFieldRules($field, $pk)
-    {
-        $fieldRules = [];
-        if($field['required'] && $field['name'] != $pk && $field['default'] === null) {
-            $fieldRules[] = 'required';
-        }
-        if($field['type'] === 'integer' || $field['type'] === 'double') {
-            $fieldRules[] = 'numeric';
-        }      
-        return $fieldRules;
-    }
-    
     protected function getValidator()
     {
-        $description = $this->getDescription();
-        $validator = \ntentan\utils\Validator::getInstance();
-        $pk = null;
-        $rules = [];
-        
-        
-        if($description['auto_primary_key']) {
-            $pk = $description['primary_key'][0];
+        if($this->validator === null) {
+            $this->validator = new Validator($this->getDescription());
         }
-        
-        foreach($description['fields'] as $name => $field) {
-
-            $rules[$name] = $this->getFieldRules($field, $pk);
-        }
-        
-        $validator->setRules($rules);
-        return $validator;
+        return $this->validator;
     }
 
     public static function createNew()
@@ -210,22 +186,6 @@ class RecordWrapper implements \ArrayAccess, \Countable
     public function __call($name, $arguments)
     {
         return $this->getDynamicOperations()->perform($name, $arguments);
-        /*if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update', 'delete']) !== false) {
-            $method = "do{$name}";
-            return call_user_func_array([$this, $method], $arguments);
-        } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {
-            $this->getQueryParameters()->addFilter(Text::deCamelize($matches['variable']), $arguments);
-            return $this;
-        } else if (preg_match("/(fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/", $name, $matches)) {
-            $parameters = $this->getQueryParameters();
-            $parameters->addFilter(Text::deCamelize($matches['variable']), $arguments);
-            if ($matches['first'] === 'First') {
-                $parameters->setFirstOnly(true);
-            }
-            return $this->doFetch();
-        } else {
-            return call_user_func_array([$this->getDataAdapter(), $name], $arguments);
-        }*/
     }
 
     public static function __callStatic($name, $arguments)

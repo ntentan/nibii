@@ -31,6 +31,8 @@ class DynamicOperations
                 $parameters->setFirstOnly(true);
             }
             return $this->doFetch();    
+        } else {
+            throw new NibiiException("Method {$name} not found");
         }
     }
     
