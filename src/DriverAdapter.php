@@ -108,6 +108,14 @@ abstract class DriverAdapter
             array_merge($data, $parameters->getBoundData())
         );
     }
+    
+    public function delete($parameters)
+    {
+        return $this->db->query(
+            $this->getQueryEngine()->delete($parameters),
+            $parameters->getBoundData()
+        );
+    }
 
     public function describe($table)
     {

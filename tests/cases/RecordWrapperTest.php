@@ -299,6 +299,22 @@ class RecordWrapperTest extends \PHPUnit_Extensions_Database_TestCase
             $queryTable
         );
     }    
+    
+    public function testDelete()
+    {
+        Users::filter('id < ?', 3)->delete();
+        $queryTable = $this->getConnection()->createQueryTable(
+            'users', 'SELECT id, username, role_id, firstname FROM users'
+        );        
+        $this->assertTablesEqual(
+            $this->createArrayDataSet([
+                'users' => [
+                    ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame']
+                ]
+            ])->getTable('users'),
+            $queryTable
+        );        
+    }
 
     protected function getConnection()
     {

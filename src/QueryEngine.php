@@ -76,5 +76,13 @@ class QueryEngine
             $parameters->getWhereClause()
         );
     }
-
+    
+    public function delete($parameters)
+    {
+        return sprintf(
+            "DELETE FROM %s%s",
+            $parameters->getTable(),
+            $parameters->getWhereClause()
+        );
+    }
 }

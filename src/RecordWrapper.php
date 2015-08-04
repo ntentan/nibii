@@ -189,11 +189,11 @@ class RecordWrapper implements \ArrayAccess, \Countable
     
     public function doUpdate($data)
     {
-        $this->getDriver()->beginTransaction();
         $instance = isset($this) ? $this : self::getInstance();
+        $instance->getDriver()->beginTransaction();
         $parameters = $instance->getQueryParameters();
         $instance->getDataAdapter()->bulkUpdate($data, $parameters);
-        $this->getDriver()->commit();
+        $instance->getDriver()->commit();
     }
 
     private static function getInstance()
@@ -214,6 +214,52 @@ class RecordWrapper implements \ArrayAccess, \Countable
         }
         $instance->data = $adapter->select($parameters);
         return $instance;
+    }
+    
+    private function deleteItem($primaryKey, $data)
+    {        
+        foreach($primaryKey as $keyField) {
+            if(!isset($data[$keyField])) {
+                break;
+            }
+            if($data[$keyField] !== '' && $data[$keyField] !== null) {
+                $primaryKeySet = true;
+                break;
+            }
+        }
+        
+        if($primaryKeySet) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private function doDelete()
+    {
+        $instance = isset($this) ? $this : self::getInstance();
+        $instance->getDriver()->beginTransaction();
+        $parameters = $instance->getQueryParameters(false);
+        
+        if($parameters === null) {
+            $primaryKey = $this->getDescription()['primary_key'];
+            $parameters = $instance->getQueryParameters();
+            $data = $this->getData();
+            $keys = [];
+            
+            foreach($data as $datum) {
+                if($this->deleteItem($primaryKey, $datum)) {
+                    $keys[] = $datum[$primaryKey];
+                }
+            }
+            
+            $parameters->addFilter($primaryKey[0], $keys);
+            $instance->getDataAdapter()->delete($parameters);
+        } else {
+            $instance->getDataAdapter()->delete($parameters);            
+        }
+        
+        $instance->getDriver()->commit();
     }
 
     private function doFetchFirst()
@@ -249,7 +295,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __call($name, $arguments)
     {
-        if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update']) !== false) {
+        if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update', 'delete']) !== false) {
             $method = "do{$name}";
             return call_user_func_array([$this, $method], $arguments);
         } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {
@@ -369,9 +415,9 @@ class RecordWrapper implements \ArrayAccess, \Countable
      * 
      * @return \ntentan\nibii\QueryParameters
      */
-    public function getQueryParameters()
+    private function getQueryParameters($instantiate = true)
     {
-        if ($this->queryParameters == null) {
+        if ($this->queryParameters === null && $instantiate) {
             $this->queryParameters = new QueryParameters($this->getDriver(), $this->table);
         }
         return $this->queryParameters;
