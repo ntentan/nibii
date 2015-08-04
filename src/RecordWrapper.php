@@ -110,6 +110,19 @@ class RecordWrapper implements \ArrayAccess, \Countable
         }        
     }
     
+    private function isPrimaryKeySet($primaryKey, $data)
+    {
+        foreach($primaryKey as $keyField) {
+            if(!isset($data[$keyField])) {
+                break;
+            }
+            if($data[$keyField] !== '' && $data[$keyField] !== null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private function saveRecord($datum, $primaryKey)
     {
         $status = [
@@ -119,25 +132,14 @@ class RecordWrapper implements \ArrayAccess, \Countable
         ];
         
         $validity = $this->validate($datum);
-        $primaryKeySet = false;
         
         if($validity !== true) {
             $status['invalid_fields'] = $validity;
             $status['success'] = false;
             return $status;
         }
-            
-        foreach($primaryKey as $keyField) {
-            if(!isset($datum[$keyField])) {
-                break;
-            }
-            if($datum[$keyField] !== '' && $datum[$keyField] !== null) {
-                $primaryKeySet = true;
-                break;
-            }
-        }
 
-        if($primaryKeySet) {
+        if($this->isPrimaryKeySet($primaryKey, $datum)) {
             $this->getDataAdapter()->update($datum);
         } else {
             $this->getDataAdapter()->insert($datum);
@@ -217,18 +219,8 @@ class RecordWrapper implements \ArrayAccess, \Countable
     }
     
     private function deleteItem($primaryKey, $data)
-    {        
-        foreach($primaryKey as $keyField) {
-            if(!isset($data[$keyField])) {
-                break;
-            }
-            if($data[$keyField] !== '' && $data[$keyField] !== null) {
-                $primaryKeySet = true;
-                break;
-            }
-        }
-        
-        if($primaryKeySet) {
+    {   
+        if($this->isPrimaryKeySet($primaryKey, $data)) {
             return true;
         } else {
             return false;
