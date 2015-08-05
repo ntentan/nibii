@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a7b505c1f5038ddf89ca1b4daf61b70b",
+    "hash": "c69dd30a49741240b1ece7281a847480",
     "packages": [
         {
             "name": "ntentan/atiaa",
-            "version": "dev-master",
+            "version": "v0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
@@ -49,16 +49,16 @@
         },
         {
             "name": "ntentan/utils",
-            "version": "dev-master",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "c1f4f20cda8444ce2ebb3750ac342af9662b62bc"
+                "reference": "bec5962cb66261fcc4c509cb103d87ce46f16471"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/c1f4f20cda8444ce2ebb3750ac342af9662b62bc",
-                "reference": "c1f4f20cda8444ce2ebb3750ac342af9662b62bc",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/bec5962cb66261fcc4c509cb103d87ce46f16471",
+                "reference": "bec5962cb66261fcc4c509cb103d87ce46f16471",
                 "shasum": ""
             },
             "require-dev": {
@@ -81,7 +81,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2015-08-04 21:21:21"
+            "time": "2015-08-05 15:33:58"
         }
     ],
     "packages-dev": [
@@ -1098,10 +1098,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ntentan/atiaa": 20,
-        "ntentan/utils": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

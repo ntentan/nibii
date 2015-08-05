@@ -2,7 +2,7 @@
 
 namespace ntentan\nibii;
 
-use ntentan\utils\General;
+use ntentan\utils\Utils;
 
 class RecordWrapper implements \ArrayAccess, \Countable
 {
@@ -16,7 +16,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __construct()
     {
-        General::factory(
+        Utils::factory(
             $this->table, function() {
                 $class = new \ReflectionClass($this);
                 $nameParts = explode("\\", $class->getName());
@@ -56,7 +56,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
     public function validate()
     {
         $valid = true;
-        $validator = General::factory($this->validator, 
+        $validator = Utils::factory($this->validator, 
             function() {
                 return new Validator($this->getDescription());
             }
@@ -172,7 +172,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __call($name, $arguments)
     {
-        return General::factory($this->dynamicOperations, 
+        return Utils::factory($this->dynamicOperations, 
             function() {
                 return new DynamicOperations($this, $this->getDataAdapter());
             }
