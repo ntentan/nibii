@@ -7,7 +7,7 @@ namespace ntentan\nibii;
  *
  * @author ekow
  */
-class QueryParameters 
+class QueryParameters
 {
     private $whereClause;
     private $and = '';
@@ -16,61 +16,73 @@ class QueryParameters
     private $table;
     private $db;
     private $firstOnly = false;
-    
-    public function __construct($driver, $table)
+    private $eagerLoad = [];
+
+    /**
+     * 
+     * @param \ $model
+     */
+    public function __construct($wrapper)
     {
-        $this->db = $driver;
-        $this->table = $table;
+        $this->db = DriverAdapter::getDefaultInstance();
+        $this->table = $wrapper->getTable();
     }
-    
+
     public function getFields()
     {
         $fields = '*';
-        
-        if(count($this->fields) > 0)
-        {
+
+        if (count($this->fields) > 0) {
             $fields = implode(', ', $this->fields);
         }
-        
+
         return $fields;
     }
-    
+
+    public function getEagerLoad()
+    {
+        return $this->eagerLoad;
+    }
+
+    public function setEagerLoad($eagerLoad)
+    {
+        $this->eagerLoad = $eagerLoad;
+    }
+
     public function setFields($fields)
     {
         $this->fields = $fields;
     }
-    
+
     public function getTable()
     {
         return $this->table;
     }
-    
+
     public function getWhereClause()
     {
         return $this->whereClause ? " WHERE {$this->whereClause}" : '';
     }
-    
+
     public function getBoundData()
     {
         return $this->boundData;
     }
-    
+
     public function addFilter($field, $values = [])
     {
         $this->whereClause .= $this->and;
         $numValues = count($values);
         $startIndex = count($this->boundData);
-        if($numValues === 1)
-        {
+        
+        if ($numValues === 1) {
             $key = "filter_{$startIndex}";
             $this->whereClause .= "{$field} = :$key";
             $this->boundData[$key] = reset($values);
-        }
-        else
-        {
+        } else {
             $this->whereClause .= "{$field} IN (";
             $comma = '';
-            for($i = 0; $i < $numValues; $i++) {
+            for ($i = 0; $i < $numValues; $i++) {
                 $key = "filter_" . ($startIndex + $i);
                 $this->whereClause .= "$comma:$key";
                 $this->boundData[$key] = $values[$i];
@@ -80,20 +92,25 @@ class QueryParameters
         }
         $this->and = ' AND ';
     }
-    
+
     public function setRawFilter($filter, $values)
     {
-        $this->whereClause .= "{$this->and}$filter" ;
+        $this->whereClause .= "{$this->and}$filter";
         $this->boundData += $values;
     }
-    
+
     public function setFirstOnly($firstOnly)
     {
         $this->firstOnly = $firstOnly;
     }
-    
+
     public function getFirstOnly()
     {
         return $this->firstOnly;
+    }
+
+    public function hasEagerLoad()
+    {
+        return count($this->eagerLoad) > 0;
     }
 }

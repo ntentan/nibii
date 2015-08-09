@@ -4,15 +4,19 @@ namespace ntentan\nibii;
 
 use ntentan\utils\Utils;
 
-class RecordWrapper implements \ArrayAccess, \Countable
+class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
-
+    protected $hasMany;
+    protected $belongsTo;
+    
     protected $table;
     private $description;
     private $data = [];
     private $invalidFields;
     private $dynamicOperations;
     private $validator;
+    private $index = 0;
+    private $relatedFields;
 
     public function __construct()
     {
@@ -42,9 +46,25 @@ class RecordWrapper implements \ArrayAccess, \Countable
     public function getDescription()
     {
         if ($this->description === null) {
-            $this->description = $this->getDataAdapter()->describe($this->table);
+            $this->description = $this->getDataAdapter()->describe(
+                $this->table, 
+                [
+                    'has_many' => $this->hasMany, 
+                    'belongs_to' => $this->belongsTo
+                ]
+            );            
         }
         return $this->description;
+    }
+    
+    private function retrieveItem($key) 
+    {
+        $relationships = $this->getDescription()['relationships'];
+        if(isset($relationships[$key])) {
+            return $this->fetchRelatedFields($relationships[$key]);
+        } else {
+            return $this->data[$key];
+        }
     }
 
     public static function createNew()
@@ -191,7 +211,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     public function __get($name)
     {
-        return $this->data[$name];
+        return $this->retrieveItem($name);
     }
 
     public function getTable()
@@ -242,7 +262,7 @@ class RecordWrapper implements \ArrayAccess, \Countable
         if (is_numeric($offset)) {
             return $this->wrap($offset);
         } else {
-            return $this->data[$offset];
+            return $this->retrieveItem($offset);
         }
     }
 
@@ -267,13 +287,64 @@ class RecordWrapper implements \ArrayAccess, \Countable
 
     private function wrap($offset)
     {
-        $newInstance = clone $this;
-        $newInstance->setData($this->data[$offset]);
-        return $newInstance;
+        if(isset($this->data[$offset])) {
+            $newInstance = clone $this;
+            $newInstance->setData($this->data[$offset]);
+            return $newInstance;
+        } else {
+            return null;
+        }
     }
     
     public function getInvalidFields() 
     {
         return $this->invalidFields;
-    }   
+    } 
+    
+    public function getHasMany()
+    {
+        return $this->hasMany;
+    }
+    
+    public function getBelongsTo()
+    {
+        return $this->belongsTo;
+    }
+
+    public function current()
+    {
+        return $this->wrap($this->index);
+    }
+
+    public function key()
+    {
+        return $this->index;
+    }
+
+    public function next()
+    {
+        $this->index++;
+    }
+
+    public function rewind()
+    {
+        $this->index = 0;
+    }
+
+    public function valid()
+    {
+        return isset($this->data[$this->index]);
+    }
+    
+    public function fetchRelatedFields($relationship)
+    {
+        $model = new $relationship['model']();
+        
+        switch($relationship['type']) {
+            case 'belongs_to':
+                $query = new QueryParameters($model);
+                $query->addFilter($relationship['foreign_key'], [$this->data[$relationship['local_key']]]);
+                return $model->fetchFirst($query);
+        }
+    }
 }

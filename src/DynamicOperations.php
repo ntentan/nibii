@@ -18,7 +18,10 @@ class DynamicOperations
     
     public function perform($name, $arguments)
     {
-        if (array_search($name, ['fetch', 'fetchFirst', 'filter', 'fields', 'update', 'delete']) !== false) {
+        if (array_search($name, 
+            [ 'fetch', 'fetchFirst', 'filter', 'query',
+            'fields', 'update', 'delete', 'cover']
+            ) !== false) {
             $method = "do{$name}";
             return call_user_func_array([$this, $method], $arguments);
         } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {
@@ -36,15 +39,38 @@ class DynamicOperations
         }
     }
     
-    private function doFetch($id = null)
+    private function doCover()
     {
         $parameters = $this->getQueryParameters();
-        if ($id !== null) {
-            $description = $this->wrapper->getDescription();
-            $parameters->addFilter($description['primary_key'][0], [$id]);
-            $parameters->setFirstOnly(true);
+        $parameters->setEagerLoad(func_get_args());
+        return $this->wrapper;
+    }
+    
+    private function getFetchQueryParameters($arg)
+    {
+        if($arg === null) {
+            $parameters = $this->getQueryParameters();
+        } else {
+            if (is_numeric($arg)) {
+                $parameters = $this->getQueryParameters();
+                $description = $this->wrapper->getDescription();
+                $parameters->addFilter($description['primary_key'][0], [$arg]);
+                $parameters->setFirstOnly(true);
+            }
+            else if(is_a($arg, '\ntentan\nibii\QueryParameters'))
+            {
+                $parameters = $arg;
+            }
         }
-        $this->wrapper->setData($this->adapter->select($parameters));
+        return $parameters;
+    }
+    
+    private function doFetch($id = null)
+    {
+        $parameters = $this->getFetchQueryParameters($id);
+        $data = $this->adapter->select($parameters);
+        $this->wrapper->setData($data);
+        $this->queryParameters = null;
         return $this->wrapper;
     }
     
@@ -129,9 +155,7 @@ class DynamicOperations
     private function getQueryParameters($instantiate = true)
     {
         if ($this->queryParameters === null && $instantiate) {
-            $this->queryParameters = new QueryParameters(
-                $this->adapter->getDriver(), $this->wrapper->getTable()
-            );
+            $this->queryParameters = new QueryParameters($this->wrapper);
         }
         return $this->queryParameters;
     }     
