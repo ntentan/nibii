@@ -3,5 +3,8 @@ namespace ntentan\nibii\tests\models;
 
 class Users extends \ntentan\nibii\RecordWrapper
 {
-    protected $belongsTo = '\ntentan\nibii\tests\models\Roles';
+    public function init()
+    {
+        $this->addBelongsTo('\ntentan\nibii\tests\models\Roles');
+    }
 }

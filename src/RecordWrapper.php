@@ -16,17 +16,23 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $dynamicOperations;
     private $validator;
     private $index = 0;
-    private $relatedFields;
 
     public function __construct()
     {
         Utils::factory(
-            $this->table, function() {
+            $this->table, 
+            function() {
                 $class = new \ReflectionClass($this);
                 $nameParts = explode("\\", $class->getName());
                 return \ntentan\utils\Text::deCamelize(end($nameParts));
             }
         );
+        $this->init();
+    }
+    
+    protected function init()
+    {
+        
     }
 
     /**
@@ -336,7 +342,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return isset($this->data[$this->index]);
     }
     
-    public function fetchRelatedFields($relationship)
+    private function fetchRelatedFields($relationship)
     {
         $model = new $relationship['model']();
         
@@ -346,5 +352,30 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
                 $query->addFilter($relationship['foreign_key'], [$this->data[$relationship['local_key']]]);
                 return $model->fetchFirst($query);
         }
+    }
+    
+    private function createRelationship($type, $name, $foreignKey, $localKey)
+    {
+        $class = "relationships\\{$type}Relationship";
+        $relationship = new $class();
+        $relationship->setForeignKey($foreignKey);
+        $relationship->setLocalKey($localKey);
+        $this->relationships[$name] = $relationship;
+        return $relationship;
+    }
+    
+    public function addBelongsTo($name, $foreignKey = null, $localKey = null)
+    {
+        return $this->createRelationship('BelongsTo', $name, $foreignKey, $localKey);
+    }
+    
+    public function addHasMany($name, $foreignKey = null, $localKey = null)
+    {
+        return $this->createRelationship('HasMany', $name, $foreignKey, $localKey);
+    }
+    
+    public function addBelongsToMany($name, $foreignKey = null, $localKey = null)
+    {
+        return $this->createRelationship('BelongsToMany', $name, $foreignKey, $localKey);
     }
 }

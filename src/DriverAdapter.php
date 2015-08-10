@@ -124,14 +124,10 @@ abstract class DriverAdapter
         $schema = $this->db->describeTable($table)[$table];
         
         $description = [
-            'table' => $table,
             'fields' => [],
             'primary_key' => [],
             'unique_keys' => [],
-            'auto_primary_key' => $schema['auto_increment'],
-            'relationships' => [],
-            'has_many' => [],
-            'belongs_to' => []
+            'auto_primary_key' => $schema['auto_increment']
         ];
         
         foreach ($schema['columns'] as $field => $details) {
@@ -151,63 +147,9 @@ abstract class DriverAdapter
         
         $this->appendConstraints($description, $schema['primary_key'], 'primary_key', true);
         $this->appendConstraints($description, $schema['unique_keys'], 'unique');
-        $this->setRelationships($description, $relationships, 'belongs_to');
         return $description;
     }
     
-    private function setRelationships(&$description, $relationships, $type)
-    {
-        if($relationships[$type] === null) {
-            return;
-        }
-        if(!is_array($relationships[$type])) {
-            $relationships[$type] = [$relationships[$type]];
-        }
-        
-        foreach($relationships[$type] as $key => $relationship) {
-            $name = null;
-            
-            if(!is_numeric($key)) {
-                $name = $key;
-            } else if(is_string($relationship)) {
-                $name = $relationship;
-            }
-            
-            if(!is_array($relationship)) {
-                $relationship = ['model' => $relationship ];
-            }
-            if(!isset($relationship['model'])) {
-                $relationship['model'] = $name;
-            }            
-            
-            $model = Nibii::load($relationship['model']);
-            if(!isset($relationship['local_key'])) {
-                switch($type) {
-                    case 'belongs_to':
-                        $relationship['local_key'] = Text::singularize($model->getTable()) . "_id";
-                        break;
-                    case 'has_many':
-                        $relationship['local_key'] = $description['primary_key'][0];
-                        break;
-                }
-            }
-            if(!isset($relationship['foreign_key'])) {
-                switch($type) {
-                    case 'belongs_to':
-                        $relationship['foreign_key'] = $model->getDescription()['primary_key'][0];
-                        break;
-                    case 'has_many':
-                        $relationship['foreign_key'] = Text::singularize($description['table']) . "_id";
-                        break;
-                }
-                        
-                
-            }
-            $relationship['type'] = $type;
-            $description['relationships'][$name] = $relationship;
-        }
-    }
-
     private function appendConstraints(&$description, $constraints, $key, $flat = false)
     {
         foreach ($constraints as $constraint) {
