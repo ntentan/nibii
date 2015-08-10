@@ -305,7 +305,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private function wrap($offset)
     {
         if(isset($this->data[$offset])) {
-            $newInstance = clone $this;
+            $newInstance = $this->createNew();
             $newInstance->setData($this->data[$offset]);
             return $newInstance;
         } else {
@@ -356,6 +356,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private function fetchRelatedFields($relationship)
     {
         $model = $relationship->getModelInstance();
-        return $model->fetchFirst($relationship->getQuery($this));
+        return $model->fetch($relationship->getQuery($this->data));
     }
 }

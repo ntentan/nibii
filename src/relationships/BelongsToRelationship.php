@@ -31,11 +31,12 @@ use ntentan\utils\Text;
 
 class BelongsToRelationship extends \ntentan\nibii\Relationship
 {
-    public function getQuery($model)
+    public function getQuery($data)
     {
-        $query = (new QueryParameters($model))
-            ->addFilter($this->foreignKey, [$model->toArray()[$this->localKey]]);
-        return $model->fetchFirst($query);
+        $query = (new QueryParameters($this->getModelInstance()))
+            ->addFilter($this->foreignKey, [$data[$this->localKey]])
+            ->setFirstOnly(true);
+        return $query;
     }
 
     public function setup()

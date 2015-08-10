@@ -9,16 +9,16 @@ class DynamicOperations
     private $wrapper;
     private $adapter;
     private $queryParameters;
-    
+
     public function __construct($wrapper, $adapter)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
     }
-    
+
     public function perform($name, $arguments)
     {
-        if (array_search($name, 
+        if (array_search($name,
             [ 'fetch', 'fetchFirst', 'filter', 'query',
             'fields', 'update', 'delete', 'cover']
             ) !== false) {
@@ -33,19 +33,19 @@ class DynamicOperations
             if ($matches['first'] === 'First') {
                 $parameters->setFirstOnly(true);
             }
-            return $this->doFetch();    
+            return $this->doFetch();
         } else {
             throw new NibiiException("Method {$name} not found");
         }
     }
-    
+
     private function doCover()
     {
         $parameters = $this->getQueryParameters();
         $parameters->setEagerLoad(func_get_args());
         return $this->wrapper;
     }
-    
+
     private function getFetchQueryParameters($arg)
     {
         if($arg === null) {
@@ -57,14 +57,14 @@ class DynamicOperations
                 $parameters->addFilter($description['primary_key'][0], [$arg]);
                 $parameters->setFirstOnly(true);
             }
-            else if(is_a($arg, '\ntentan\nibii\QueryParameters'))
+            else if($arg instanceof \ntentan\nibii\QueryParameters)
             {
                 $parameters = $arg;
             }
         }
         return $parameters;
     }
-    
+
     private function doFetch($id = null)
     {
         $parameters = $this->getFetchQueryParameters($id);
@@ -73,39 +73,39 @@ class DynamicOperations
         $this->queryParameters = null;
         return $this->wrapper;
     }
-    
+
     private function deleteItem($primaryKey, $data)
-    {   
+    {
         if($this->isPrimaryKeySet($primaryKey, $data)) {
             return true;
         } else {
             return false;
         }
     }
-    
+
     private function doDelete()
     {
         $this->adapter->getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters(false);
-        
+
         if($parameters === null) {
             $primaryKey = $this->getDescription()['primary_key'];
             $parameters = $this->wrapper->getQueryParameters();
             $data = $this->getData();
             $keys = [];
-            
+
             foreach($data as $datum) {
                 if($this->deleteItem($primaryKey, $datum)) {
                     $keys[] = $datum[$primaryKey];
                 }
             }
-            
+
             $parameters->addFilter($primaryKey[0], $keys);
             $this->adapter->delete($parameters);
         } else {
-            $this->adapter->delete($parameters);            
+            $this->adapter->delete($parameters);
         }
-        
+
         $this->adapter->getDriver()->commit();
     }
 
@@ -127,7 +127,7 @@ class DynamicOperations
         }
         $filterCompiler = new FilterCompiler();
         $this->getQueryParameters()->setRawFilter(
-            $filterCompiler->compile($filter), 
+            $filterCompiler->compile($filter),
             $filterCompiler->rewriteBoundData($bind)
         );
         return $this->wrapper;
@@ -139,7 +139,7 @@ class DynamicOperations
         $this->getQueryParameters()->setFields($arguments);
         return $this->wrapper;
     }
-    
+
     private function doUpdate($data)
     {
         $this->adapter->getDriver()->beginTransaction();
@@ -147,9 +147,9 @@ class DynamicOperations
         $this->adapter->bulkUpdate($data, $parameters);
         $this->adapter->getDriver()->commit();
     }
-    
+
     /**
-     * 
+     *
      * @return \ntentan\nibii\QueryParameters
      */
     private function getQueryParameters($instantiate = true)
@@ -158,5 +158,5 @@ class DynamicOperations
             $this->queryParameters = new QueryParameters($this->wrapper);
         }
         return $this->queryParameters;
-    }     
+    }
 }

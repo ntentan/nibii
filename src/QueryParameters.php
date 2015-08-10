@@ -19,7 +19,7 @@ class QueryParameters
     private $eagerLoad = [];
 
     /**
-     * 
+     *
      * @param \ $model
      */
     public function __construct($wrapper)
@@ -47,11 +47,13 @@ class QueryParameters
     public function setEagerLoad($eagerLoad)
     {
         $this->eagerLoad = $eagerLoad;
+        return $this;
     }
 
     public function setFields($fields)
     {
         $this->fields = $fields;
+        return $this;
     }
 
     public function getTable()
@@ -74,7 +76,7 @@ class QueryParameters
         $this->whereClause .= $this->and;
         $numValues = count($values);
         $startIndex = count($this->boundData);
-        
+
         if ($numValues === 1) {
             $key = "filter_{$startIndex}";
             $this->whereClause .= "{$field} = :$key";
@@ -91,6 +93,7 @@ class QueryParameters
             $this->whereClause .= ")";
         }
         $this->and = ' AND ';
+        return $this;
     }
 
     public function setRawFilter($filter, $values)
@@ -102,6 +105,7 @@ class QueryParameters
     public function setFirstOnly($firstOnly)
     {
         $this->firstOnly = $firstOnly;
+        return $this;
     }
 
     public function getFirstOnly()

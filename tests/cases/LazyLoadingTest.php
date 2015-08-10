@@ -10,8 +10,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $users = Users::fetch();
         foreach($users as $user)
         {
-            var_dump('hi!');
-            var_dump($user->{'\ntentan\nibii\tests\models\Roles'}->toArray());
+            //var_dump($user->{'\ntentan\nibii\tests\models\Roles'}->toArray());
         }
     }
 }
