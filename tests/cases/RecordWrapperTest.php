@@ -11,8 +11,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
     {
         $users = new Users();
         $datastore = getenv('NIBII_DATASTORE');
-        require __DIR__ . "/../expected/$datastore/users_description.php";
-        //$this->assertEquals($description, $users->getDescription());
+        $description = $users->getDescription();
+        $this->assertInstanceOf('\ntentan\nibii\ModelDescription', $description);
     }
 
     public function testCreate()
@@ -25,11 +25,11 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertArrayHasKey('id', $role->toArray());
         $this->assertTrue(is_numeric($role->toArray()['id']));
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
-        
+
         $queryTable = $this->getConnection()->createQueryTable(
             'roles', 'SELECT name FROM roles ORDER BY name'
         );
-        
+
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'roles' => [
@@ -52,11 +52,11 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $role['name'] = 'Super User';
         $this->assertEquals(true, $role->save());
         $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
-        
+
         $queryTable = $this->getConnection()->createQueryTable(
             'roles', 'SELECT name FROM roles ORDER BY name'
         );
-        
+
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'roles' => [
@@ -175,27 +175,27 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertEquals(false, $response);
         $this->assertEquals(
             array (
-                'email' => 
+                'email' =>
                 array (
                   0 => 'The email field is required',
                 ),
-                'firstname' => 
+                'firstname' =>
                 array (
                   0 => 'The firstname field is required',
                 ),
-                'lastname' => 
+                'lastname' =>
                 array (
                   0 => 'The lastname field is required',
                 ),
-                'password' => 
+                'password' =>
                 array (
                   0 => 'The password field is required',
                 ),
-                'role_id' => 
+                'role_id' =>
                 array (
                   0 => 'The role_id field is required',
                 ),
-                'username' => 
+                'username' =>
                 array (
                   0 => 'The username field is required',
                 ),
@@ -203,7 +203,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             $user->getInvalidFields()
         );
     }
-    
+
     public function testUpdate()
     {
         $user = Users::fetchFirstWithId(1);
@@ -211,7 +211,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $user->save();
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT username FROM users WHERE id = 1'
-        );        
+        );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
@@ -221,14 +221,14 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             $queryTable
         );
     }
-    
+
     public function testBulkUpdate()
     {
         Users::update(['role_id' => 15]);
-        
+
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT role_id FROM users'
-        );        
+        );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
@@ -240,13 +240,13 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             $queryTable
         );
     }
-    
+
     public function testBulkUpdate2()
     {
         Users::filterByRoleId(11, 12)->update(['role_id' => 15]);
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT role_id FROM users ORDER BY role_id'
-        );        
+        );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
@@ -258,13 +258,13 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             $queryTable
         );
     }
-    
+
     public function testBulkUpdate3()
     {
         Users::filter('id < ?', 3)->update(['role_id' => 15]);
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT role_id FROM users ORDER BY role_id'
-        );        
+        );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
@@ -275,14 +275,14 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             ])->getTable('users'),
             $queryTable
         );
-    }    
-    
+    }
+
     public function testDelete()
     {
         Users::filter('id < ?', 3)->delete();
         $queryTable = $this->getConnection()->createQueryTable(
             'users', 'SELECT id, username, role_id, firstname FROM users'
-        );        
+        );
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
@@ -290,6 +290,6 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                 ]
             ])->getTable('users'),
             $queryTable
-        );        
+        );
     }
 }

@@ -12,6 +12,7 @@ class ModelDescription
 
     public function __construct($schema, $relationships, $typeMapper)
     {
+        $this->autoPrimaryKey = $schema['auto_increment'];
         foreach ($schema['columns'] as $field => $details) {
             $this->fields[$field] = [
                 'type' => $typeMapper($details['type']),
@@ -85,5 +86,15 @@ class ModelDescription
     public function getPrimaryKey()
     {
         return $this->primaryKey;
+    }
+
+    public function getAutoPrimaryKey()
+    {
+        return $this->autoPrimaryKey;
+    }
+
+    public function getFields()
+    {
+        return $this->fields;
     }
 }

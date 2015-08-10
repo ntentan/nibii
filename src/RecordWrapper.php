@@ -166,7 +166,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $invalidFields = [];
         $data = $this->getData();
         $this->getDataAdapter()->setModel($this);
-        $primaryKey = $this->getDescription()['primary_key'];
+        $primaryKey = $this->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
         $succesful = true;
 

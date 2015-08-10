@@ -54,7 +54,7 @@ class DynamicOperations
             if (is_numeric($arg)) {
                 $parameters = $this->getQueryParameters();
                 $description = $this->wrapper->getDescription();
-                $parameters->addFilter($description['primary_key'][0], [$arg]);
+                $parameters->addFilter($description->getPrimaryKey()[0], [$arg]);
                 $parameters->setFirstOnly(true);
             }
             else if($arg instanceof \ntentan\nibii\QueryParameters)
