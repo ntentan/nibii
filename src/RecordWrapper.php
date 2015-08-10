@@ -33,7 +33,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     protected $belongsTo = [];
 
     protected $table;
-    private $description;
     private $data = [];
     private $invalidFields;
     private $dynamicOperations;

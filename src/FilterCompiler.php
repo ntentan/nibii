@@ -4,9 +4,9 @@ namespace ntentan\nibii;
 
 /**
  * Safely compiles SQL conditions to ensure that a portable interface is provided
- * through which conditions can be specified accross database platforms. Also 
- * the FilterCompiler ensures that raw data is never passed through queries. 
- * This is done in order to minimize injection errors. 
+ * through which conditions can be specified accross database platforms. Also
+ * the FilterCompiler ensures that raw data is never passed through queries.
+ * This is done in order to minimize injection errors.
  */
 class FilterCompiler
 {
@@ -51,7 +51,7 @@ class FilterCompiler
         array('in'),
         array('multiply')
     );
-    
+
     private $numPositions = 0;
 
     public function compile($filter)
@@ -165,33 +165,42 @@ class FilterCompiler
         return "$name$parameters)";
     }
 
+    private function returnToken()
+    {
+        return $this->token;
+    }
+
+    private function returnPositionTag()
+    {
+        return ":filter_bind_" . (++$this->numPositions);
+    }
+
+    private function parseObracket()
+    {
+        $this->getToken();
+        $expression = $this->parseExpression();
+        return $this->renderExpression($expression);
+    }
+
     private function parseFactor()
     {
         $return = null;
-        switch ($this->lookahead) {
-            case 'cast':
-                $return = $this->parseCast();
-                break;
-            case 'function':
-                $return = $this->parseFunction();
-                break;
-            case 'identifier':
-            case 'named_bind_param':
-            case 'number':
-                $return = $this->token;
-                break;
-            case 'position_bind_param':
-                $return = ":filter_bind_" . (++$this->numPositions);
-                break;
-            case 'obracket':
-                $this->getToken();
-                $expression = $this->parseExpression();
-                $return = $this->renderExpression($expression);
-                break;
+        $methods = [
+            'cast' => 'parseCast',
+            'function' => 'parseFunction',
+            'identifier' => 'returnToken',
+            'named_bind_param' => 'returnToken',
+            'number' => 'returnToken',
+            'position_bind_param' => 'returnPositionTag',
+            'obracket' => 'parseObracket'
+        ];
+
+        if(isset($methods[$this->lookahead])) {
+            $method = $methods[$this->lookahead];
+            $return = $this->$method();
         }
 
         $this->getToken();
-
         return $return;
     }
 
@@ -255,7 +264,7 @@ class FilterCompiler
             $this->filter = substr($this->filter, strlen($matches[0]));
         }
     }
-    
+
     public function rewriteBoundData($data) {
         $rewritten = [];
         foreach($data as $key => $value) {
