@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2015 ekow.
@@ -26,36 +26,46 @@
 
 namespace ntentan\nibii;
 
-class Relationship 
+abstract class Relationship
 {
-    
-    private $name;
-    private $foreignKey;
-    private $localKey;
-    private $type;
-    private $model;
-    
+
+    protected $name;
+    protected $foreignKey;
+    protected $localKey;
+    protected $model;
+    protected $belongsTo;
+    protected $hasMany;
+    protected $belongsToMany;
+
     public function setModel($model)
     {
         $this->model = $model;
         return $this;
     }
 
-    public function setName($name) 
+    public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
-    
+
     public function setForeignKey($foreignKey)
     {
         $this->foreignKey = $foreignKey;
         return $this;
     }
-    
+
     public function setLocalKey($localKey)
     {
         $this->localKey = $localKey;
         return $this;
     }
+
+    public function getModelInstance()
+    {
+        return (new \ReflectionClass($this->model))->newInstance();
+    }
+
+    abstract public function getQuery($model);
+    abstract public function setup();
 }

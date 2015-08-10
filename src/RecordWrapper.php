@@ -1,4 +1,27 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2015 ekow.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 namespace ntentan\nibii;
 
@@ -6,9 +29,9 @@ use ntentan\utils\Utils;
 
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
-    protected $hasMany;
-    protected $belongsTo;
-    
+    protected $hasMany = [];
+    protected $belongsTo = [];
+
     protected $table;
     private $description;
     private $data = [];
@@ -20,30 +43,24 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __construct()
     {
         Utils::factory(
-            $this->table, 
+            $this->table,
             function() {
                 $class = new \ReflectionClass($this);
                 $nameParts = explode("\\", $class->getName());
                 return \ntentan\utils\Text::deCamelize(end($nameParts));
             }
         );
-        $this->init();
-    }
-    
-    protected function init()
-    {
-        
     }
 
     /**
-     * 
+     *
      * @return \ntentan\nibii\DriverAdapter
      */
     protected function getDataAdapter()
     {
         return DriverAdapter::getDefaultInstance();
     }
-    
+
     protected function getDriver()
     {
         return $this->getDataAdapter()->getDriver();
@@ -51,21 +68,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function getDescription()
     {
-        if ($this->description === null) {
-            $this->description = $this->getDataAdapter()->describe(
-                $this->table, 
-                [
-                    'has_many' => $this->hasMany, 
-                    'belongs_to' => $this->belongsTo
-                ]
-            );            
-        }
-        return $this->description;
+        return $this->getDataAdapter()->describe(
+            $this->table,
+            ['BelongsTo' => $this->belongsTo, 'HasMany' => $this->hasMany]
+        );
     }
-    
-    private function retrieveItem($key) 
+
+    private function retrieveItem($key)
     {
-        $relationships = $this->getDescription()['relationships'];
+        $relationships = $this->getDescription()->getRelationships();
         if(isset($relationships[$key])) {
             return $this->fetchRelatedFields($relationships[$key]);
         } else {
@@ -78,39 +89,39 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $class = get_called_class();
         return new $class();
     }
-    
+
     public function validate()
     {
         $valid = true;
-        $validator = Utils::factory($this->validator, 
+        $validator = Utils::factory($this->validator,
             function() {
                 return new Validator($this->getDescription());
             }
         );
         $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();
-        
+
         foreach($data as $datum) {
             if(!$validator->validate($datum)) {
                 $valid = false;
             }
         }
-        
+
         if($valid === false) {
             $valid = $validator->getInvalidFields();
         }
-        
+
         return $valid;
     }
-    
+
     private function assignValue(&$property, $value)
     {
         if($this->hasMultipleData()) {
             $property = $value;
         } else {
             $property = $value[0];
-        }        
+        }
     }
-    
+
     private function isPrimaryKeySet($primaryKey, $data)
     {
         foreach($primaryKey as $keyField) {
@@ -123,7 +134,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         return false;
     }
-    
+
     private function saveRecord($datum, $primaryKey)
     {
         $status = [
@@ -131,9 +142,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             'pk_assigned' => null,
             'invalid_fields' => []
         ];
-        
+
         $validity = $this->validate($datum);
-        
+
         if($validity !== true) {
             $status['invalid_fields'] = $validity;
             $status['success'] = false;
@@ -146,47 +157,47 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $this->getDataAdapter()->insert($datum);
             $status['pk_assigned'] = $this->getDriver()->getLastInsertId();
         }
-        
-        return $status;    
+
+        return $status;
     }
 
     public function save()
     {
         $invalidFields = [];
         $data = $this->getData();
-        $this->getDataAdapter()->setModel($this);  
+        $this->getDataAdapter()->setModel($this);
         $primaryKey = $this->getDescription()['primary_key'];
         $singlePrimaryKey = null;
         $succesful = true;
-        
+
         if (count($primaryKey) == 1) {
             $singlePrimaryKey = $primaryKey[0];
         }
-        
-        $this->getDriver()->beginTransaction();  
-        
+
+        $this->getDriver()->beginTransaction();
+
         foreach($data as $i => $datum) {
             $status = $this->saveRecord($datum, $primaryKey);
-            
+
             if(!$status['success']) {
                 $succesful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
                 $this->getDriver()->rollback();
                 continue;
             }
-            
+
             if($singlePrimaryKey) {
                 $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
             }
         }
-        
+
         if($succesful) {
             $this->assignValue($this->data, $data);
             $this->getDriver()->commit();
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
         }
-        
+
         return $succesful;
     }
 
@@ -198,7 +209,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function __call($name, $arguments)
     {
-        return Utils::factory($this->dynamicOperations, 
+        return Utils::factory($this->dynamicOperations,
             function() {
                 return new DynamicOperations($this, $this->getDataAdapter());
             }
@@ -229,7 +240,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         return $this->data;
     }
-    
+
     private function hasMultipleData()
     {
         if(count($this->data) > 0) {
@@ -238,18 +249,18 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             return false;
         }
     }
-    
+
     public function getData()
     {
         $data = [];
-        
+
         if($this->hasMultipleData())
         {
             $data = $this->data;
         } else {
             $data[] = $this->data;
-        }        
-        
+        }
+
         return $data;
     }
 
@@ -301,17 +312,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             return null;
         }
     }
-    
-    public function getInvalidFields() 
+
+    public function getInvalidFields()
     {
         return $this->invalidFields;
-    } 
-    
+    }
+
     public function getHasMany()
     {
         return $this->hasMany;
     }
-    
+
     public function getBelongsTo()
     {
         return $this->belongsTo;
@@ -341,41 +352,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         return isset($this->data[$this->index]);
     }
-    
+
     private function fetchRelatedFields($relationship)
     {
-        $model = new $relationship['model']();
-        
-        switch($relationship['type']) {
-            case 'belongs_to':
-                $query = new QueryParameters($model);
-                $query->addFilter($relationship['foreign_key'], [$this->data[$relationship['local_key']]]);
-                return $model->fetchFirst($query);
-        }
-    }
-    
-    private function createRelationship($type, $name, $foreignKey, $localKey)
-    {
-        $class = "relationships\\{$type}Relationship";
-        $relationship = new $class();
-        $relationship->setForeignKey($foreignKey);
-        $relationship->setLocalKey($localKey);
-        $this->relationships[$name] = $relationship;
-        return $relationship;
-    }
-    
-    public function addBelongsTo($name, $foreignKey = null, $localKey = null)
-    {
-        return $this->createRelationship('BelongsTo', $name, $foreignKey, $localKey);
-    }
-    
-    public function addHasMany($name, $foreignKey = null, $localKey = null)
-    {
-        return $this->createRelationship('HasMany', $name, $foreignKey, $localKey);
-    }
-    
-    public function addBelongsToMany($name, $foreignKey = null, $localKey = null)
-    {
-        return $this->createRelationship('BelongsToMany', $name, $foreignKey, $localKey);
+        $model = $relationship->getModelInstance();
+        return $model->fetchFirst($relationship->getQuery($this));
     }
 }

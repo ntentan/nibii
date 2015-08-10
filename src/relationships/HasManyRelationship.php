@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2015 ekow.
@@ -28,5 +28,13 @@ namespace ntentan\nibii\relationships;
 
 class HasManyRelationship extends \ntentan\nibii\Relationship
 {
-    
+    public function getQuery($model)
+    {
+        
+    }
+
+    public function setup()
+    {
+
+    }
 }

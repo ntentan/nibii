@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2015 ekow.
@@ -26,7 +26,29 @@
 
 namespace ntentan\nibii\relationships;
 
+use ntentan\nibii\QueryParameters;
+use ntentan\utils\Text;
+
 class BelongsToRelationship extends \ntentan\nibii\Relationship
 {
-    
+    public function getQuery($model)
+    {
+        $query = (new QueryParameters($model))
+            ->addFilter($this->foreignKey, [$model->toArray()[$this->localKey]]);
+        return $model->fetchFirst($query);
+    }
+
+    public function setup()
+    {
+        $model = $this->getModelInstance();
+        if($this->foreignKey == null)
+        {
+            $this->foreignKey = $model->getDescription()->getPrimaryKey()[0];
+        }
+
+        if($this->localKey == null)
+        {
+            $this->localKey = Text::singularize($model->getTable()) . '_id';
+        }
+    }
 }
