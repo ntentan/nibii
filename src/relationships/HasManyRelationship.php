@@ -26,15 +26,25 @@
 
 namespace ntentan\nibii\relationships;
 
+use ntentan\nibii\QueryParameters;
+use ntentan\utils\Text;
+
 class HasManyRelationship extends \ntentan\nibii\Relationship
 {
-    public function getQuery($model)
+    public function getQuery($data)
     {
-        
+        $query = (new QueryParameters($this->getModelInstance()))
+            ->addFilter($this->foreignKey, [$data[$this->localKey]]);
+        return $query;
     }
 
-    public function setup()
+    public function setup($table, $primaryKey)
     {
-
+        if($this->foreignKey == null) {
+            $this->foreignKey = Text::singularize($table) . '_id';
+        }
+        if($this->localKey == null) {
+            $this->localKey = $primaryKey[0];
+        }
     }
 }

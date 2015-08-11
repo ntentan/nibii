@@ -67,10 +67,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function getDescription()
     {
-        return $this->getDataAdapter()->describe(
+        return new ModelDescription($this);
+        /*return $this->getDataAdapter()->describe(
             $this->table,
             ['BelongsTo' => $this->belongsTo, 'HasMany' => $this->hasMany]
-        );
+        );*/
     }
 
     private function retrieveItem($key)
@@ -356,5 +357,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $model = $relationship->getModelInstance();
         return $model->fetch($relationship->getQuery($this->data));
+    }
+
+    public function getRelationships()
+    {
+        return [
+            'HasMany' => $this->hasMany,
+            'BelongsTo' => $this->belongsTo
+        ];
     }
 }

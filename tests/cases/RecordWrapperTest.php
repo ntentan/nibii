@@ -139,7 +139,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertArrayNotHasKey('other', $role);
 
         $users = Users::fetch();
-        $this->assertEquals(3, count($users));
+        $this->assertEquals(4, count($users));
         $this->assertEquals(1, count($users[0]));
 
         $users = Users::fields('id', 'username')->filterByUsername('james')->fetchFirst();
@@ -162,7 +162,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $user = Users::filter('username = ? or (role_id in(? , ?)', 'james', '10', '11')->fetch();
 
         $user = Users::filter('role_id between 10 and 13')->fetch();
-        $this->assertEquals(3, count($user));
+        $this->assertEquals(4, count($user));
 
         $user = Users::filter('password = md5(?)', 'password')->fetch();
         $this->assertEquals(1, count($user));
@@ -234,6 +234,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                 'users' => [
                     ['role_id' => 15],
                     ['role_id' => 15],
+                    ['role_id' => 15],
                     ['role_id' => 15]
                 ]
             ])->getTable('users'),
@@ -252,6 +253,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                 'users' => [
                     ['role_id' => 10],
                     ['role_id' => 15],
+                    ['role_id' => 15],
                     ['role_id' => 15]
                 ]
             ])->getTable('users'),
@@ -268,6 +270,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
+                    ['role_id' => 12],
                     ['role_id' => 12],
                     ['role_id' => 15],
                     ['role_id' => 15]
@@ -286,7 +289,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertTablesEqual(
             $this->createArrayDataSet([
                 'users' => [
-                    ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame']
+                    ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame'],
+                    ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa'],
                 ]
             ])->getTable('users'),
             $queryTable

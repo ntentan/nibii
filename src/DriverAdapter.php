@@ -46,7 +46,7 @@ abstract class DriverAdapter
      * @param string $nativeType The native datatype
      * @return string The generic datatype for use in nibii.
      */
-    abstract protected function mapDataTypes($nativeType);
+    abstract public function mapDataTypes($nativeType);
 
     public function init()
     {
@@ -119,7 +119,7 @@ abstract class DriverAdapter
         );
     }
 
-    public function describe($table, $relationships)
+    public function describe($model, $relationships)
     {
         return new ModelDescription(
             $this->getDriver()->describeTable($table)[$table],

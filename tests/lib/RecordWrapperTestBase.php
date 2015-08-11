@@ -22,7 +22,7 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
     {
         \ntentan\nibii\DriverAdapter::reset();
     }
-    
+
     protected function getConnection()
     {
         $pdo = new \PDO(getenv('NIBII_PDO_DSN'), getenv('NIBII_USER'), getenv('NIBII_PASSWORD'));
@@ -43,7 +43,8 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
             'users' => [
                 ['id' => 1, 'username' => 'james', 'role_id' => 10, 'firstname' => 'James', 'lastname' => 'Ainooson', 'status' => 1, 'password' => 'somehashedstring', 'email' => 'james@nibii.test'],
                 ['id' => 2, 'username' => 'fiifi', 'role_id' => 11, 'firstname' => 'Fiifi', 'lastname' => 'Antobra', 'status' => 2, 'password' => md5('password'), 'email' => 'fiifi@nibii.test'],
-                ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame', 'lastname' => 'Nyarko', 'status' => 2, 'password' => 'coolthings', 'email' => 'knyarko@nibii.test']
+                ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame', 'lastname' => 'Nyarko', 'status' => 2, 'password' => 'coolthings', 'email' => 'knyarko@nibii.test'],
+                ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa', 'lastname' => 'Boateng', 'status' => 2, 'password' => 'hahaha', 'email' => 'aboateng@nibii.test']
             ]
         ]);
     }
@@ -52,5 +53,5 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
     {
         return $this->getOperations()->CLEAN_INSERT(TRUE);
     }
-    
+
 }

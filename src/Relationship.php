@@ -66,6 +66,6 @@ abstract class Relationship
         return (new \ReflectionClass($this->model))->newInstance();
     }
 
-    abstract public function getQuery($model);
-    abstract public function setup();
+    abstract public function getQuery($data);
+    abstract public function setup($table, $primaryKey);
 }

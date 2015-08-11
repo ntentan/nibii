@@ -39,16 +39,13 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship
         return $query;
     }
 
-    public function setup()
+    public function setup($table, $primaryKey)
     {
         $model = $this->getModelInstance();
-        if($this->foreignKey == null)
-        {
+        if($this->foreignKey == null) {
             $this->foreignKey = $model->getDescription()->getPrimaryKey()[0];
         }
-
-        if($this->localKey == null)
-        {
+        if($this->localKey == null) {
             $this->localKey = Text::singularize($model->getTable()) . '_id';
         }
     }

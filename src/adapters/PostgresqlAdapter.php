@@ -10,7 +10,7 @@ class PostgresqlAdapter extends \ntentan\nibii\DriverAdapter
      * @return string
      * @throws \Exception
      */
-    protected function mapDataTypes($nativeType) 
+    public function mapDataTypes($nativeType) 
     {
         switch($nativeType)
         {

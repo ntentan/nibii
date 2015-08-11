@@ -9,13 +9,19 @@ class ModelDescription
     private $uniqueKeys = [];
     private $autoPrimaryKey = false;
     private $relationships = [];
+    private $table;
 
-    public function __construct($schema, $relationships, $typeMapper)
+    public function __construct($model)
     {
+        $this->table = $model->getTable();
+        $relationships = $model->getRelationships();
+        $adapter = DriverAdapter::getDefaultInstance();
+        $schema = $adapter->getDriver()->describeTable($this->table)[$this->table];
         $this->autoPrimaryKey = $schema['auto_increment'];
+
         foreach ($schema['columns'] as $field => $details) {
             $this->fields[$field] = [
-                'type' => $typeMapper($details['type']),
+                'type' => $adapter->mapDataTypes($details['type']),
                 'required' => !$details['nulls'],
                 'default' => $details['default'],
                 'name' => $field
@@ -28,12 +34,13 @@ class ModelDescription
             }
         }
 
-        foreach($relationships as $type => $relations) {
-            $this->createRelationships($type, $relations);
-        }
-
         $this->appendConstraints($schema['primary_key'], $this->primaryKey, true);
         $this->appendConstraints($schema['unique_keys'], $this->uniqueKeys);
+
+        foreach($relationships as $type => $relations) {
+            $this->createRelationships($model, $type, $relations);
+        }
+        
     }
 
     private function appendConstraints($constraints, &$key, $flat = false)
@@ -63,7 +70,7 @@ class ModelDescription
         }
     }
 
-    private function createRelationships($type, $relationships)
+    private function createRelationships($model, $type, $relationships)
     {
         foreach($relationships as $relationship)
         {
@@ -73,7 +80,7 @@ class ModelDescription
             $relationshipObject->setForeignKey($relationship['foreign_key']);
             $relationshipObject->setLocalKey($relationship['local_key']);
             $relationshipObject->setModel($relationship['model']);
-            $relationshipObject->setup();
+            $relationshipObject->setup($this->table, $this->primaryKey);
             $this->relationships[$relationship['name']] = $relationshipObject;
         }
     }

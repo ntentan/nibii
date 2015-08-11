@@ -3,7 +3,7 @@ namespace ntentan\nibii\adapters;
 
 class MysqlAdapter extends \ntentan\nibii\DriverAdapter
 {
-    protected function mapDataTypes($nativeType) 
+    public function mapDataTypes($nativeType) 
     {
         switch($nativeType)
         {
