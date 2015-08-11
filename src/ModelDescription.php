@@ -40,7 +40,7 @@ class ModelDescription
         foreach($relationships as $type => $relations) {
             $this->createRelationships($model, $type, $relations);
         }
-        
+
     }
 
     private function appendConstraints($constraints, &$key, $flat = false)
@@ -66,6 +66,13 @@ class ModelDescription
                 'name' => $relationship,
                 'foreign_key' => '',
                 'local_key' => ''
+            ];
+        } else if (is_array($relationship)) {
+            return [
+                'model' => $relationship[0],
+                'name' => isset($relationship['as']) ? $relationship['as'] : $relationship[0],
+                'foreign_key' => isset($relationship['foreign_key']) ? $relationship['foreign_key'] : '',
+                'local_key' => isset($relationship['local_key']) ? $relationship['local_key'] : ''
             ];
         }
     }

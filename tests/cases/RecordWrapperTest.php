@@ -2,8 +2,8 @@
 
 namespace ntentan\nibii\tests\cases;
 
-use ntentan\nibii\tests\models\Users;
-use ntentan\nibii\tests\models\Roles;
+use ntentan\nibii\tests\models\raw\Users;
+use ntentan\nibii\tests\models\raw\Roles;
 
 class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 {
