@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9b8f8f175543c82e75316d3d681e9fb2",
+    "hash": "c69dd30a49741240b1ece7281a847480",
     "packages": [
         {
             "name": "ntentan/atiaa",
-            "version": "dev-master",
+            "version": "v0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "0be0b1dac174a7d1ab7ed1fcb175bd31baaced20"
+                "reference": "66f3af3ea62e163ff5007f3fa706a20e34ade8ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/0be0b1dac174a7d1ab7ed1fcb175bd31baaced20",
-                "reference": "0be0b1dac174a7d1ab7ed1fcb175bd31baaced20",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/66f3af3ea62e163ff5007f3fa706a20e34ade8ff",
+                "reference": "66f3af3ea62e163ff5007f3fa706a20e34ade8ff",
                 "shasum": ""
             },
             "require": {
@@ -45,20 +45,20 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2015-08-09 09:28:39"
+            "time": "2015-08-04 13:22:28"
         },
         {
             "name": "ntentan/utils",
-            "version": "dev-master",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "06d773d706e834ac3ba6a54284d556f929a2365b"
+                "reference": "5957a0a3caa8ce42f92f51bbdacfd62782391679"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/06d773d706e834ac3ba6a54284d556f929a2365b",
-                "reference": "06d773d706e834ac3ba6a54284d556f929a2365b",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/5957a0a3caa8ce42f92f51bbdacfd62782391679",
+                "reference": "5957a0a3caa8ce42f92f51bbdacfd62782391679",
                 "shasum": ""
             },
             "require-dev": {
@@ -81,7 +81,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2015-08-09 21:47:35"
+            "time": "2015-08-12 06:32:09"
         }
     ],
     "packages-dev": [
@@ -1098,10 +1098,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ntentan/atiaa": 20,
-        "ntentan/utils": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
