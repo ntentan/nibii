@@ -3,7 +3,7 @@ namespace ntentan\nibii\adapters;
 
 class MysqlAdapter extends \ntentan\nibii\DriverAdapter
 {
-    public function mapDataTypes($nativeType) 
+    public function mapDataTypes($nativeType)
     {
         switch($nativeType)
         {
@@ -15,6 +15,8 @@ class MysqlAdapter extends \ntentan\nibii\DriverAdapter
                 return 'boolean';
             case 'timestamp':
                 return 'datetime';
+            case 'text':
+                return 'text';
             default:
                 throw new \Exception("Unknown type {$nativeType}");
         }

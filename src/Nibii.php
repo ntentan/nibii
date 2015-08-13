@@ -14,7 +14,8 @@ class Nibii
     public static function getClassName($path)
     {
         if(self::$classResolver !== null && $path[0] !== "\\") {
-            $className = self::$classResolver($path);
+            $resolver = self::$classResolver;
+            $className = $resolver($path);
         } else {
             $className = $path;
         }
