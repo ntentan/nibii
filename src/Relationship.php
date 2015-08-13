@@ -63,7 +63,7 @@ abstract class Relationship
 
     public function getModelInstance()
     {
-        return (new \ReflectionClass($this->model))->newInstance();
+        return Nibii::load($this->model);
     }
 
     abstract public function getQuery($data);
