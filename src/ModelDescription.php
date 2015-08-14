@@ -38,7 +38,7 @@ class ModelDescription
         $this->appendConstraints($schema['unique_keys'], $this->uniqueKeys);
 
         foreach($relationships as $type => $relations) {
-            $this->createRelationships($model, $type, $relations);
+            $this->createRelationships($type, $relations);
         }
 
     }
@@ -77,7 +77,7 @@ class ModelDescription
         }
     }
 
-    private function createRelationships($model, $type, $relationships)
+    private function createRelationships($type, $relationships)
     {
         foreach($relationships as $relationship)
         {

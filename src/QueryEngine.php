@@ -1,5 +1,4 @@
 <?php
-
 namespace ntentan\nibii;
 
 class QueryEngine
@@ -10,6 +9,11 @@ class QueryEngine
     public function setDriver($driver)
     {
         $this->db = $driver;
+    }
+    
+    private function filter($query)
+    {
+        return $query;
     }
 
     public function getInsertQuery($model)
@@ -24,8 +28,10 @@ class QueryEngine
             $valueFields[] = ":{$field}";
         }
 
-        return "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) .
-            " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")";
+        return $this->filter(
+            "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) .
+            " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")"
+        );
     }
 
     public function getBulkUpdateQuery($data, $parameters)
@@ -35,12 +41,12 @@ class QueryEngine
             $updateData[] = "{$this->db->quoteIdentifier($field)} = :$field";
         }
 
-        return sprintf(
+        return $this->filter(sprintf(
             "UPDATE %s SET %s %s",
             $parameters->getTable(),
             implode(', ', $updateData),
             $parameters->getWhereClause()
-        );
+        ));
     }
 
     public function getUpdateQuery($model)
@@ -61,28 +67,41 @@ class QueryEngine
             }
         }
 
-        return "UPDATE " .
+        return $this->filter("UPDATE " .
             $this->db->quoteIdentifier($model->getTable()) .
             " SET " . implode(', ', $valueFields) .
-            " WHERE " . implode(' AND ', $conditions);
+            " WHERE " . implode(' AND ', $conditions)
+        );
     }
 
     public function getSelectQuery($parameters)
     {
-        return sprintf(
-            "SELECT %s FROM %s%s",
-            $parameters->getFields(),
-            $parameters->getTable(),
-            $parameters->getWhereClause()
+        return $this->filter(sprintf(
+                "SELECT %s FROM %s%s",
+                $parameters->getFields(),
+                $parameters->getTable(),
+                $parameters->getWhereClause()
+            )
+        );
+    }
+    
+    public function getCountQuery($parameters)
+    {
+        return $this->filter(sprintf(
+                "SELECT count(*) as count FROM %s%s",
+                $parameters->getTable(),
+                $parameters->getWhereClause()
+            )
         );
     }
 
     public function getDeleteQuery($parameters)
     {
-        return sprintf(
-            "DELETE FROM %s%s",
-            $parameters->getTable(),
-            $parameters->getWhereClause()
+        return $this->filter(sprintf(
+                "DELETE FROM %s%s",
+                $parameters->getTable(),
+                $parameters->getWhereClause()
+            )
         );
     }
 }

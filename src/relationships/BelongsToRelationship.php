@@ -31,6 +31,8 @@ use ntentan\utils\Text;
 
 class BelongsToRelationship extends \ntentan\nibii\Relationship
 {
+    protected $type = self::BELONGS_TO;
+
     public function getQuery($data)
     {
         $query = (new QueryParameters($this->getModelInstance()))

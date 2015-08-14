@@ -9,6 +9,7 @@ class DynamicOperations
     private $wrapper;
     private $adapter;
     private $queryParameters;
+    private $queryFired = false;
 
     public function __construct($wrapper, $adapter)
     {
@@ -19,9 +20,12 @@ class DynamicOperations
     public function perform($name, $arguments)
     {
         if (array_search($name,
-            [ 'fetch', 'fetchFirst', 'filter', 'query',
-            'fields', 'update', 'delete', 'cover']
-            ) !== false) {
+            [ 
+                'fetch', 'fetchFirst', 'filter', 'query',
+                'fields', 'update', 'delete', 'cover',
+                'count'
+            ]
+        ) !== false) {
             $method = "do{$name}";
             return call_user_func_array([$this, $method], $arguments);
         } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {
@@ -36,6 +40,15 @@ class DynamicOperations
             return $this->doFetch();
         } else {
             throw new NibiiException("Method {$name} not found");
+        }
+    }
+    
+    private function doCount()
+    {
+        if($this->queryFired) {
+            return count($this->wrapper->getData());
+        } else {
+            return $this->adapter->count($this->getQueryParameters());
         }
     }
 
@@ -70,7 +83,8 @@ class DynamicOperations
         $parameters = $this->getFetchQueryParameters($id);
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
-        $this->queryParameters = null;
+        $this->resetQueryParameters();
+        $this->queryFired = true;
         return $this->wrapper;
     }
 
@@ -107,6 +121,7 @@ class DynamicOperations
         }
 
         $this->adapter->getDriver()->commit();
+        $this->resetQueryParameters();
     }
 
     private function doFetchFirst()
@@ -146,6 +161,7 @@ class DynamicOperations
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
         $this->adapter->getDriver()->commit();
+        $this->resetQueryParameters();
     }
 
     /**
@@ -158,5 +174,10 @@ class DynamicOperations
             $this->queryParameters = new QueryParameters($this->wrapper);
         }
         return $this->queryParameters;
+    }
+    
+    private function resetQueryParameters()
+    {
+        $this->queryParameters = null;
     }
 }

@@ -48,6 +48,9 @@ abstract class DriverAdapter
      */
     abstract public function mapDataTypes($nativeType);
 
+    /**
+     * 
+     */
     public function init()
     {
         $this->settings['driver'] = $this->settings['datastore'];
@@ -62,10 +65,17 @@ abstract class DriverAdapter
         }
     }
 
+    /**
+     * 
+     * 
+     * @param type $parameters
+     * @return type
+     */
     public function select($parameters)
     {
         $result = $this->db->query(
-            $this->getQueryEngine()->getSelectQuery($parameters), $parameters->getBoundData()
+            $this->getQueryEngine()->getSelectQuery($parameters), 
+            $parameters->getBoundData()
         );
 
         if ($parameters->getFirstOnly()) {
@@ -73,6 +83,15 @@ abstract class DriverAdapter
         }
 
         return $result;
+    }
+    
+    public function count($parameters)
+    {
+        $result = $this->db->query(
+            $this->getQueryEngine()->getCountQuery($parameters),
+            $parameters->getBoundData()
+        );
+        return $result[0]['count'];
     }
 
     private function initInsert()

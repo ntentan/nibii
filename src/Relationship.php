@@ -28,7 +28,10 @@ namespace ntentan\nibii;
 
 abstract class Relationship
 {
-
+    const BELONGS_TO = 'BelongsTo';
+    const HAS_MANY = 'HasMany';
+    const MANY_HAVE_MANY = 'ManyHaveMany';
+    
     protected $name;
     protected $foreignKey;
     protected $localKey;
@@ -36,6 +39,7 @@ abstract class Relationship
     protected $belongsTo;
     protected $hasMany;
     protected $belongsToMany;
+    protected $type;
 
     public function setModel($model)
     {
@@ -63,7 +67,8 @@ abstract class Relationship
 
     public function getModelInstance()
     {
-        return Nibii::load($this->model);
+        $class = Nibii::getClassName($this->model, $this->type);
+        return new $class();
     }
 
     abstract public function getQuery($data);

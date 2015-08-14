@@ -68,10 +68,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function getDescription()
     {
         return new ModelDescription($this);
-        /*return $this->getDataAdapter()->describe(
-            $this->table,
-            ['BelongsTo' => $this->belongsTo, 'HasMany' => $this->hasMany]
-        );*/
+    }
+    
+    public function count()
+    {
+        return $this->__call('count', []);
     }
 
     private function retrieveItem($key)
@@ -291,15 +292,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
-    }
-
-    public function count($mode = 'COUNT_NORMAL')
-    {
-        if (array_keys($this->data)[0] === 0) {
-            return count($this->data);
-        } else {
-            return 1;
-        }
     }
 
     private function wrap($offset)

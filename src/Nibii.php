@@ -11,13 +11,13 @@ class Nibii
         return (new \ReflectionClass(self::getClassName($path)))->newInstance();
     }
 
-    public static function getClassName($path)
+    public static function getClassName($model, $context = null)
     {
-        if(self::$classResolver !== null && $path[0] !== "\\") {
+        if(self::$classResolver !== null && $model[0] !== "\\") {
             $resolver = self::$classResolver;
-            $className = $resolver($path);
+            $className = $resolver($model, $context);
         } else {
-            $className = $path;
+            $className = $model;
         }
         return $className;
     }
