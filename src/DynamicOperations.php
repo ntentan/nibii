@@ -9,7 +9,6 @@ class DynamicOperations
     private $wrapper;
     private $adapter;
     private $queryParameters;
-    private $queryFired = false;
 
     public function __construct($wrapper, $adapter)
     {
@@ -45,11 +44,7 @@ class DynamicOperations
     
     private function doCount()
     {
-        if($this->queryFired) {
-            return count($this->wrapper->getData());
-        } else {
-            return $this->adapter->count($this->getQueryParameters());
-        }
+        return $this->adapter->count($this->getQueryParameters());
     }
 
     private function doCover()
@@ -84,7 +79,6 @@ class DynamicOperations
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
         $this->resetQueryParameters();
-        $this->queryFired = true;
         return $this->wrapper;
     }
 

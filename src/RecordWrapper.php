@@ -38,6 +38,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $dynamicOperations;
     private $validator;
     private $index = 0;
+    private $dataSet = false;
 
     public function __construct()
     {
@@ -72,7 +73,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     
     public function count()
     {
-        return $this->__call('count', []);
+        if ($this->dataSet) {
+            return count($this->getData());
+        } else {
+            return $this->__call('count', []);
+        }
     }
 
     private function retrieveItem($key)
@@ -224,6 +229,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function __set($name, $value)
     {
+        $this->dataSet = true;
         $this->data[$name] = $value;
     }
 
@@ -267,6 +273,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function setData($data)
     {
+        $this->dataSet = true;
         $this->data = $data;
     }
 
@@ -286,6 +293,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function offsetSet($offset, $value)
     {
+        $this->dataSet = true;
         $this->data[$offset] = $value;
     }
 
