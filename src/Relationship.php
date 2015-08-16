@@ -32,24 +32,14 @@ abstract class Relationship
     const HAS_MANY = 'HasMany';
     const MANY_HAVE_MANY = 'ManyHaveMany';
     
-    protected $name;
     protected $foreignKey;
     protected $localKey;
     protected $model;
-    protected $belongsTo;
-    protected $hasMany;
-    protected $belongsToMany;
     protected $type;
 
     public function setModel($model)
     {
         $this->model = $model;
-        return $this;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
         return $this;
     }
 

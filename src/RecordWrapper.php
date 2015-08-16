@@ -236,10 +236,27 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         return $this->table;
     }
+    
+    private function expandArrayValue($array, $relationships, $index = null)
+    {
+        foreach($relationships as $name => $relationship) {
+            $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray();
+        }
+        return $array;
+    }
 
     public function toArray()
     {
-        return $this->data;
+        $relationships = $this->getDescription()->getRelationships();
+        $array = $this->data;
+        if($this->hasMultipleData()) {
+            foreach($array as $i => $value) {
+                $array[$i] = $this->expandArrayValue($value, $relationships, $i);
+            }
+        } else {
+            $array = $this->expandArrayValue($array, $relationships);
+        }
+        return $array;
     }
 
     private function hasMultipleData()
@@ -345,10 +362,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return isset($this->data[$this->index]);
     }
 
-    private function fetchRelatedFields($relationship)
+    private function fetchRelatedFields($relationship, $index = null)
     {
+        if($index === null) {
+            $data = $this->data;
+        } else {
+            $data = $this->data[$index];
+        }
         $model = $relationship->getModelInstance();
-        return $model->fetch($relationship->getQuery($this->data));
+        return $model->fetch($relationship->getQuery($data));
     }
 
     public function getRelationships()
