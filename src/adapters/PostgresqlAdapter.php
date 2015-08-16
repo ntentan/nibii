@@ -16,6 +16,10 @@ class PostgresqlAdapter extends \ntentan\nibii\DriverAdapter
         {
             case 'character varying':
                 return 'string';
+            case 'text':
+                return 'text';
+            case 'date':
+                return 'date';
             case 'integer':
             case 'boolean':
                 return $nativeType;

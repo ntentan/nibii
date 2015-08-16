@@ -22,7 +22,7 @@ class DynamicOperations
             [ 
                 'fetch', 'fetchFirst', 'filter', 'query',
                 'fields', 'update', 'delete', 'cover',
-                'count'
+                'count', 'limit'
             ]
         ) !== false) {
             $method = "do{$name}";
@@ -40,6 +40,12 @@ class DynamicOperations
         } else {
             throw new NibiiException("Method {$name} not found");
         }
+    }
+    
+    private function doLimit($numItems)
+    {
+        $this->getQueryParameters()->setLimit($numItems);
+        return $this->wrapper;
     }
     
     private function doCount()

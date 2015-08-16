@@ -17,6 +17,7 @@ class QueryParameters
     private $db;
     private $firstOnly = false;
     private $eagerLoad = [];
+    private $limit;
 
     /**
      *
@@ -44,12 +45,6 @@ class QueryParameters
         return $this->eagerLoad;
     }
 
-    public function setEagerLoad($eagerLoad)
-    {
-        $this->eagerLoad = $eagerLoad;
-        return $this;
-    }
-
     public function setFields($fields)
     {
         $this->fields = $fields;
@@ -59,6 +54,11 @@ class QueryParameters
     public function getTable()
     {
         return $this->table;
+    }
+    
+    public function getLimit()
+    {
+        return " LIMIT {$this->limit}";
     }
 
     public function getWhereClause()
@@ -112,9 +112,9 @@ class QueryParameters
     {
         return $this->firstOnly;
     }
-
-    public function hasEagerLoad()
+    
+    public function setLimit($numItems)
     {
-        return count($this->eagerLoad) > 0;
+        $this->limit = $numItems;
     }
 }

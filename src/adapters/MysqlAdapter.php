@@ -17,6 +17,8 @@ class MysqlAdapter extends \ntentan\nibii\DriverAdapter
                 return 'datetime';
             case 'text':
                 return 'text';
+            case 'date':
+                return 'date';
             default:
                 throw new \Exception("Unknown type {$nativeType}");
         }
