@@ -243,24 +243,26 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->table;
     }
     
-    private function expandArrayValue($array, $relationships, $index = null)
+    private function expandArrayValue($array, $relationships, $depth, $index = null)
     {
         foreach($relationships as $name => $relationship) {
-            $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray();
+            $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
         }
         return $array;
     }
 
-    public function toArray()
+    public function toArray($depth = 0)
     {
         $relationships = $this->getDescription()->getRelationships();
         $array = $this->data;
-        if($this->hasMultipleData()) {
-            foreach($array as $i => $value) {
-                $array[$i] = $this->expandArrayValue($value, $relationships, $i);
+        if($depth > 0) {
+            if($this->hasMultipleData()) {
+                foreach($array as $i => $value) {
+                    $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $i);
+                }
+            } else {
+                $array = $this->expandArrayValue($array, $relationships, $depth - 1);
             }
-        } else {
-            $array = $this->expandArrayValue($array, $relationships);
         }
         return $array;
     }
