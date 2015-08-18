@@ -22,14 +22,17 @@ class DynamicOperations
             [ 
                 'fetch', 'fetchFirst', 'filter', 'query',
                 'fields', 'update', 'delete', 'cover',
-                'count', 'limit'
+                'count', 'limit', 'offset', 'filterBy', 'sortBy'
             ]
         ) !== false) {
             $method = "do{$name}";
             return call_user_func_array([$this, $method], $arguments);
-        } else if (preg_match("/(filterBy)(?<variable>[A-Za-z]+)/", $name, $matches)) {
+        } else if (preg_match("/(filterBy)(?<variable>[A-Z][A-Za-z]+){1}/", $name, $matches)) {
             $this->getQueryParameters()->addFilter(Text::deCamelize($matches['variable']), $arguments);
             return $this->wrapper;
+        } else if (preg_match("/(sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/", $name, $matches)) {
+            $this->getQueryParameters()->addSort(Text::deCamelize($matches['variable']), $matches['direction']);
+            return $this->wrapper;            
         } else if (preg_match("/(fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/", $name, $matches)) {
             $parameters = $this->getQueryParameters();
             $parameters->addFilter(Text::deCamelize($matches['variable']), $arguments);
@@ -45,6 +48,12 @@ class DynamicOperations
     private function doLimit($numItems)
     {
         $this->getQueryParameters()->setLimit($numItems);
+        return $this->wrapper;
+    }
+    
+    private function doOffset($offset)
+    {
+        $this->getQueryParameters()->setOffset($offset);
         return $this->wrapper;
     }
     

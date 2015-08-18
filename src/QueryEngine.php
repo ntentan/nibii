@@ -77,10 +77,13 @@ class QueryEngine
     public function getSelectQuery($parameters)
     {
         return $this->filter(sprintf(
-                "SELECT %s FROM %s%s",
+                "SELECT %s FROM %s%s%s%s",
                 $parameters->getFields(),
                 $parameters->getTable(),
-                $parameters->getWhereClause()
+                $parameters->getWhereClause(),
+                $parameters->getSorts(),
+                $parameters->getLimit(),
+                $parameters->getOffset()
             )
         );
     }

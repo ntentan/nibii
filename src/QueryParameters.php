@@ -18,6 +18,8 @@ class QueryParameters
     private $firstOnly = false;
     private $eagerLoad = [];
     private $limit;
+    private $offset;
+    private $sorts = [];
 
     /**
      *
@@ -58,7 +60,12 @@ class QueryParameters
     
     public function getLimit()
     {
-        return " LIMIT {$this->limit}";
+        return $this->limit > 0 ? " LIMIT {$this->limit}" : null;
+    }
+    
+    public function getOffset()
+    {
+        return $this->offset > 0 ? " OFFSET {$this->offset}" : null;
     }
 
     public function getWhereClause()
@@ -69,6 +76,11 @@ class QueryParameters
     public function getBoundData()
     {
         return $this->boundData;
+    }
+    
+    public function getSorts()
+    {
+        return count($this->sorts) ? " ORDER BY " . implode(", ", $this->sorts) : null;
     }
 
     public function addFilter($field, $values = [])
@@ -116,5 +128,15 @@ class QueryParameters
     public function setLimit($numItems)
     {
         $this->limit = $numItems;
+    }
+    
+    public function setOffset($offset)
+    {
+        $this->offset = $offset;
+    }
+    
+    public function addSort($field, $direction = 'ASC')
+    {
+        $this->sorts[] = "$field $direction";
     }
 }

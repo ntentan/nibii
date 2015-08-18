@@ -77,7 +77,7 @@ abstract class DriverAdapter
             $this->getQueryEngine()->getSelectQuery($parameters), 
             $parameters->getBoundData()
         );
-
+        
         if ($parameters->getFirstOnly()) {
             $result = $result[0];
         }
