@@ -78,7 +78,7 @@ abstract class DriverAdapter
             $parameters->getBoundData()
         );
         
-        if ($parameters->getFirstOnly()) {
+        if ($parameters->getFirstOnly() && isset($result[0])) {
             $result = $result[0];
         }
 

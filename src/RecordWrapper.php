@@ -148,7 +148,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             'pk_assigned' => null,
             'invalid_fields' => []
         ];
+        $pkSet = $this->isPrimaryKeySet($primaryKey, $datum);
 
+        if($pkSet) {
+            $this->preUpdateCallback();
+        } else {
+            $this->preSaveCallback();
+        }
+        
         $validity = $this->validate($datum);
 
         if($validity !== true) {
@@ -159,10 +166,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
         if($this->isPrimaryKeySet($primaryKey, $datum)) {
             $this->getDataAdapter()->update($datum);
+            $this->postUpdateCallback();
         } else {
             $this->getDataAdapter()->insert($datum);
             $status['pk_assigned'] = $this->getDriver()->getLastInsertId();
+            $this->postSaveCallback($status['pk_assigned']);
         }
+        $this->postSaveCallback();
 
         return $status;
     }
@@ -280,10 +290,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $data = [];
 
-        if($this->hasMultipleData())
-        {
+        if(count($this->data) == 0) {
             $data = $this->data;
-        } else {
+        } else if($this->hasMultipleData()) {
+            $data = $this->data;
+        } else if(count($this->data) > 0) {
             $data[] = $this->data;
         }
 
@@ -389,5 +400,25 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             'HasMany' => $this->hasMany,
             'BelongsTo' => $this->belongsTo
         ];
+    }
+    
+    public function preSaveCallback()
+    {
+        
+    }
+    
+    public function postSaveCallback($id)
+    {
+        
+    }
+    
+    public function preUpdateCallback()
+    {
+        
+    }
+    
+    public function postUpdateCallback()
+    {
+        
     }
 }
