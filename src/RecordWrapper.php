@@ -96,132 +96,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return new $class();
     }
 
-    public function validate()
-    {
-        $valid = true;
-        $validator = Utils::factory($this->validator,
-            function() {
-                return new Validator($this->getDescription());
-            }
-        );
-        $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();
-
-        foreach($data as $datum) {
-            if(!$validator->validate($datum)) {
-                $valid = false;
-            }
-        }
-
-        if($valid === false) {
-            $valid = $validator->getInvalidFields();
-        }
-
-        return $valid;
-    }
-
-    private function assignValue(&$property, $value)
-    {
-        if($this->hasMultipleData()) {
-            $property = $value;
-        } else {
-            $property = $value[0];
-        }
-    }
-
-    private function isPrimaryKeySet($primaryKey, $data)
-    {
-        foreach($primaryKey as $keyField) {
-            if(!isset($data[$keyField])) {
-                break;
-            }
-            if($data[$keyField] !== '' && $data[$keyField] !== null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function saveRecord($datum, $primaryKey)
-    {
-        $status = [
-            'success' => true,
-            'pk_assigned' => null,
-            'invalid_fields' => []
-        ];
-        $pkSet = $this->isPrimaryKeySet($primaryKey, $datum);
-
-        if($pkSet) {
-            $this->preUpdateCallback();
-        } else {
-            $this->preSaveCallback();
-        }
-        
-        $validity = $this->validate($datum);
-
-        if($validity !== true) {
-            $status['invalid_fields'] = $validity;
-            $status['success'] = false;
-            return $status;
-        }
-
-        if($this->isPrimaryKeySet($primaryKey, $datum)) {
-            $this->getDataAdapter()->update($datum);
-            $this->postUpdateCallback();
-        } else {
-            $this->getDataAdapter()->insert($datum);
-            $status['pk_assigned'] = $this->getDriver()->getLastInsertId();
-            $this->postSaveCallback($status['pk_assigned']);
-        }
-        $this->postSaveCallback($status['pk_assigned']);
-
-        return $status;
-    }
-
-    public function save()
-    {
-        $invalidFields = [];
-        $data = $this->getData();
-        $this->getDataAdapter()->setModel($this);
-        $primaryKey = $this->getDescription()->getPrimaryKey();
-        $singlePrimaryKey = null;
-        $succesful = true;;
-
-        if (count($primaryKey) == 1) {
-            $singlePrimaryKey = $primaryKey[0];
-        }
-        
-        // Assign an empty array to force a validation error for empty models
-        if(empty($data)) {
-            $data = [[]];
-        }
-
-        $this->getDriver()->beginTransaction();
-
-        foreach($data as $i => $datum) {
-            $status = $this->saveRecord($datum, $primaryKey);
-            
-            if(!$status['success']) {
-                $succesful = false;
-                $invalidFields[$i] = $status['invalid_fields'];
-                $this->getDriver()->rollback();
-                continue;
-            }
-
-            if($singlePrimaryKey) {
-                $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
-            }
-        }
-        
-        if($succesful) {
-            $this->assignValue($this->data, $data);
-            $this->getDriver()->commit();
-        } else {
-            $this->assignValue($this->invalidFields, $invalidFields);
-        }
-
-        return $succesful;
-    }
-
     private static function getInstance()
     {
         $class = get_called_class();
@@ -281,8 +155,16 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         return $array;
     }
+    
+    public function save()
+    {
+        $return = $this->__call('save', [$this->hasMultipleData()]);
+        $this->data = $this->dynamicOperations->getData();
+        $this->invalidFields = $this->dynamicOperations->getInvalidFields();
+        return $return;
+    }
 
-    private function hasMultipleData()
+    public function hasMultipleData()
     {
         if(count($this->data) > 0) {
             return is_numeric(array_keys($this->data)[0]);

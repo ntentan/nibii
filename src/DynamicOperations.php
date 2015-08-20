@@ -3,12 +3,19 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\Text;
+use ntentan\utils\Utils;
 
 class DynamicOperations
 {
     private $wrapper;
+    /**
+     *
+     * @var \ntentan\nibii\DriverAdapter
+     */
     private $adapter;
     private $queryParameters;
+    private $data;
+    private $invalidFields;
 
     public function __construct($wrapper, $adapter)
     {
@@ -22,7 +29,7 @@ class DynamicOperations
             [ 
                 'fetch', 'fetchFirst', 'filter', 'query',
                 'fields', 'update', 'delete', 'cover',
-                'count', 'limit', 'offset', 'filterBy', 'sortBy'
+                'count', 'limit', 'offset', 'filterBy', 'sortBy', 'save'
             ]
         ) !== false) {
             $method = "do{$name}";
@@ -188,5 +195,141 @@ class DynamicOperations
     private function resetQueryParameters()
     {
         $this->queryParameters = null;
+    }
+    
+    public function validate()
+    {
+        $valid = true;
+        $validator = Utils::factory($this->validator,
+            function() {
+                return new Validator($this->wrapper->getDescription());
+            }
+        );
+        $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();
+
+        foreach($data as $datum) {
+            if(!$validator->validate($datum)) {
+                $valid = false;
+            }
+        }
+
+        if($valid === false) {
+            $valid = $validator->getInvalidFields();
+        }
+
+        return $valid;
+    }
+
+    private function assignValue(&$property, $value)
+    {
+        if($this->wrapper->hasMultipleData()) {
+            $property = $value;
+        } else {
+            $property = $value[0];
+        }
+    }
+
+    private function isPrimaryKeySet($primaryKey, $data)
+    {
+        foreach($primaryKey as $keyField) {
+            if(!isset($data[$keyField])) {
+                break;
+            }
+            if($data[$keyField] !== '' && $data[$keyField] !== null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function saveRecord($datum, $primaryKey)
+    {
+        $status = [
+            'success' => true,
+            'pk_assigned' => null,
+            'invalid_fields' => []
+        ];
+        $pkSet = $this->isPrimaryKeySet($primaryKey, $datum);
+
+        if($pkSet) {
+            $this->wrapper->preUpdateCallback();
+        } else {
+            $this->wrapper->preSaveCallback();
+        }
+        
+        $validity = $this->validate($datum);
+
+        if($validity !== true) {
+            $status['invalid_fields'] = $validity;
+            $status['success'] = false;
+            return $status;
+        }
+
+        if($this->isPrimaryKeySet($primaryKey, $datum)) {
+            $this->adapter->update($datum);
+            $this->wrapper->postUpdateCallback();
+        } else {
+            $this->adapter->insert($datum);
+            $status['pk_assigned'] = $this->adapter->getDriver()->getLastInsertId();
+            $this->wrapper->postSaveCallback($status['pk_assigned']);
+        }
+        $this->wrapper->postSaveCallback($status['pk_assigned']);
+
+        return $status;
+    }
+
+    private function doSave()
+    {
+        $invalidFields = [];
+        $data = $this->wrapper->getData();
+        $this->adapter->setModel($this->wrapper);
+        $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
+        $singlePrimaryKey = null;
+        $succesful = true;;
+
+        if (count($primaryKey) == 1) {
+            $singlePrimaryKey = $primaryKey[0];
+        }
+        
+        // Assign an empty array to force a validation error for empty models
+        if(empty($data)) {
+            $data = [[]];
+        }
+
+        $this->adapter->getDriver()->beginTransaction();
+
+        foreach($data as $i => $datum) {
+            $status = $this->saveRecord($datum, $primaryKey);
+            
+            if(!$status['success']) {
+                $succesful = false;
+                $invalidFields[$i] = $status['invalid_fields'];
+                $this->adapter->getDriver()->rollback();
+                continue;
+            }
+
+            if($singlePrimaryKey) {
+                $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
+            }
+        }
+        
+        if($succesful) {
+            $this->assignValue($this->data, $data);
+            $this->adapter->getDriver()->commit();
+        } else {
+            $this->assignValue($this->invalidFields, $invalidFields);
+        }
+
+        return $succesful;
+    }
+    
+    public function getData() 
+    {
+        return $this->data;
+    }
+    
+    public function getInvalidFields()
+    {
+        return $this->invalidFields;
     }
 }
