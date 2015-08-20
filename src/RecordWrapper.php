@@ -172,7 +172,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $status['pk_assigned'] = $this->getDriver()->getLastInsertId();
             $this->postSaveCallback($status['pk_assigned']);
         }
-        $this->postSaveCallback();
+        $this->postSaveCallback($status['pk_assigned']);
 
         return $status;
     }
@@ -184,17 +184,22 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->getDataAdapter()->setModel($this);
         $primaryKey = $this->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
-        $succesful = true;
+        $succesful = true;;
 
         if (count($primaryKey) == 1) {
             $singlePrimaryKey = $primaryKey[0];
+        }
+        
+        // Assign an empty array to force a validation error for empty models
+        if(empty($data)) {
+            $data = [[]];
         }
 
         $this->getDriver()->beginTransaction();
 
         foreach($data as $i => $datum) {
             $status = $this->saveRecord($datum, $primaryKey);
-
+            
             if(!$status['success']) {
                 $succesful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
@@ -206,7 +211,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
                 $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
             }
         }
-
+        
         if($succesful) {
             $this->assignValue($this->data, $data);
             $this->getDriver()->commit();
@@ -289,7 +294,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function getData()
     {
         $data = [];
-
+        
         if(count($this->data) == 0) {
             $data = $this->data;
         } else if($this->hasMultipleData()) {
