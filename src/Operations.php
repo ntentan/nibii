@@ -16,13 +16,13 @@ class Operations
     private $queryOperations;
     private $dataOperations;
     
-    const QUERY_OPERATIONS = [
+    private $queryOperationMethods = [
         'fetch', 'fetchFirst', 'filter', 'query', 'fields', 
         'cover', 'limit', 'offset', 'filterBy', 'sortBy',
         'update', 'delete', 'count'
     ];
     
-    const DATA_OPERATIONS = [
+    private $dataOperationMethods = [
         'save'
     ];
     
@@ -36,9 +36,9 @@ class Operations
 
     public function perform($name, $arguments)
     {
-        if (array_search($name, self::QUERY_OPERATIONS) !== false) {
+        if (array_search($name, $this->queryOperationMethods) !== false) {
             return call_user_func_array([$this->queryOperations, "do$name"], $arguments);
-        } else if (array_search($name, self::DATA_OPERATIONS) !== false){
+        } else if (array_search($name, $this->dataOperationMethods) !== false){
             return call_user_func_array([$this->dataOperations, "do$name"], $arguments);
         } else if($this->queryOperations->initDynamicMethod($name)) {
             return $this->queryOperations->runDynamicMethod($arguments);

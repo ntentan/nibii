@@ -35,7 +35,7 @@ class QueryOperations
     private $queryParameters;
     private $pendingMethod;
     
-    const DYNAMIC_METHOD_REGEXP = 
+    private $dynamicMethods = 
         [ "/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/" ];
@@ -181,7 +181,7 @@ class QueryOperations
     {
         $return = false;
         
-        foreach(self::DYNAMIC_METHOD_REGEXP as $regexp) {
+        foreach($this->dynamicMethods as $regexp) {
             if(preg_match($regexp, $method, $matches)) {
                 $return = true;
                 $this->pendingMethod = $matches;
