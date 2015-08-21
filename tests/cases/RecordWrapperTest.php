@@ -10,7 +10,6 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
     public function testTableResolution()
     {
         $users = new Users();
-        $datastore = getenv('NIBII_DATASTORE');
         $description = $users->getDescription();
         $this->assertInstanceOf('\ntentan\nibii\ModelDescription', $description);
     }
@@ -74,7 +73,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 
     public function testFetch()
     {
-        /*$role = Roles::fetch(10);
+        $role = Roles::fetch(10);
         $this->assertEquals(
             array(
                 'id' => 10,
@@ -136,7 +135,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertEquals(11, $role['id']);
         $this->assertArrayHasKey('id', $role);
         $this->assertArrayHasKey('name', $role);
-        $this->assertArrayNotHasKey('other', $role);*/
+        $this->assertArrayNotHasKey('other', $role);
 
         $users = Users::fetch();
         //$this->assertEquals(4, count($users));

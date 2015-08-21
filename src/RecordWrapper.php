@@ -36,7 +36,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $data = [];
     private $invalidFields;
     private $dynamicOperations;
-    private $validator;
     private $index = 0;
     private $dataSet = false;
 
@@ -102,11 +101,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return new $class();
     }
 
+    /**
+     * @method
+     * @param type $name
+     * @param type $arguments
+     * @return type
+     */
     public function __call($name, $arguments)
     {
         return Utils::factory($this->dynamicOperations,
             function() {
-                return new DynamicOperations($this, $this->getDataAdapter());
+                return new Operations($this, $this->getDataAdapter());
             }
         )->perform($name, $arguments);
     }
