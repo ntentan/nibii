@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "ntentan/atiaa": "0.*",
-        "ntentan/utils": "dev-master",
+        "ntentan/utils": "0.*",
         "ntentan/kaikai": "dev-master"
     },
     "require-dev": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4f169dd92a544d509c194641055e6764",
+    "hash": "36fdfe4f94dbf842225c0e17ec022373",
     "packages": [
         {
             "name": "ntentan/atiaa",
@@ -53,16 +53,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/kaikai.git",
-                "reference": "33e451f6e61c8789ae432cf5d9de93d44a00cb53"
+                "reference": "5d027dd154abe0e13d3ef835d9c854f7ca038d1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/33e451f6e61c8789ae432cf5d9de93d44a00cb53",
-                "reference": "33e451f6e61c8789ae432cf5d9de93d44a00cb53",
+                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/5d027dd154abe0e13d3ef835d9c854f7ca038d1d",
+                "reference": "5d027dd154abe0e13d3ef835d9c854f7ca038d1d",
                 "shasum": ""
             },
             "require": {
-                "ntentan/utils": "dev-master"
+                "ntentan/utils": "0.*"
             },
             "type": "library",
             "autoload": {
@@ -78,20 +78,20 @@
                 }
             ],
             "description": "Caching for Ntentan Framework",
-            "time": "2015-08-23 11:54:51"
+            "time": "2015-08-23 12:12:01"
         },
         {
             "name": "ntentan/utils",
-            "version": "dev-master",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "e739f8c212bbca0d35b1012652e547336c11beb9"
+                "reference": "5957a0a3caa8ce42f92f51bbdacfd62782391679"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/e739f8c212bbca0d35b1012652e547336c11beb9",
-                "reference": "e739f8c212bbca0d35b1012652e547336c11beb9",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/5957a0a3caa8ce42f92f51bbdacfd62782391679",
+                "reference": "5957a0a3caa8ce42f92f51bbdacfd62782391679",
                 "shasum": ""
             },
             "require-dev": {
@@ -114,7 +114,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2015-08-23 10:27:43"
+            "time": "2015-08-12 06:32:09"
         }
     ],
     "packages-dev": [
@@ -1132,7 +1132,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ntentan/utils": 20,
         "ntentan/kaikai": 20
     },
     "prefer-stable": false,
