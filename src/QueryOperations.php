@@ -205,5 +205,22 @@ class QueryOperations
         
         return $return;
     } 
+    
+    public function doCount()
+    {
+        return $this->adapter->count($this->getQueryParameters());
+    }   
+    
+    public function doLimit($numItems)
+    {
+        $this->getQueryParameters()->setLimit($numItems);
+        return $this->wrapper;
+    }
+    
+    public function doOffset($offset)
+    {
+        $this->getQueryParameters()->setOffset($offset);
+        return $this->wrapper;
+    }    
 }
 

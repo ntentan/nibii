@@ -46,30 +46,6 @@ class Operations
             throw new NibiiException("Method {$name} not found");
         }
     }
-    
-    private function doLimit($numItems)
-    {
-        $this->getQueryParameters()->setLimit($numItems);
-        return $this->wrapper;
-    }
-    
-    private function doOffset($offset)
-    {
-        $this->getQueryParameters()->setOffset($offset);
-        return $this->wrapper;
-    }
-    
-    private function doCount()
-    {
-        return $this->adapter->count($this->getQueryParameters());
-    }
-
-    private function doCover()
-    {
-        $parameters = $this->getQueryParameters();
-        $parameters->setEagerLoad(func_get_args());
-        return $this->wrapper;
-    }
 
     private function deleteItem($primaryKey, $data)
     {
