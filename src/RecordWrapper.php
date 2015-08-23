@@ -26,6 +26,7 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\Utils;
+use ntentan\kaikai\Cache;
 
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
@@ -68,7 +69,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function getDescription()
     {
-        return new ModelDescription($this);
+        return Cache::read(
+            (new \ReflectionClass($this))->getName() . '::desc',
+            function() 
+            {
+                return new ModelDescription($this);
+            }
+        );
     }
     
     public function count()
