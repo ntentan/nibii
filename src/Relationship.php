@@ -32,35 +32,20 @@ abstract class Relationship
     const HAS_MANY = 'HasMany';
     const MANY_HAVE_MANY = 'ManyHaveMany';
     
-    protected $foreignKey;
-    protected $localKey;
-    protected $model;
+    protected $options = [];
     protected $type;
 
-    public function setModel($model)
-    {
-        $this->model = $model;
-        return $this;
-    }
-
-    public function setForeignKey($foreignKey)
-    {
-        $this->foreignKey = $foreignKey;
-        return $this;
-    }
-
-    public function setLocalKey($localKey)
-    {
-        $this->localKey = $localKey;
-        return $this;
+    public function setOptions($options)
+    {   
+        $this->options = $options;
     }
 
     public function getModelInstance()
     {
-        $class = Nibii::getClassName($this->model, $this->type);
+        $class = Nibii::getClassName($this->options['model'], $this->type);
         return new $class();
     }
 
     abstract public function getQuery($data);
-    abstract public function setup($table, $primaryKey);
+    abstract public function setup($name, $table, $primaryKey);
 }

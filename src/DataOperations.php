@@ -41,6 +41,7 @@ class DataOperations
     private $invalidFields;
     private $queryOperations;
     private $validator;
+    private $hasMultipleData;
     
     public function __construct($wrapper, $adapter, $queryOperations)
     {
@@ -49,8 +50,9 @@ class DataOperations
         $this->queryOperations = $queryOperations;
     }
     
-    public function doSave()
+    public function doSave($hasMultipleData)
     {
+        $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
         $this->adapter->setModel($this->wrapper);
@@ -169,7 +171,7 @@ class DataOperations
     
     private function assignValue(&$property, $value)
     {
-        if($this->wrapper->hasMultipleData()) {
+        if($this->hasMultipleData) {
             $property = $value;
         } else {
             $property = $value[0];

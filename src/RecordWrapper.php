@@ -31,6 +31,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
     protected $hasMany = [];
     protected $belongsTo = [];
+    protected $manyHaveMany = [];
 
     protected $table;
     private $data = [];
@@ -95,12 +96,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return new $class();
     }
 
-    private static function getInstance()
-    {
-        $class = get_called_class();
-        return new $class();
-    }
-
     /**
      * @method
      * @param type $name
@@ -118,7 +113,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public static function __callStatic($name, $arguments)
     {
-        return call_user_func_array([self::getInstance(), $name], $arguments);
+        return call_user_func_array([self::createNew(), $name], $arguments);
     }
 
     public function __set($name, $value)
@@ -169,7 +164,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $return;
     }
 
-    public function hasMultipleData()
+    private function hasMultipleData()
     {
         if(count($this->data) > 0) {
             return is_numeric(array_keys($this->data)[0]);
@@ -290,7 +285,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         return [
             'HasMany' => $this->hasMany,
-            'BelongsTo' => $this->belongsTo
+            'BelongsTo' => $this->belongsTo,
+            'ManyHaveMany' => $this->manyHaveMany
         ];
     }
     

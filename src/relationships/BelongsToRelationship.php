@@ -36,19 +36,19 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship
     public function getQuery($data)
     {
         $query = (new QueryParameters($this->getModelInstance()))
-            ->addFilter($this->foreignKey, [$data[$this->localKey]])
+            ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]])
             ->setFirstOnly(true);
         return $query;
     }
 
-    public function setup($table, $primaryKey)
+    public function setup($name, $table, $primaryKey)
     {
         $model = $this->getModelInstance();
-        if($this->foreignKey == null) {
-            $this->foreignKey = $model->getDescription()->getPrimaryKey()[0];
+        if($this->options['foreign_key'] == null) {
+            $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }
-        if($this->localKey == null) {
-            $this->localKey = Text::singularize($model->getTable()) . '_id';
+        if($this->options['local_key'] == null) {
+            $this->options['local_key'] = Text::singularize($model->getTable()) . '_id';
         }
     }
 }

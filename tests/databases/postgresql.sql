@@ -52,11 +52,47 @@ CREATE SEQUENCE users_id_seq
 
 ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
+
+CREATE TABLE projects_users (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    project_id integer NOT NULL
+);
+
+CREATE SEQUENCE projects_users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE projects_users_id_seq OWNED BY projects_users.id;
+
+CREATE TABLE projects (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    description text
+);
+
+CREATE SEQUENCE projects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE projects_id_seq OWNED BY projects.id;
+
+
 ALTER TABLE ONLY departments ALTER COLUMN id SET DEFAULT nextval('departments_id_seq'::regclass);
 
 ALTER TABLE ONLY roles ALTER COLUMN id SET DEFAULT nextval('roles_id_seq'::regclass);
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq'::regclass);
+
+ALTER TABLE ONLY projects_users ALTER COLUMN id SET DEFAULT nextval('projects_users_id_seq'::regclass);
 
 ALTER TABLE ONLY departments
     ADD CONSTRAINT departments_pkey PRIMARY KEY (id);
@@ -73,3 +109,8 @@ ALTER TABLE ONLY users
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_role_id_fkey FOREIGN KEY (role_id) REFERENCES roles(id);
 
+ALTER TABLE ONLY projects
+    ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY projects_users
+    ADD CONSTRAINT projects_users_pkey PRIMARY KEY (id);

@@ -31,7 +31,7 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
 
     protected function getDataSet()
     {
-        return $this->createArrayDataSet([
+        return $this->createArrayDataSet(array_merge($this->getExtraArrayData(),[
             'roles' => [
                 ['id' => 10, 'name' => 'Some test user'],
                 ['id' => 11, 'name' => 'Matches'],
@@ -46,12 +46,16 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
                 ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame', 'lastname' => 'Nyarko', 'status' => 2, 'password' => 'coolthings', 'email' => 'knyarko@nibii.test'],
                 ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa', 'lastname' => 'Boateng', 'status' => 2, 'password' => 'hahaha', 'email' => 'aboateng@nibii.test']
             ]
-        ]);
+        ]));
     }
 
     protected function getSetUpOperation()
     {
         return $this->getOperations()->CLEAN_INSERT(TRUE);
     }
-
+    
+    protected function getExtraArrayData()
+    {
+        return [];
+    }
 }

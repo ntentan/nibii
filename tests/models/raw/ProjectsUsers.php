@@ -24,29 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace ntentan\nibii\relationships;
+namespace ntentan\nibii\tests\models\raw;
 
-use ntentan\nibii\QueryParameters;
-use ntentan\utils\Text;
-
-class HasManyRelationship extends \ntentan\nibii\Relationship
+/**
+ * Description of ProjectsUsers
+ *
+ * @author ekow
+ */
+class ProjectsUsers extends \ntentan\nibii\RecordWrapper
 {
-    protected $type = self::HAS_MANY;
-
-    public function getQuery($data)
-    {
-        $query = (new QueryParameters($this->getModelInstance()))
-            ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]]);
-        return $query;
-    }
-
-    public function setup($name, $table, $primaryKey)
-    {
-        if($this->options['foreign_key'] == null) {
-            $this->options['foreign_key'] = Text::singularize($table) . '_id';
-        }
-        if($this->options['local_key'] == null) {
-            $this->options['local_key'] = $primaryKey[0];
-        }
-    }
+    
 }

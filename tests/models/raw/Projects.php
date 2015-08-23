@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2015 ekow.
@@ -24,9 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace ntentan\nibii\relationships;
+namespace ntentan\nibii\tests\models\raw;
 
-class BelongsToManyRelationship extends \ntentan\nibii\Relationship
+/**
+ * Description of Projects
+ *
+ * @author ekow
+ */
+class Projects extends \ntentan\nibii\RecordWrapper
 {
-    
+    public $manyHaveMany = ['\ntentan\nibii\tests\models\raw\Users'];
 }

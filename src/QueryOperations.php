@@ -104,23 +104,37 @@ class QueryOperations
         return $this->wrapper;
     }    
     
+    private function getFilter($arguments)
+    {
+        if (count($arguments) == 2 && is_array($arguments[1])) {
+            $filter = $arguments[0];
+            $data = $arguments[1];
+        } else {
+            $filter = array_shift($arguments);
+            $data = $arguments;
+        }
+        return ['filter' => $filter, 'data' => $data];
+    }
+    
     public function doFilter()
     {
         $arguments = func_get_args();
-        if (count($arguments) == 2 && is_array($arguments[1])) {
-            $filter = $arguments[0];
-            $bind = $arguments[1];
-        } else {
-            $filter = array_shift($arguments);
-            $bind = $arguments;
-        }
+        $details = $this->getFilter($arguments);
         $filterCompiler = new FilterCompiler();
         $this->getQueryParameters()->setRawFilter(
-            $filterCompiler->compile($filter),
-            $filterCompiler->rewriteBoundData($bind)
+            $filterCompiler->compile($details['filter']),
+            $filterCompiler->rewriteBoundData($details['data'])
         );
         return $this->wrapper;
-    }    
+    }   
+    
+    public function doFilterBy()
+    {
+        $arguments = func_get_args();
+        $details = $this->getFilter($arguments);
+        $this->getQueryParameters()->addFilter($details['filter'], $details['data']);
+        return $this->wrapper;
+    }
     
     public function doUpdate($data)
     {
@@ -137,8 +151,8 @@ class QueryOperations
         $parameters = $this->getQueryParameters(false);
 
         if($parameters === null) {
-            $primaryKey = $this->getDescription()['primary_key'];
-            $parameters = $this->wrapper->getQueryParameters();
+            $primaryKey = $this->wrapper->getDescription()['primary_key'];
+            $parameters = $this->getQueryParameters();
             $data = $this->getData();
             $keys = [];
 
@@ -190,6 +204,6 @@ class QueryOperations
         }
         
         return $return;
-    }
+    } 
 }
 

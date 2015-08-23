@@ -120,5 +120,4 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         );
         $this->assertEquals($results, $role->users->toArray());
     }
-
 }

@@ -10,10 +10,12 @@ class ModelDescription
     private $autoPrimaryKey = false;
     private $relationships = [];
     private $table;
+    private $name;
 
     public function __construct($model)
     {
         $this->table = $model->getTable();
+        $this->name = Nibii::getModelName((new \ReflectionClass($model))->getName());
         $relationships = $model->getRelationships();
         $adapter = DriverAdapter::getDefaultInstance();
         $schema = $adapter->getDriver()->describeTable($this->table)[$this->table];
@@ -84,10 +86,8 @@ class ModelDescription
             $relationship = $this->getRelationshipDetails($relationship);
             $class = "\\ntentan\\nibii\\relationships\\{$type}Relationship";
             $relationshipObject = new $class();
-            $relationshipObject->setForeignKey($relationship['foreign_key']);
-            $relationshipObject->setLocalKey($relationship['local_key']);
-            $relationshipObject->setModel($relationship['model']);
-            $relationshipObject->setup($this->table, $this->primaryKey);
+            $relationshipObject->setOptions($relationship);
+            $relationshipObject->setup($this->name, $this->table, $this->primaryKey);
             $this->relationships[$relationship['name']] = $relationshipObject;
         }
     }
