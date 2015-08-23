@@ -98,6 +98,70 @@ class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         );
     }
     
+    public function testAliasedManyHaveMany()
+    {
+        $projects = \ntentan\nibii\tests\models\aliased\Projects::fetchFirstWithId(1);
+        $this->assertEquals(
+            array (
+              'id' => 1,
+              'name' => 'Kakalika',
+              'description' => 'Lorem ipsum dolor',
+              'users' => 
+              array (
+                0 => 
+                array (
+                  'id' => 1,
+                  'username' => 'james',
+                  'password' => 'somehashedstring',
+                  'role_id' => 10,
+                  'firstname' => 'James',
+                  'lastname' => 'Ainooson',
+                  'othernames' => NULL,
+                  'status' => 1,
+                  'email' => 'james@nibii.test',
+                  'phone' => NULL,
+                  'office' => NULL,
+                  'last_login_time' => NULL,
+                  'is_admin' => NULL,
+                ),
+                1 => 
+                array (
+                  'id' => 2,
+                  'username' => 'fiifi',
+                  'password' => '5f4dcc3b5aa765d61d8327deb882cf99',
+                  'role_id' => 11,
+                  'firstname' => 'Fiifi',
+                  'lastname' => 'Antobra',
+                  'othernames' => NULL,
+                  'status' => 2,
+                  'email' => 'fiifi@nibii.test',
+                  'phone' => NULL,
+                  'office' => NULL,
+                  'last_login_time' => NULL,
+                  'is_admin' => NULL,
+                ),
+                2 => 
+                array (
+                  'id' => 3,
+                  'username' => 'kwame',
+                  'password' => 'coolthings',
+                  'role_id' => 12,
+                  'firstname' => 'Kwame',
+                  'lastname' => 'Nyarko',
+                  'othernames' => NULL,
+                  'status' => 2,
+                  'email' => 'knyarko@nibii.test',
+                  'phone' => NULL,
+                  'office' => NULL,
+                  'last_login_time' => NULL,
+                  'is_admin' => NULL,
+                ),
+              ),
+            ),                
+            $projects->toArray(1)
+        );
+    }    
+    
     protected function getExtraArrayData()
     {
         return [
