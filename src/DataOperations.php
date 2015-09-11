@@ -81,7 +81,7 @@ class DataOperations
                 continue;
             }
 
-            if($singlePrimaryKey) {
+            if($singlePrimaryKey && isset($status['pk_assigned'])) {
                 $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
             }
         }
@@ -127,7 +127,6 @@ class DataOperations
             $status['pk_assigned'] = $this->adapter->getDriver()->getLastInsertId();
             $this->wrapper->postSaveCallback($status['pk_assigned']);
         }
-        $this->wrapper->postSaveCallback($status['pk_assigned']);
 
         return $status;
     }
