@@ -97,6 +97,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
     }
 
+    /**
+     * Create a new instance of this Model
+     * @return \ntentan\nibii\RecordWrapper
+     */
     public static function createNew()
     {
         $class = get_called_class();

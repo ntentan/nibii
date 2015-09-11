@@ -58,7 +58,7 @@ class DataOperations
         $this->adapter->setModel($this->wrapper);
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
-        $succesful = true;;
+        $succesful = true;
 
         if (count($primaryKey) == 1) {
             $singlePrimaryKey = $primaryKey[0];
