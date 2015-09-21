@@ -92,6 +92,8 @@ class DataOperations
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
         }
+        
+        $this->wrapper->setData($data);
 
         return $succesful;
     }   
@@ -104,6 +106,7 @@ class DataOperations
             'invalid_fields' => []
         ];
         $pkSet = $this->isPrimaryKeySet($primaryKey, $datum);
+        $this->wrapper->setData($datum);
 
         if($pkSet) {
             $this->wrapper->preUpdateCallback();
@@ -111,7 +114,8 @@ class DataOperations
             $this->wrapper->preSaveCallback();
         }
         
-        $validity = $this->validate($datum);
+        $preProcessed = $this->wrapper->getData()[0];
+        $validity = $this->validate($preProcessed);
 
         if($validity !== true) {
             $status['invalid_fields'] = $validity;
@@ -119,11 +123,11 @@ class DataOperations
             return $status;
         }
 
-        if($this->isPrimaryKeySet($primaryKey, $datum)) {
-            $this->adapter->update($datum);
+        if($pkSet) {
+            $this->adapter->update($preProcessed);
             $this->wrapper->postUpdateCallback();
         } else {
-            $this->adapter->insert($datum);
+            $this->adapter->insert($preProcessed);
             $status['pk_assigned'] = $this->adapter->getDriver()->getLastInsertId();
             $this->wrapper->postSaveCallback($status['pk_assigned']);
         }
