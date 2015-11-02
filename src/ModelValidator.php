@@ -1,8 +1,12 @@
 <?php
 namespace ntentan\nibii;
 
-class Validator extends \ntentan\utils\Validator
+class ModelValidator extends \ntentan\utils\Validator
 {
+    /**
+     * 
+     * @param ModelDescription $description
+     */
     public function __construct($description) {
         $pk = null;
         $rules = [];
@@ -15,7 +19,7 @@ class Validator extends \ntentan\utils\Validator
         foreach($fields as $name => $field) {
             $rules[$name] = $this->getFieldRules($field, $pk);
         }
-
+        
         $this->setRules($rules);
     }
 
@@ -30,4 +34,9 @@ class Validator extends \ntentan\utils\Validator
         }
         return $fieldRules;
     }
+    
+    /*protected function validateUnique()
+    {
+        
+    }*/
 }

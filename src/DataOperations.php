@@ -140,7 +140,7 @@ class DataOperations
         $valid = true;
         $validator = Utils::factory($this->validator,
             function() {
-                return new Validator($this->wrapper->getDescription());
+                return new ModelValidator($this->wrapper->getDescription());
             }
         );
         $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();

@@ -111,4 +111,9 @@ class ModelDescription
     {
         return $this->fields;
     }
+    
+    public function getUniqueKeys()
+    {
+        return $this->uniqueKeys;
+    }
 }
