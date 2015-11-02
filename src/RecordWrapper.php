@@ -187,7 +187,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function getData()
     {
         $data = [];
-        
+                
         if(count($this->data) == 0) {
             $data = $this->data;
         } else if($this->hasMultipleData()) {

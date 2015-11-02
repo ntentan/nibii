@@ -114,7 +114,9 @@ class DataOperations
             $this->wrapper->preSaveCallback();
         }
         
-        $preProcessed = $this->wrapper->getData()[0];
+        $preProcessed = $this->wrapper->getData();
+        $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
+        
         $validity = $this->validate($preProcessed);
 
         if($validity !== true) {
