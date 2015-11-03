@@ -14,8 +14,8 @@ ALTER SEQUENCE departments_id_seq OWNED BY departments.id;
 
 
 CREATE TABLE roles (
-    id integer UNIQUE NOT NULL,
-    name character varying(255) NOT NULL
+    id integer NOT NULL,
+    name character varying(255) UNIQUE NOT NULL
 );
 
 CREATE SEQUENCE roles_id_seq
