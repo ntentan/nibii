@@ -202,6 +202,13 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             $user->getInvalidFields()
         );
     }
+    
+    public function testUniqueValidation()
+    {
+        $role = Roles::createNew();
+        $role->name = 'Matches';
+        $role->save();
+    }
 
     public function testUpdate()
     {

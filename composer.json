@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "ntentan/atiaa": "0.*",
-        "ntentan/utils": "0.*",
+        "ntentan/utils": "dev-master",
         "ntentan/kaikai": "dev-master"
     },
     "require-dev": {
@@ -23,5 +23,6 @@
             "ntentan\\nibii\\": "src/",
             "ntentan\\nibii\\tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability" : "dev"
 }

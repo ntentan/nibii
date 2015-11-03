@@ -3,40 +3,55 @@ namespace ntentan\nibii;
 
 class ModelValidator extends \ntentan\utils\Validator
 {
+    private $model;
+    
     /**
      * 
-     * @param ModelDescription $description
+     * @param RecordWrapper
      */
-    public function __construct($description) {
+    public function __construct($model) {
         $pk = null;
         $rules = [];
+        $this->model = $model;
+        $description = $model->getDescription();
 
         if($description->getAutoPrimaryKey()) {
             $pk = $description->getPrimaryKey()[0];
         }
 
         $fields = $description->getFields();
-        foreach($fields as $name => $field) {
-            $rules[$name] = $this->getFieldRules($field, $pk);
+        foreach($fields as $field) {
+            $this->getFieldRules($rules, $field, $pk);
+        }
+        
+        $unique = $description->getUniqueKeys();
+        foreach($unique as $constraints) {
+            $rules['unique'][] = [$constraints['fields']];
         }
         
         $this->setRules($rules);
     }
 
-    private function getFieldRules($field, $pk)
+    private function getFieldRules(&$rules, $field, $pk)
     {
-        $fieldRules = [];
         if($field['required'] && $field['name'] != $pk && $field['default'] === null) {
-            $fieldRules[] = 'required';
+            $rules['required'][] = $field['name'];
         }
         if($field['type'] === 'integer' || $field['type'] === 'double') {
-            $fieldRules[] = 'numeric';
+            $rules['numeric'][] = $field['name'];
         }
-        return $fieldRules;
     }
     
-    /*protected function validateUnique()
+    protected function validateUnique($field, $data)
     {
-        
-    }*/
+        $test = [];
+        foreach($field['name'] as $name) {
+            $test[$name] = isset($data[$name]) ? $data[$name] : null;
+        }
+        return $this->evaluateResult(
+            $field, 
+            $this->model->createNew()->fetch($test)->count() === 0,
+            $data
+        );
+    }
 }

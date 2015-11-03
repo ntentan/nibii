@@ -195,7 +195,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         } else if(count($this->data) > 0) {
             $data[] = $this->data;
         }
-
+        
         return $data;
     }
 
