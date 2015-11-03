@@ -30,6 +30,11 @@ class ModelValidator extends \ntentan\utils\Validator
         }
         
         $this->setRules($rules);
+        $this->registerValidation(
+            'unique', 
+            '\ntentan\nibii\validations\UniqueValidation',
+            $model
+        );        
     }
 
     private function getFieldRules(&$rules, $field, $pk)
@@ -40,18 +45,5 @@ class ModelValidator extends \ntentan\utils\Validator
         if($field['type'] === 'integer' || $field['type'] === 'double') {
             $rules['numeric'][] = $field['name'];
         }
-    }
-    
-    protected function validateUnique($field, $data)
-    {
-        $test = [];
-        foreach($field['name'] as $name) {
-            $test[$name] = isset($data[$name]) ? $data[$name] : null;
-        }
-        return $this->evaluateResult(
-            $field, 
-            $this->model->createNew()->fetch($test)->count() === 0,
-            $data
-        );
     }
 }

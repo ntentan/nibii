@@ -207,7 +207,18 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
     {
         $role = Roles::createNew();
         $role->name = 'Matches';
-        $role->save();
+        $response = $role->save();
+        
+        $this->assertEquals(false, $response);
+        $this->assertEquals(
+            array (
+                'name' =>
+                array (
+                  0 => 'The value of name must be unique',
+                ),
+            ),
+            $role->getInvalidFields()
+        );        
     }
 
     public function testUpdate()
