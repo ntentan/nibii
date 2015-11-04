@@ -36,12 +36,21 @@ use ntentan\utils\Utils;
 class DataOperations
 {
     private $wrapper;
+    
+    /**
+     *
+     * @var DriverAdapter
+     */
     private $adapter;
     private $data;
     private $invalidFields;
     private $queryOperations;
     private $validator;
     private $hasMultipleData;
+    private static $transactionCounter = 0;
+    
+    const MODE_SAVE = 0;
+    const MODE_UPDATE = 1;
     
     public function __construct($wrapper, $adapter, $queryOperations)
     {
@@ -93,7 +102,7 @@ class DataOperations
             $this->assignValue($this->invalidFields, $invalidFields);
         }
         
-        $this->wrapper->setData($data);
+        $this->wrapper->setData($hasMultipleData ? $data : $data[0]);
 
         return $succesful;
     }   
@@ -117,7 +126,10 @@ class DataOperations
         $preProcessed = $this->wrapper->getData();
         $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
         
-        $validity = $this->validate($preProcessed);
+        $validity = $this->validate(
+            $preProcessed, 
+            $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
+        );
 
         if($validity !== true) {
             $status['invalid_fields'] = $validity;
@@ -137,20 +149,17 @@ class DataOperations
         return $status;
     }
     
-    private function validate()
+    private function validate($data, $mode)
     {
         $valid = true;
         $validator = Utils::factory($this->validator,
-            function() {
-                return new ModelValidator($this->wrapper);
+            function() use($mode) {
+                return new ModelValidator($this->wrapper, $mode);
             }
         );
-        $data = isset(func_get_args()[0]) ? [func_get_args()[0]] : $this->getData();
 
-        foreach($data as $datum) {
-            if(!$validator->validate($datum)) {
-                $valid = false;
-            }
+        if(!$validator->validate($data)) {
+            $valid = false;
         }
 
         if($valid === false) {

@@ -9,7 +9,7 @@ class ModelValidator extends \ntentan\utils\Validator
      * 
      * @param RecordWrapper
      */
-    public function __construct($model) {
+    public function __construct($model, $mode) {
         $pk = null;
         $rules = [];
         $this->model = $model;
@@ -33,7 +33,7 @@ class ModelValidator extends \ntentan\utils\Validator
         $this->registerValidation(
             'unique', 
             '\ntentan\nibii\validations\UniqueValidation',
-            $model
+            ['model' => $model, 'mode' => $mode]
         );        
     }
 

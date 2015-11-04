@@ -30,10 +30,12 @@ use ntentan\utils\validator\Validation;
 class UniqueValidation extends Validation
 {
     private $model;
+    private $mode;
     
-    public function __construct($model)
+    public function __construct($params)
     {
-        $this->model = $model;
+        $this->model = $params['model'];
+        $this->mode = $params['mode'];
     }
     
     public function run($field, $data)
@@ -42,9 +44,18 @@ class UniqueValidation extends Validation
         foreach($field['name'] as $name) {
             $test[$name] = isset($data[$name]) ? $data[$name] : null;
         }
+        
+        $testItem = $this->model->createNew()->fields(array_keys($data))->fetchFirst($test);
+        
+        if($this->mode === \ntentan\nibii\DataOperations::MODE_UPDATE && 
+            $testItem->toArray() == $test
+        ) {
+            return true;
+        }
+                
         return $this->evaluateResult(
             $field, 
-            $this->model->createNew()->fetch($test)->count() === 0,
+            $testItem->count() === 0,
             "The value of " . implode(', ', $field['name']) . " must be unique"
         );        
     }

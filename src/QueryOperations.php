@@ -89,16 +89,24 @@ class QueryOperations
         $this->queryParameters = null;
     }
 
-    public function doFetchFirst()
+    public function doFetchFirst($id = null)
     {
         $this->getQueryParameters()->setFirstOnly(true);
-        return $this->doFetch();
+        return $this->doFetch($id);
     }
 
     public function doFields()
     {
+        $fields = [];
         $arguments = func_get_args();
-        $this->getQueryParameters()->setFields($arguments);
+        foreach($arguments as $argument) {
+            if(is_array($argument)) {
+                $fields = array_merge($fields, $argument);
+            } else {
+                $fields[]=$argument;
+            }
+        }
+        $this->getQueryParameters()->setFields($fields);
         return $this->wrapper;
     }
 

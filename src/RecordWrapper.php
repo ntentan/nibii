@@ -40,6 +40,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $dynamicOperations;
     private $index = 0;
     private $dataSet = false;
+    private $adapter;
 
     public function __construct()
     {
@@ -59,7 +60,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     protected function getDataAdapter()
     {
-        return DriverAdapter::getDefaultInstance();
+        if(!$this->adapter)
+        {
+            $this->adapter = DriverAdapter::getDefaultInstance();
+        }
+        return $this->adapter;
     }
 
     protected function getDriver()
@@ -170,7 +175,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function save()
     {
         $return = $this->__call('save', [$this->hasMultipleData()]);
-        $this->data = $this->dynamicOperations->getData();
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
         return $return;
     }
@@ -299,6 +303,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             'BelongsTo' => $this->belongsTo,
             'ManyHaveMany' => $this->manyHaveMany
         ];
+    }
+    
+    public function usetField($field)
+    {
+        unset($this->data[$field]);
     }
     
     public function preSaveCallback()

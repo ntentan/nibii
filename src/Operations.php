@@ -2,9 +2,6 @@
 
 namespace ntentan\nibii;
 
-use ntentan\utils\Text;
-use ntentan\utils\Utils;
-
 class Operations
 {
     private $wrapper;
@@ -17,9 +14,9 @@ class Operations
     private $dataOperations;
     
     private $queryOperationMethods = [
-        'fetch', 'fetchFirst', 'filter', 'query', 'fields', 
-        'cover', 'limit', 'offset', 'filterBy', 'sortBy',
-        'update', 'delete', 'count'
+        'fetch',    'fetchFirst',   'filter',   'query',    'fields', 
+        'cover',    'limit',        'offset',   'filterBy', 'sortBy',
+        'delete',   'count'
     ];
     
     private $dataOperationMethods = [
