@@ -48,7 +48,7 @@ class UniqueValidation extends Validation
         $testItem = $this->model->createNew()->fields(array_keys($data))->fetchFirst($test);
         
         if($this->mode === \ntentan\nibii\DataOperations::MODE_UPDATE && 
-            $testItem->toArray() == $test
+            $testItem->toArray() == $data
         ) {
             return true;
         }
