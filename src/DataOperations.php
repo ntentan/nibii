@@ -44,19 +44,16 @@ class DataOperations
     private $adapter;
     private $data;
     private $invalidFields;
-    private $queryOperations;
     private $validator;
     private $hasMultipleData;
-    private static $transactionCounter = 0;
     
     const MODE_SAVE = 0;
     const MODE_UPDATE = 1;
     
-    public function __construct($wrapper, $adapter, $queryOperations)
+    public function __construct($wrapper, $adapter)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;        
-        $this->queryOperations = $queryOperations;
     }
     
     public function doSave($hasMultipleData)
@@ -172,6 +169,12 @@ class DataOperations
 
     private function isPrimaryKeySet($primaryKey, $data)
     {
+        if(is_string($primaryKey)) {
+            if(isset($data[$primaryKey]))
+            {
+                return true;
+            }
+        }
         foreach($primaryKey as $keyField) {
             if(!isset($data[$keyField])) {
                 break;
@@ -200,5 +203,14 @@ class DataOperations
     public function getInvalidFields()
     {
         return $this->invalidFields;
-    }    
+    }   
+    
+    public function isItemDeletable($primaryKey, $data)
+    {
+        if($this->isPrimaryKeySet($primaryKey, $data)) {
+            return true;
+        } else {
+            return false;
+        }
+    }     
 }

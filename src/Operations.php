@@ -27,8 +27,8 @@ class Operations
     {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
-        $this->queryOperations = new QueryOperations($wrapper, $adapter);
-        $this->dataOperations = new DataOperations($wrapper, $adapter, $this->queryOperations);
+        $this->dataOperations = new DataOperations($wrapper, $adapter);
+        $this->queryOperations = new QueryOperations($wrapper, $adapter, $this->dataOperations);
     }
 
     public function perform($name, $arguments)
@@ -41,15 +41,6 @@ class Operations
             return $this->queryOperations->runDynamicMethod($arguments);
         } else {
             throw new NibiiException("Method {$name} not found");
-        }
-    }
-
-    private function deleteItem($primaryKey, $data)
-    {
-        if($this->isPrimaryKeySet($primaryKey, $data)) {
-            return true;
-        } else {
-            return false;
         }
     }
     

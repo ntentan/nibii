@@ -31,18 +31,26 @@ use ntentan\utils\Text;
 class QueryOperations
 {
 
+    /**
+     *
+     * @var RecordWrapper
+     */
     private $wrapper;
     private $adapter;
     private $queryParameters;
     private $pendingMethod;
-    private $dynamicMethods = [ "/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/",
+    private $dynamicMethods = [ 
+        "/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/",
-        "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/"];
+        "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/"
+    ];
+    private $dataOperations;
 
-    public function __construct($wrapper, $adapter)
+    public function __construct($wrapper, $adapter, $dataOperations)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
+        $this->dataOperations = $dataOperations;
     }
 
     public function doFetch($id = null)
@@ -156,14 +164,14 @@ class QueryOperations
         $parameters = $this->getQueryParameters(false);
 
         if ($parameters === null) {
-            $primaryKey = $this->wrapper->getDescription()['primary_key'];
+            $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
             $parameters = $this->getQueryParameters();
-            $data = $this->getData();
+            $data = $this->wrapper->getData();
             $keys = [];
 
             foreach ($data as $datum) {
-                if ($this->deleteItem($primaryKey, $datum)) {
-                    $keys[] = $datum[$primaryKey];
+                if ($this->dataOperations->isItemDeletable($primaryKey, $datum)) {
+                    $keys[] = $datum[$primaryKey[0]];
                 }
             }
 
@@ -226,6 +234,5 @@ class QueryOperations
     {
         $this->getQueryParameters()->setOffset($offset);
         return $this->wrapper;
-    }
-
+    }   
 }

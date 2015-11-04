@@ -72,6 +72,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->getDataAdapter()->getDriver();
     }
 
+    /**
+     * 
+     * @return ModelDescription
+     */
     public function getDescription()
     {
         return Cache::read(
