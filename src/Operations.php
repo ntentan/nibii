@@ -16,7 +16,7 @@ class Operations
     private $queryOperationMethods = [
         'fetch',    'fetchFirst',   'filter',   'query',    'fields', 
         'cover',    'limit',        'offset',   'filterBy', 'sortBy',
-        'delete',   'count'
+        'delete',   'count',        'update'
     ];
     
     private $dataOperationMethods = [

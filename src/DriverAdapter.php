@@ -161,13 +161,13 @@ abstract class DriverAdapter
     {
         if (self::$defaultSettings['datastore']) {
             $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['datastore']) . "Adapter";
-            self::$defaultInstance = new $class();
-            self::$defaultInstance->setSettings(self::$defaultSettings);
-            self::$defaultInstance->init();
+            $instance = new $class();
+            $instance->setSettings(self::$defaultSettings);
+            $instance->init();
         } else {
             throw new \Exception("No datastore specified");
         }
-        return self::$defaultInstance;
+        return $instance;
     }
 
     /**
@@ -194,10 +194,10 @@ abstract class DriverAdapter
 
     public static function reset()
     {
-        if (self::$defaultInstance !== null) {
-            self::$defaultInstance->getDriver()->disconnect();
+        if(self::$db !== null) {
+            self::$db->disconnect();
+            self::$db = null;
         }
-        self::$defaultInstance = null;
     }
 
     public function setModel($model)
