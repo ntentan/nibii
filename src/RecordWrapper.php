@@ -212,6 +212,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->dataSet = true;
         $this->data = $data;
     }
+    
+    public function mergeData($data)
+    {
+        foreach($data as $key => $value) {
+            $this->data[$key] = $value;
+        }
+        $this->dataSet = true;
+    }
 
     public function offsetExists($offset)
     {
