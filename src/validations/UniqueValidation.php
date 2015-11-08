@@ -51,25 +51,22 @@ class UniqueValidation extends Validation
         
         if($this->mode == \ntentan\nibii\DataOperations::MODE_UPDATE) {
             $primaryKeyFields = $this->model->getDescription()->getPrimaryKey();
-            foreach($primaryKeyFields as $primaryKeyField) {
-                $test[$primaryKeyField] = isset($data[$primaryKeyField]) ? $data[$primaryKeyField] : null;
+            $keys = [];
+            foreach($primaryKeyFields as $name) {
+                $keys[$name] = $data[$name];
             }
-            $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
-            if($testItem->toArray() == $test) {
+            $testItem = $this->model->createNew()->fetchFirst($test);
+            if(!empty(array_intersect($testItem->toArray(), $keys))) {
                 return true;
-            }
-            return $this->evaluateResult(
-                $field, 
-                $testItem->count() === 1,
-                "The value of " . implode(', ', $field['name']) . " must be unique"
-            );                    
+            }                   
         } else {
             $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
-            return $this->evaluateResult(
-                $field, 
-                $testItem->count() === 0,
-                "The value of " . implode(', ', $field['name']) . " must be unique"
-            );                    
-        }        
+        }
+        
+        return $this->evaluateResult(
+            $field, 
+            $testItem->count() === 0,
+            "The value of " . implode(', ', $field['name']) . " must be unique"
+        );        
     }
 }
