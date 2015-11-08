@@ -29,6 +29,10 @@ use ntentan\utils\validator\Validation;
 
 class UniqueValidation extends Validation
 {
+    /**
+     *
+     * @var \ntentan\nibii\RecordWrapper
+     */
     private $model;
     private $mode;
     
@@ -45,18 +49,27 @@ class UniqueValidation extends Validation
             $test[$name] = isset($data[$name]) ? $data[$name] : null;
         }
         
-        $testItem = $this->model->createNew()->fields(array_keys($data))->fetchFirst($test);
-        
-        if($this->mode === \ntentan\nibii\DataOperations::MODE_UPDATE && 
-            $testItem->toArray() == $data
-        ) {
-            return true;
-        }
-                
-        return $this->evaluateResult(
-            $field, 
-            $testItem->count() === 0,
-            "The value of " . implode(', ', $field['name']) . " must be unique"
-        );        
+        if($this->mode == \ntentan\nibii\DataOperations::MODE_UPDATE) {
+            $primaryKeyFields = $this->model->getDescription()->getPrimaryKey();
+            foreach($primaryKeyFields as $primaryKeyField) {
+                $test[$primaryKeyField] = isset($data[$primaryKeyField]) ? $data[$primaryKeyField] : null;
+            }
+            $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
+            if($testItem->toArray() == $test) {
+                return true;
+            }
+            return $this->evaluateResult(
+                $field, 
+                $testItem->count() === 1,
+                "The value of " . implode(', ', $field['name']) . " must be unique"
+            );                    
+        } else {
+            $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
+            return $this->evaluateResult(
+                $field, 
+                $testItem->count() === 0,
+                "The value of " . implode(', ', $field['name']) . " must be unique"
+            );                    
+        }        
     }
 }
