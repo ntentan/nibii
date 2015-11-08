@@ -40,13 +40,13 @@ class HasManyRelationship extends \ntentan\nibii\Relationship
         return $query;
     }
 
-    public function setup($name, $table, $primaryKey)
+    public function runSetup()
     {
         if($this->options['foreign_key'] == null) {
-            $this->options['foreign_key'] = Text::singularize($table) . '_id';
+            $this->options['foreign_key'] = Text::singularize($this->setupTable) . '_id';
         }
         if($this->options['local_key'] == null) {
-            $this->options['local_key'] = $primaryKey[0];
+            $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
     }
 }

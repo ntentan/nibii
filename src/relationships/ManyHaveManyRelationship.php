@@ -54,27 +54,27 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
         return $query;
     }
 
-    public function setup($model, $table, $primaryKey)
+    public function runSetup()
     {
         if(isset($this->options['through'])) {
             $junctionModelName = $this->options['through'];
         } else {
-            $junctionModelName = Nibii::joinModels($model, $this->options['model']);
+            $junctionModelName = Nibii::joinModels($this->setupName, $this->options['model']);
         }
         $this->options['junction_model'] = $junctionModelName;
         
-        $foreignModel = $this->getModelInstance();
+        $foreignModel = Nibii::load($this->options['model']);
         if($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $foreignModel->getDescription()->getPrimaryKey()[0];
         } 
         
         if($this->options['local_key'] == null) {
-            $this->options['local_key'] = $primaryKey[0];
+            $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
         
         if(!isset($this->options['junction_local_key'])) {
             $this->options['junction_local_key'] = 
-                Text::singularize($table) . '_id';
+                Text::singularize($this->setupTable) . '_id';
         }
         
         if(!isset($this->options['junction_foreign_key'])) {

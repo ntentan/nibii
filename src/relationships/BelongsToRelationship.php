@@ -28,6 +28,7 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\QueryParameters;
 use ntentan\utils\Text;
+use ntentan\nibii\Nibii;
 
 class BelongsToRelationship extends \ntentan\nibii\Relationship
 {
@@ -41,9 +42,9 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship
         return $query;
     }
 
-    public function setup($name, $table, $primaryKey)
+    public function runSetup()
     {
-        $model = $this->getModelInstance();
+        $model = (new \ReflectionClass(Nibii::getClassName($this->options['model'], self::BELONGS_TO)))->newInstance();
         if($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }

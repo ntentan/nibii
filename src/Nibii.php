@@ -65,4 +65,9 @@ class Nibii
     {
         self::$classResolver = $classResolver;
     }
+    
+    public static function setModelJoiner($modelJoiner)
+    {
+        self::$modelJoiner = $modelJoiner;
+    }
 }

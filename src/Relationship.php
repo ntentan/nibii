@@ -34,6 +34,11 @@ abstract class Relationship
     
     protected $options = [];
     protected $type;
+    protected $setupName;
+    protected $setupTable;
+    protected $setupPrimaryKey;
+    
+    private $setup = false;
 
     public function setOptions($options)
     {   
@@ -42,10 +47,22 @@ abstract class Relationship
 
     public function getModelInstance()
     {
+        if(!$this->setup) {
+            $this->runSetup();
+            $this->setup = true;
+        }
         $class = Nibii::getClassName($this->options['model'], $this->type);
         return new $class();
     }
+    
+    public function setup($name, $table, $primaryKey) 
+    {
+        $this->setupName = $name;
+        $this->setupTable = $table;
+        $this->setupPrimaryKey = $primaryKey;
+    }
 
     abstract public function getQuery($data);
-    abstract public function setup($name, $table, $primaryKey);
+    abstract public function runSetup();
+    
 }
