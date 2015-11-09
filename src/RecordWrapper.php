@@ -47,9 +47,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         Utils::factory(
             $this->table,
             function() {
-                $class = new \ReflectionClass($this);
-                $nameParts = explode("\\", $class->getName());
-                return \ntentan\utils\Text::deCamelize(end($nameParts));
+                return Nibii::getModelTable($this);
             }
         );
     }

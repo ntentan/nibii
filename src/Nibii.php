@@ -7,6 +7,7 @@ class Nibii
     private static $classResolver;
     private static $modelResolver;
     private static $modelJoiner;
+    private static $tableResolver;
 
     public static function load($path)
     {
@@ -32,11 +33,27 @@ class Nibii
             $classA = self::getClassFileDetails($classA);
             $classB = self::getClassFileDetails($classB);
             if($classA['namespace'] != $classB['namespace']) {
-                throw new NibiiException("Cannot automatically join two classes of different namespaces. Please provide a model joiner or explicitly specify your joint model.");
+                throw new NibiiException(
+                    "Cannot automatically join two classes of different "
+                        . "namespaces. Please provide a model joiner or "
+                        . "explicitly specify your joint model."
+                );
             }
             $classes = [$classA['class'], $classB['class']];
             sort($classes);
             return "{$classA['namespace']}\\" . implode('', $classes);
+        }
+    }
+    
+    public static function getModelTable($instance)
+    {
+        if(self::$tableResolver) {
+            $tableResolver = self::$tableResolver;
+            return $tableResolver($instance);
+        } else {
+            $class = new \ReflectionClass($instance);
+            $nameParts = explode("\\", $class->getName());
+            return \ntentan\utils\Text::deCamelize(end($nameParts));            
         }
     }
 
@@ -69,5 +86,10 @@ class Nibii
     public static function setModelJoiner($modelJoiner)
     {
         self::$modelJoiner = $modelJoiner;
+    }
+    
+    public static function setTableResolver($tableResolver)
+    {
+        self::$tableResolver = $tableResolver;
     }
 }
