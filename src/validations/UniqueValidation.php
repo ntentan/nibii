@@ -56,7 +56,8 @@ class UniqueValidation extends Validation
                 $keys[$name] = $data[$name];
             }
             $testItem = $this->model->createNew()->fetchFirst($test);
-            if(!empty(array_intersect($testItem->toArray(), $keys))) {
+            $intersection = array_intersect($testItem->toArray(), $keys);
+            if(!empty($intersection)) {
                 return true;
             }                   
         } else {
