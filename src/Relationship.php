@@ -41,7 +41,7 @@ abstract class Relationship
     private $setup = false;
 
     public function setOptions($options)
-    {   
+    {
         $this->options = $options;
     }
 

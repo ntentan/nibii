@@ -100,7 +100,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if(isset($relationships[$key])) {
             return $this->fetchRelatedFields($relationships[$key]);
         } else {
-            return $this->data[$key];
+            return isset($this->data[$key]) ? $this->data[$key] : null;
         }
     }
 

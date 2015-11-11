@@ -14,6 +14,7 @@ class MysqlAdapter extends \ntentan\nibii\DriverAdapter
             case 'tinyint':
                 return 'boolean';
             case 'timestamp':
+            case 'datetime':
                 return 'datetime';
             case 'text':
                 return 'text';
