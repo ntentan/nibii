@@ -35,7 +35,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     protected $manyHaveMany = [];
 
     protected $table;
-    private $data = [];
+    private $modelData = [];
     private $invalidFields;
     private $dynamicOperations;
     private $index = 0;
@@ -100,7 +100,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if(isset($relationships[$key])) {
             return $this->fetchRelatedFields($relationships[$key]);
         } else {
-            return isset($this->data[$key]) ? $this->data[$key] : null;
+            return isset($this->modelData[$key]) ? $this->modelData[$key] : null;
         }
     }
 
@@ -137,7 +137,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __set($name, $value)
     {
         $this->dataSet = true;
-        $this->data[$name] = $value;
+        $this->modelData[$name] = $value;
     }
 
     public function __get($name)
@@ -161,7 +161,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function toArray($depth = 0)
     {
         $relationships = $this->getDescription()->getRelationships();
-        $array = $this->data;
+        $array = $this->modelData;
         if($depth > 0) {
             if($this->hasMultipleData()) {
                 foreach($array as $i => $value) {
@@ -183,8 +183,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private function hasMultipleData()
     {
-        if(count($this->data) > 0) {
-            return is_numeric(array_keys($this->data)[0]);
+        if(count($this->modelData) > 0) {
+            return is_numeric(array_keys($this->modelData)[0]);
         } else {
             return false;
         }
@@ -194,12 +194,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $data = [];
                 
-        if(count($this->data) == 0) {
-            $data = $this->data;
+        if(count($this->modelData) == 0) {
+            $data = $this->modelData;
         } else if($this->hasMultipleData()) {
-            $data = $this->data;
-        } else if(count($this->data) > 0) {
-            $data[] = $this->data;
+            $data = $this->modelData;
+        } else if(count($this->modelData) > 0) {
+            $data[] = $this->modelData;
         }
         
         return $data;
@@ -208,20 +208,20 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function setData($data)
     {
         $this->dataSet = true;
-        $this->data = $data;
+        $this->modelData = $data;
     }
     
     public function mergeData($data)
     {
         foreach($data as $key => $value) {
-            $this->data[$key] = $value;
+            $this->modelData[$key] = $value;
         }
         $this->dataSet = true;
     }
 
     public function offsetExists($offset)
     {
-        return isset($this->data[$offset]);
+        return isset($this->modelData[$offset]);
     }
 
     public function offsetGet($offset)
@@ -236,19 +236,19 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function offsetSet($offset, $value)
     {
         $this->dataSet = true;
-        $this->data[$offset] = $value;
+        $this->modelData[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
-        unset($this->data[$offset]);
+        unset($this->modelData[$offset]);
     }
 
     private function wrap($offset)
     {
-        if(isset($this->data[$offset])) {
+        if(isset($this->modelData[$offset])) {
             $newInstance = $this->createNew();
-            $newInstance->setData($this->data[$offset]);
+            $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
         } else {
             return null;
@@ -292,15 +292,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function valid()
     {
-        return isset($this->data[$this->index]);
+        return isset($this->modelData[$this->index]);
     }
 
     private function fetchRelatedFields($relationship, $index = null)
     {
         if($index === null) {
-            $data = $this->data;
+            $data = $this->modelData;
         } else {
-            $data = $this->data[$index];
+            $data = $this->modelData[$index];
         }
         $model = $relationship->getModelInstance();
         return $model->fetch($relationship->getQuery($data));
@@ -317,7 +317,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     
     public function usetField($field)
     {
-        unset($this->data[$field]);
+        unset($this->modelData[$field]);
     }
     
     public function preSaveCallback()

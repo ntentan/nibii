@@ -3,7 +3,7 @@
     "description": "ORM for ntentan",
     "type": "library",
     "require": {
-        "ntentan/atiaa": "0.*",
+        "ntentan/atiaa": "dev-master",
         "ntentan/utils": "0.*",
         "ntentan/kaikai": "dev-master"
     },
