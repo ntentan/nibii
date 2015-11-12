@@ -30,9 +30,12 @@ use ntentan\kaikai\Cache;
 
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
+    use \ntentan\utils\DependencyInjector;
+    
     protected $hasMany = [];
     protected $belongsTo = [];
     protected $manyHaveMany = [];
+    protected $behaviours = [];
 
     protected $table;
     private $modelData = [];
@@ -50,6 +53,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
                 return Nibii::getModelTable($this);
             }
         );
+        foreach($this->behaviours as $behaviour) {
+            $this->loadDependency($behaviour);
+        }
     }
 
     /**
@@ -338,5 +344,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function postUpdateCallback()
     {
         
+    }
+    
+    public function getBehaviours()
+    {
+        return $this->loadedDependencies;
     }
 }

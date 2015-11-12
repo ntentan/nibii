@@ -116,12 +116,15 @@ class DataOperations
 
         if($pkSet) {
             $this->wrapper->preUpdateCallback();
+            $preProcessed = $this->wrapper->getData();
+            $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
+            $preProcessed = $this->runBehaviours('preUpdateCallback', [$preProcessed]);
         } else {
             $this->wrapper->preSaveCallback();
-        }
-        
-        $preProcessed = $this->wrapper->getData();
-        $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
+            $preProcessed = $this->wrapper->getData();
+            $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
+            $preProcessed = $this->runBehaviours('preSaveCallback', [$preProcessed]);
+        }        
         
         $validity = $this->validate(
             $preProcessed, 
@@ -137,10 +140,12 @@ class DataOperations
         if($pkSet) {
             $this->adapter->update($preProcessed);
             $this->wrapper->postUpdateCallback();
+            $this->runBehaviours('postUpdateCallback', [$preProcessed]);
         } else {
             $this->adapter->insert($preProcessed);
             $status['pk_assigned'] = $this->adapter->getDriver()->getLastInsertId();
             $this->wrapper->postSaveCallback($status['pk_assigned']);
+            $this->runBehaviours('postUpdateCallback', [$preProcessed, $status['pk_assigned']]);
         }
 
         return $status;
@@ -213,4 +218,12 @@ class DataOperations
             return false;
         }
     }     
+    
+    private function runBehaviours($event, $args)
+    {
+        foreach($this->wrapper->getBehaviours() as $behaviour) {
+            $args[0] = call_user_func_array([$behaviour, $event], $args);
+        }
+        return $args[0];
+    }
 }
