@@ -79,6 +79,7 @@ class DataOperations
 
         foreach($data as $i => $datum) {
             $status = $this->saveRecord($datum, $primaryKey);
+            $data[$i] = $datum;
             
             if(!$status['success']) {
                 $succesful = false;
@@ -86,14 +87,10 @@ class DataOperations
                 $this->adapter->getDriver()->rollback();
                 continue;
             }
-
-            if($singlePrimaryKey && isset($status['pk_assigned'])) {
-                $data[$i][$singlePrimaryKey] = $status['pk_assigned'];
-            }
         }
         
         if($succesful) {
-            $this->assignValue($this->data, $data);
+            //$this->assignValue($this->data, $data);
             $this->adapter->getDriver()->commit();
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
@@ -104,7 +101,7 @@ class DataOperations
         return $succesful;
     }   
     
-    private function saveRecord($datum, $primaryKey)
+    private function saveRecord(&$datum, $primaryKey)
     {
         $status = [
             'success' => true,
@@ -116,18 +113,18 @@ class DataOperations
 
         if($pkSet) {
             $this->wrapper->preUpdateCallback();
-            $preProcessed = $this->wrapper->getData();
-            $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
-            $preProcessed = $this->runBehaviours('preUpdateCallback', [$preProcessed]);
+            $datum = $this->wrapper->getData();
+            $datum = reset($datum) === false ? [] : reset($datum);
+            $datum = $this->runBehaviours('preUpdateCallback', [$datum]);
         } else {
             $this->wrapper->preSaveCallback();
-            $preProcessed = $this->wrapper->getData();
-            $preProcessed = reset($preProcessed) === false ? [] : reset($preProcessed);
-            $preProcessed = $this->runBehaviours('preSaveCallback', [$preProcessed]);
+            $datum = $this->wrapper->getData();
+            $datum = reset($datum) === false ? [] : reset($datum);
+            $datum = $this->runBehaviours('preSaveCallback', [$datum]);
         }        
         
         $validity = $this->validate(
-            $preProcessed, 
+            $datum, 
             $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
         );
 
@@ -136,18 +133,17 @@ class DataOperations
             $status['success'] = false;
             return $status;
         }
-        
-        $this->wrapper->setData($preProcessed);
 
         if($pkSet) {
-            $this->adapter->update($preProcessed);
+            $this->adapter->update($datum);
             $this->wrapper->postUpdateCallback();
-            $this->runBehaviours('postUpdateCallback', [$preProcessed]);
+            $this->runBehaviours('postUpdateCallback', [$datum]);
         } else {
-            $this->adapter->insert($preProcessed);
-            $status['pk_assigned'] = $this->adapter->getDriver()->getLastInsertId();
-            $this->wrapper->postSaveCallback($status['pk_assigned']);
-            $this->runBehaviours('postUpdateCallback', [$preProcessed, $status['pk_assigned']]);
+            $this->adapter->insert($datum);
+            $keyValue = $this->adapter->getDriver()->getLastInsertId();
+            $this->wrapper->{$primaryKey[0]} = $keyValue;
+            $this->wrapper->postSaveCallback($keyValue);
+            $this->runBehaviours('postSaveCallback', [$datum, $keyValue]);
         }
 
         return $status;
