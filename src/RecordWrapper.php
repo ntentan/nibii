@@ -54,7 +54,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             }
         );
         foreach($this->behaviours as $behaviour) {
-            $this->loadDependency($behaviour);
+            $behaviourInstance = $this->loadDependency($behaviour);
+            $behaviourInstance->setModel($this);
         }
     }
 

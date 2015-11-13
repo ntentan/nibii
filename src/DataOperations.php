@@ -136,6 +136,8 @@ class DataOperations
             $status['success'] = false;
             return $status;
         }
+        
+        $this->wrapper->setData($preProcessed);
 
         if($pkSet) {
             $this->adapter->update($preProcessed);
