@@ -147,6 +147,9 @@ class DataOperations
             $status['success'] = false;
             return $status;
         }
+        
+        // Assign the data to the wrapper again
+        $this->wrapper->setData($record);
 
         // Update or save the data and run post callbacks
         if($pkSet) {
