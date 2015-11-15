@@ -4,20 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5a18563eb1273056d2b28e179e092e08",
+    "hash": "36fdfe4f94dbf842225c0e17ec022373",
+    "content-hash": "e0ceebb8cf2c78a66b6a7d47d1d64fa6",
     "packages": [
         {
             "name": "ntentan/atiaa",
-            "version": "dev-master",
+            "version": "v0.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "2d64df8ee8d29af7fd7f614a694ed259544a6e46"
+                "reference": "5dd4ba0e3ce764cd09f811a49e1977dd9c6a4914"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/2d64df8ee8d29af7fd7f614a694ed259544a6e46",
-                "reference": "2d64df8ee8d29af7fd7f614a694ed259544a6e46",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/5dd4ba0e3ce764cd09f811a49e1977dd9c6a4914",
+                "reference": "5dd4ba0e3ce764cd09f811a49e1977dd9c6a4914",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +46,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2015-11-05 17:02:04"
+            "time": "2015-11-07 09:32:21"
         },
         {
             "name": "ntentan/kaikai",
@@ -82,25 +83,27 @@
         },
         {
             "name": "ntentan/utils",
-            "version": "v0.2.2",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "6165014d7e77cf71b857441fd058733c4caaf256"
+                "reference": "e58264479657f0faa86673c4bcc84e7843cf346a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/6165014d7e77cf71b857441fd058733c4caaf256",
-                "reference": "6165014d7e77cf71b857441fd058733c4caaf256",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/e58264479657f0faa86673c4bcc84e7843cf346a",
+                "reference": "e58264479657f0faa86673c4bcc84e7843cf346a",
                 "shasum": ""
             },
             "require-dev": {
-                "phpunit/phpunit": "4.*"
+                "mikey179/vfsstream": "~1.0",
+                "phpunit/phpunit": "~4.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "ntentan\\utils\\": "src/"
+                    "ntentan\\utils\\": "src/",
+                    "ntentan\\utils\\tests\\": "tests/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -114,7 +117,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2015-11-03 18:07:50"
+            "time": "2015-11-15 00:43:43"
         }
     ],
     "packages-dev": [
@@ -582,16 +585,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.16",
+            "version": "4.8.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "625f8c345606ed0f3a141dfb88f4116f0e22978e"
+                "reference": "fa33d4ad96481b91df343d83e8c8aabed6b1dfd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/625f8c345606ed0f3a141dfb88f4116f0e22978e",
-                "reference": "625f8c345606ed0f3a141dfb88f4116f0e22978e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fa33d4ad96481b91df343d83e8c8aabed6b1dfd3",
+                "reference": "fa33d4ad96481b91df343d83e8c8aabed6b1dfd3",
                 "shasum": ""
             },
             "require": {
@@ -650,7 +653,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-23 06:48:33"
+            "time": "2015-11-11 11:32:49"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1129,7 +1132,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ntentan/atiaa": 20,
         "ntentan/kaikai": 20
     },
     "prefer-stable": false,
