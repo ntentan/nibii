@@ -162,7 +162,7 @@ class DataOperations
         }
         
         // Reset the data so it contains any modifications made by callbacks
-        $record = reset($this->wrapper->getData());
+        $record = $this->wrapper->getData()[0];
         return $status;
     }
     
