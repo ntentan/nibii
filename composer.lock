@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "36fdfe4f94dbf842225c0e17ec022373",
-    "content-hash": "e0ceebb8cf2c78a66b6a7d47d1d64fa6",
+    "hash": "e8ce954923b1c54c227614479a448d4a",
+    "content-hash": "62f507717c4409b3d8a904fbfbde741d",
     "packages": [
         {
             "name": "ntentan/atiaa",
@@ -50,16 +50,16 @@
         },
         {
             "name": "ntentan/kaikai",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/kaikai.git",
-                "reference": "1d1bea43db45c691b472c7fee5709c9b3ea1698f"
+                "reference": "3c01521869b59367e3b19c727a35f6a18eb50312"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/1d1bea43db45c691b472c7fee5709c9b3ea1698f",
-                "reference": "1d1bea43db45c691b472c7fee5709c9b3ea1698f",
+                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/3c01521869b59367e3b19c727a35f6a18eb50312",
+                "reference": "3c01521869b59367e3b19c727a35f6a18eb50312",
                 "shasum": ""
             },
             "require": {
@@ -79,7 +79,7 @@
                 }
             ],
             "description": "Caching for Ntentan Framework",
-            "time": "2015-11-03 18:18:12"
+            "time": "2015-11-15 02:34:03"
         },
         {
             "name": "ntentan/utils",
@@ -1131,9 +1131,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ntentan/kaikai": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
