@@ -101,51 +101,71 @@ class DataOperations
         return $succesful;
     }   
     
-    private function saveRecord(&$datum, $primaryKey)
+    /**
+     * Save an individual record.
+     * 
+     * @param array $record The record to be saved
+     * @param type $primaryKey The primary keys of the record
+     * @return boolean
+     */
+    private function saveRecord(&$record, $primaryKey)
     {
         $status = [
             'success' => true,
             'pk_assigned' => null,
             'invalid_fields' => []
         ];
-        $pkSet = $this->isPrimaryKeySet($primaryKey, $datum);
-        $this->wrapper->setData($datum);
+        
+        // Determine if the primary key of the record is set.
+        $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
+        
+        // Reset the data in the model to contain only the data to be saved
+        $this->wrapper->setData($record);
 
+        // Run preUpdate or preSave callbacks on models and behaviours
         if($pkSet) {
             $this->wrapper->preUpdateCallback();
-            $datum = $this->wrapper->getData();
-            $datum = reset($datum) === false ? [] : reset($datum);
-            $datum = $this->runBehaviours('preUpdateCallback', [$datum]);
+            $record = $this->wrapper->getData();
+            $record = reset($record) === false ? [] : reset($record);
+            $record = $this->runBehaviours('preUpdateCallback', [$record]);
         } else {
             $this->wrapper->preSaveCallback();
-            $datum = $this->wrapper->getData();
-            $datum = reset($datum) === false ? [] : reset($datum);
-            $datum = $this->runBehaviours('preSaveCallback', [$datum]);
+            $record = $this->wrapper->getData();
+            $record = reset($record) === false ? [] : reset($record);
+            $record = $this->runBehaviours('preSaveCallback', [$record]);
         }        
         
+        // Validat the data
         $validity = $this->validate(
-            $datum, 
+            $record, 
             $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
         );
 
+        // Exit if data is invalid
         if($validity !== true) {
             $status['invalid_fields'] = $validity;
             $status['success'] = false;
             return $status;
         }
+        
+        // Assign the data to the wrapper again
+        $this->wrapper->setData($record);
 
+        // Update or save the data and run post callbacks
         if($pkSet) {
-            $this->adapter->update($datum);
+            $this->adapter->update($record);
             $this->wrapper->postUpdateCallback();
-            $this->runBehaviours('postUpdateCallback', [$datum]);
+            $this->runBehaviours('postUpdateCallback', [$record]);
         } else {
-            $this->adapter->insert($datum);
+            $this->adapter->insert($record);
             $keyValue = $this->adapter->getDriver()->getLastInsertId();
             $this->wrapper->{$primaryKey[0]} = $keyValue;
             $this->wrapper->postSaveCallback($keyValue);
-            $this->runBehaviours('postSaveCallback', [$datum, $keyValue]);
+            $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
         }
-
+        
+        // Reset the data so it contains any modifications made by callbacks
+        $record = $this->wrapper->getData()[0];
         return $status;
     }
     

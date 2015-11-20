@@ -46,6 +46,12 @@ class QueryOperations
     ];
     private $dataOperations;
 
+    /**
+     * 
+     * @param RecordWrapper $wrapper
+     * @param DataAdapter $adapter
+     * @param DataOperations $dataOperations
+     */
     public function __construct($wrapper, $adapter, $dataOperations)
     {
         $this->wrapper = $wrapper;
