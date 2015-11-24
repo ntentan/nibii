@@ -91,8 +91,12 @@ class QueryParameters
 
         if ($numValues === 1) {
             $key = "filter_{$startIndex}";
-            $this->whereClause .= "{$field} = :$key";
-            $this->boundData[$key] = reset($values);
+            if($values[0] === null) {
+               $this->whereClause .= "{$field} is NULL";
+            } else {
+               $this->whereClause .= "{$field} = :$key";
+               $this->boundData[$key] = reset($values);
+            }
         } else {
             $this->whereClause .= "{$field} IN (";
             $comma = '';
