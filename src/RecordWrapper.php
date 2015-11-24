@@ -310,7 +310,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $data = $this->modelData[$index];
         }
         $model = $relationship->getModelInstance();
-        return $model->fetch($relationship->getQuery($data));
+        if(empty($data)) {
+            return $model;
+        } else {
+            return $model->fetch($relationship->getQuery($data));
+        }
     }
 
     public function getRelationships()

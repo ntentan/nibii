@@ -85,7 +85,7 @@ class DataOperations
                 $succesful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
                 $this->adapter->getDriver()->rollback();
-                continue;
+                break;
             }
         }
         

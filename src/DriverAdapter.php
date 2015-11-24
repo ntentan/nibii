@@ -17,7 +17,6 @@ abstract class DriverAdapter
     protected $settings;
     protected $data;
     private static $defaultSettings;
-    private static $defaultInstance = null;
     private $insertQuery;
     private $updateQuery;
     private $modelInstance;
@@ -54,8 +53,6 @@ abstract class DriverAdapter
     public function init()
     {
         if(self::$db == null) {
-            $this->settings['driver'] = $this->settings['datastore'];
-            unset($this->settings['datastore']);
             self::$db = \ntentan\atiaa\Driver::getConnection($this->settings);
             self::$db->setCleanDefaults(true);
 
@@ -159,8 +156,8 @@ abstract class DriverAdapter
 
     public static function getDefaultInstance()
     {
-        if (self::$defaultSettings['datastore']) {
-            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['datastore']) . "Adapter";
+        if (self::$defaultSettings['driver']) {
+            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['driver']) . "Adapter";
             $instance = new $class();
             $instance->setSettings(self::$defaultSettings);
             $instance->init();
