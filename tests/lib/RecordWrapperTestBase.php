@@ -8,7 +8,7 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
         parent::setUp();
         \ntentan\nibii\DriverAdapter::setDefaultSettings(
             [
-                'datastore' => getenv('NIBII_DATASTORE'),
+                'driver' => getenv('NIBII_DATASTORE'),
                 'host' => getenv('NIBII_HOST'),
                 'user' => getenv('NIBII_USER'),
                 'password' => getenv('NIBII_PASSWORD'),
