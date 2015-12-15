@@ -157,16 +157,16 @@ class QueryOperations
 
     public function doUpdate($data)
     {
-        $this->adapter->getDriver()->beginTransaction();
+        DriverAdapter::getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
-        $this->adapter->getDriver()->commit();
+        DriverAdapter::getDriver()->commit();
         $this->resetQueryParameters();
     }
 
     public function doDelete()
     {
-        $this->adapter->getDriver()->beginTransaction();
+        DriverAdapter::getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters(false);
 
         if ($parameters === null) {
@@ -187,7 +187,7 @@ class QueryOperations
             $this->adapter->delete($parameters);
         }
 
-        $this->adapter->getDriver()->commit();
+        DriverAdapter::getDriver()->commit();
         $this->resetQueryParameters();
     }
 

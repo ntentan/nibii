@@ -14,7 +14,6 @@ use ntentan\utils\Text;
 abstract class DriverAdapter
 {
 
-    protected $settings;
     protected $data;
     private static $defaultSettings;
     private $insertQuery;
@@ -27,11 +26,6 @@ abstract class DriverAdapter
      */
     private static $db;
     protected $queryEngine;
-
-    public function setSettings($settings)
-    {
-        $this->settings = $settings;
-    }
 
     public function setData($data)
     {
@@ -46,14 +40,11 @@ abstract class DriverAdapter
      * @return string The generic datatype for use in nibii.
      */
     abstract public function mapDataTypes($nativeType);
-
-    /**
-     * 
-     */
-    public function init()
+  
+    public static function getDriver()
     {
         if(self::$db == null) {
-            self::$db = \ntentan\atiaa\Driver::getConnection($this->settings);
+            self::$db = \ntentan\atiaa\Driver::getConnection(self::$defaultSettings);
             self::$db->setCleanDefaults(true);
 
             try {
@@ -62,6 +53,7 @@ abstract class DriverAdapter
                 // Just do nothing for drivers which do not allow turning off autocommit
             }
         }
+        return self::$db;
     }
 
     /**
@@ -72,7 +64,7 @@ abstract class DriverAdapter
      */
     public function select($parameters)
     {
-        $result = self::$db->query(
+        $result = self::getDriver()->query(
             $this->getQueryEngine()->getSelectQuery($parameters), 
             $parameters->getBoundData()
         );
@@ -86,7 +78,7 @@ abstract class DriverAdapter
     
     public function count($parameters)
     {
-        $result = self::$db->query(
+        $result = self::getDriver()->query(
             $this->getQueryEngine()->getCountQuery($parameters),
             $parameters->getBoundData()
         );
@@ -110,7 +102,7 @@ abstract class DriverAdapter
         if($this->insertQuery === null) {
             $this->initInsert();
         }
-        return self::$db->query($this->insertQuery, $record);
+        return self::getDriver()->query($this->insertQuery, $record);
     }
 
     public function update($record)
@@ -118,12 +110,12 @@ abstract class DriverAdapter
         if($this->updateQuery === null) {
             $this->initUpdate();
         }
-        return self::$db->query($this->updateQuery, $record);
+        return self::getDriver()->query($this->updateQuery, $record);
     }
 
     public function bulkUpdate($data, $parameters)
     {
-        return self::$db->query(
+        return self::getDriver()->query(
             $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters),
             array_merge($data, $parameters->getBoundData())
         );
@@ -131,7 +123,7 @@ abstract class DriverAdapter
 
     public function delete($parameters)
     {
-        return self::$db->query(
+        return self::getDriver()->query(
             $this->getQueryEngine()->getDeleteQuery($parameters),
             $parameters->getBoundData()
         );
@@ -140,7 +132,7 @@ abstract class DriverAdapter
     public function describe($model, $relationships)
     {
         return new ModelDescription(
-            $this->getDriver()->describeTable($table)[$table],
+            self::getDriver()->describeTable($table)[$table],
             $relationships, function($type) { return $this->mapDataTypes($type); }
         );
     }
@@ -159,8 +151,6 @@ abstract class DriverAdapter
         if (self::$defaultSettings['driver']) {
             $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['driver']) . "Adapter";
             $instance = new $class();
-            $instance->setSettings(self::$defaultSettings);
-            $instance->init();
         } else {
             throw new \Exception("No datastore specified");
         }
@@ -175,18 +165,9 @@ abstract class DriverAdapter
     {
         if ($this->queryEngine === null) {
             $this->queryEngine = new QueryEngine();
-            $this->queryEngine->setDriver(self::$db);
+            $this->queryEngine->setDriver(self::getDriver());
         }
         return $this->queryEngine;
-    }
-
-    /**
-     *
-     * @return \ntentan\atiaa\Driver
-     */
-    public function getDriver()
-    {
-        return self::$db;
     }
 
     public static function reset()

@@ -75,7 +75,7 @@ class DataOperations
             $data = [[]];
         }
 
-        $this->adapter->getDriver()->beginTransaction();
+        DriverAdapter::getDriver()->beginTransaction();
 
         foreach($data as $i => $datum) {
             $status = $this->saveRecord($datum, $primaryKey);
@@ -84,14 +84,13 @@ class DataOperations
             if(!$status['success']) {
                 $succesful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
-                $this->adapter->getDriver()->rollback();
+                DriverAdapter::getDriver()->rollback();
                 break;
             }
         }
         
         if($succesful) {
-            //$this->assignValue($this->data, $data);
-            $this->adapter->getDriver()->commit();
+            DriverAdapter::getDriver()->commit();
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
         }
@@ -158,7 +157,7 @@ class DataOperations
             $this->runBehaviours('postUpdateCallback', [$record]);
         } else {
             $this->adapter->insert($record);
-            $keyValue = $this->adapter->getDriver()->getLastInsertId();
+            $keyValue = DriverAdapter::getDriver()->getLastInsertId();
             $this->wrapper->{$primaryKey[0]} = $keyValue;
             $this->wrapper->postSaveCallback($keyValue);
             $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
