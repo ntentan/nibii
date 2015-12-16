@@ -2,6 +2,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\atiaa\Db;
+
 class ModelDescription
 {
     private $fields = [];
@@ -18,7 +20,7 @@ class ModelDescription
         $this->name = Nibii::getModelName((new \ReflectionClass($model))->getName());
         $relationships = $model->getRelationships();
         $adapter = DriverAdapter::getDefaultInstance();
-        $schema = DriverAdapter::getDriver()->describeTable($this->table)[$this->table];
+        $schema = Db::getDriver()->describeTable($this->table)[$this->table];
         $this->autoPrimaryKey = $schema['auto_increment'];
 
         foreach ($schema['columns'] as $field => $details) {

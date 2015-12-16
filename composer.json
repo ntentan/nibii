@@ -3,11 +3,12 @@
     "description": "ORM for ntentan",
     "type": "library",
     "require": {
-        "ntentan/atiaa": "0.*",
+        "ntentan/atiaa": "dev-master",
         "ntentan/utils": "0.*",
         "ntentan/kaikai": "0.*"
     },
     "require-dev": {
+        "symfony/yaml": "^2.0",
         "phpunit/phpunit": "4.*",
         "phpunit/dbunit" : "1.*"
     },

@@ -27,6 +27,7 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\Text;
+use ntentan\atiaa\Db;
 
 class QueryOperations
 {
@@ -157,16 +158,16 @@ class QueryOperations
 
     public function doUpdate($data)
     {
-        DriverAdapter::getDriver()->beginTransaction();
+        Db::getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
-        DriverAdapter::getDriver()->commit();
+        Db::getDriver()->commit();
         $this->resetQueryParameters();
     }
 
     public function doDelete()
     {
-        DriverAdapter::getDriver()->beginTransaction();
+        Db::getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters(false);
 
         if ($parameters === null) {
@@ -187,7 +188,7 @@ class QueryOperations
             $this->adapter->delete($parameters);
         }
 
-        DriverAdapter::getDriver()->commit();
+        Db::getDriver()->commit();
         $this->resetQueryParameters();
     }
 

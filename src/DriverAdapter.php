@@ -3,6 +3,7 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\Text;
+use ntentan\atiaa\Db;
 
 /**
  * A DriverAdaptr is a generic database adapter.
@@ -15,16 +16,9 @@ abstract class DriverAdapter
 {
 
     protected $data;
-    private static $defaultSettings;
     private $insertQuery;
     private $updateQuery;
     private $modelInstance;
-
-    /**
-     * An instance of an atiaa driver.
-     * @var \ntentan\atiaa\Driver
-     */
-    private static $db;
     protected $queryEngine;
 
     public function setData($data)
@@ -40,21 +34,6 @@ abstract class DriverAdapter
      * @return string The generic datatype for use in nibii.
      */
     abstract public function mapDataTypes($nativeType);
-  
-    public static function getDriver()
-    {
-        if(self::$db == null) {
-            self::$db = \ntentan\atiaa\Driver::getConnection(self::$defaultSettings);
-            self::$db->setCleanDefaults(true);
-
-            try {
-                self::$db->getPDO()->setAttribute(\PDO::ATTR_AUTOCOMMIT, false);
-            } catch (\PDOException $e) {
-                // Just do nothing for drivers which do not allow turning off autocommit
-            }
-        }
-        return self::$db;
-    }
 
     /**
      * 
@@ -64,7 +43,7 @@ abstract class DriverAdapter
      */
     public function select($parameters)
     {
-        $result = self::getDriver()->query(
+        $result = Db::getDriver()->query(
             $this->getQueryEngine()->getSelectQuery($parameters), 
             $parameters->getBoundData()
         );
@@ -78,7 +57,7 @@ abstract class DriverAdapter
     
     public function count($parameters)
     {
-        $result = self::getDriver()->query(
+        $result = Db::getDriver()->query(
             $this->getQueryEngine()->getCountQuery($parameters),
             $parameters->getBoundData()
         );
@@ -102,7 +81,7 @@ abstract class DriverAdapter
         if($this->insertQuery === null) {
             $this->initInsert();
         }
-        return self::getDriver()->query($this->insertQuery, $record);
+        return Db::getDriver()->query($this->insertQuery, $record);
     }
 
     public function update($record)
@@ -110,12 +89,12 @@ abstract class DriverAdapter
         if($this->updateQuery === null) {
             $this->initUpdate();
         }
-        return self::getDriver()->query($this->updateQuery, $record);
+        return Db::getDriver()->query($this->updateQuery, $record);
     }
 
     public function bulkUpdate($data, $parameters)
     {
-        return self::getDriver()->query(
+        return Db::getDriver()->query(
             $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters),
             array_merge($data, $parameters->getBoundData())
         );
@@ -123,7 +102,7 @@ abstract class DriverAdapter
 
     public function delete($parameters)
     {
-        return self::getDriver()->query(
+        return Db::getDriver()->query(
             $this->getQueryEngine()->getDeleteQuery($parameters),
             $parameters->getBoundData()
         );
@@ -132,24 +111,16 @@ abstract class DriverAdapter
     public function describe($model, $relationships)
     {
         return new ModelDescription(
-            self::getDriver()->describeTable($table)[$table],
+            Db::getDriver()->describeTable($table)[$table],
             $relationships, function($type) { return $this->mapDataTypes($type); }
         );
     }
 
-    /**
-     * Set the settings used for creating default datastores.
-     * @param array $settings
-     */
-    public static function setDefaultSettings($settings)
-    {
-        self::$defaultSettings = $settings;
-    }
-
     public static function getDefaultInstance()
     {
-        if (self::$defaultSettings['driver']) {
-            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize(self::$defaultSettings['driver']) . "Adapter";
+        $driver = Db::getDefaultSettings()['driver'];
+        if ($driver) {
+            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize($driver) . "Adapter";
             $instance = new $class();
         } else {
             throw new \Exception("No datastore specified");
@@ -165,17 +136,9 @@ abstract class DriverAdapter
     {
         if ($this->queryEngine === null) {
             $this->queryEngine = new QueryEngine();
-            $this->queryEngine->setDriver(self::getDriver());
+            $this->queryEngine->setDriver(Db::getDriver());
         }
         return $this->queryEngine;
-    }
-
-    public static function reset()
-    {
-        if(self::$db !== null) {
-            self::$db->disconnect();
-            self::$db = null;
-        }
     }
 
     public function setModel($model)

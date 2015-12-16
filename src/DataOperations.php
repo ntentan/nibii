@@ -27,6 +27,7 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\Utils;
+use ntentan\atiaa\Db;
 
 /**
  * Description of DataOperations
@@ -75,7 +76,7 @@ class DataOperations
             $data = [[]];
         }
 
-        DriverAdapter::getDriver()->beginTransaction();
+        Db::getDriver()->beginTransaction();
 
         foreach($data as $i => $datum) {
             $status = $this->saveRecord($datum, $primaryKey);
@@ -84,13 +85,13 @@ class DataOperations
             if(!$status['success']) {
                 $succesful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
-                DriverAdapter::getDriver()->rollback();
+                Db::getDriver()->rollback();
                 break;
             }
         }
         
         if($succesful) {
-            DriverAdapter::getDriver()->commit();
+            Db::getDriver()->commit();
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
         }
@@ -157,7 +158,7 @@ class DataOperations
             $this->runBehaviours('postUpdateCallback', [$record]);
         } else {
             $this->adapter->insert($record);
-            $keyValue = DriverAdapter::getDriver()->getLastInsertId();
+            $keyValue = Db::getDriver()->getLastInsertId();
             $this->wrapper->{$primaryKey[0]} = $keyValue;
             $this->wrapper->postSaveCallback($keyValue);
             $this->runBehaviours('postSaveCallback', [$record, $keyValue]);

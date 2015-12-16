@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e8ce954923b1c54c227614479a448d4a",
-    "content-hash": "62f507717c4409b3d8a904fbfbde741d",
+    "hash": "397a6980830590a1c99a8fb1a9031ae8",
+    "content-hash": "edba39310a746e17800f4cb475577967",
     "packages": [
         {
             "name": "ntentan/atiaa",
-            "version": "v0.1.7",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "5dd4ba0e3ce764cd09f811a49e1977dd9c6a4914"
+                "reference": "f2dd2ea5b573722cc8f48f5a41aba437a9315169"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/5dd4ba0e3ce764cd09f811a49e1977dd9c6a4914",
-                "reference": "5dd4ba0e3ce764cd09f811a49e1977dd9c6a4914",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/f2dd2ea5b573722cc8f48f5a41aba437a9315169",
+                "reference": "f2dd2ea5b573722cc8f48f5a41aba437a9315169",
                 "shasum": ""
             },
             "require": {
@@ -26,7 +26,8 @@
             },
             "require-dev": {
                 "phpunit/dbunit": "1.*",
-                "phpunit/phpunit": "4.*"
+                "phpunit/phpunit": "4.*",
+                "symfony/yaml": "^2.0"
             },
             "type": "library",
             "autoload": {
@@ -46,7 +47,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2015-11-07 09:32:21"
+            "time": "2015-12-16 12:41:15"
         },
         {
             "name": "ntentan/kaikai",
@@ -1084,25 +1085,25 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "177a015cb0e19ff4a49e0e2e2c5fc1c1bee07002"
+                "reference": "f79824187de95064a2f5038904c4d7f0227fedb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/177a015cb0e19ff4a49e0e2e2c5fc1c1bee07002",
-                "reference": "177a015cb0e19ff4a49e0e2e2c5fc1c1bee07002",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/f79824187de95064a2f5038904c4d7f0227fedb5",
+                "reference": "f79824187de95064a2f5038904c4d7f0227fedb5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.9"
+                "php": ">=5.3.9"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
@@ -1129,12 +1130,14 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-11-30 12:36:17"
+            "time": "2015-11-30 12:35:10"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "ntentan/atiaa": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -6,7 +6,7 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
     public function setUp()
     {
         parent::setUp();
-        \ntentan\nibii\DriverAdapter::setDefaultSettings(
+        \ntentan\atiaa\Db::setDefaultSettings(
             [
                 'driver' => getenv('NIBII_DATASTORE'),
                 'host' => getenv('NIBII_HOST'),
@@ -20,7 +20,7 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
 
     public function tearDown()
     {
-        \ntentan\nibii\DriverAdapter::reset();
+        \ntentan\atiaa\Db::reset();
     }
 
     protected function getConnection()
