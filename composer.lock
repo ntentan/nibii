@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "397a6980830590a1c99a8fb1a9031ae8",
-    "content-hash": "edba39310a746e17800f4cb475577967",
+    "hash": "d357997257995177953d016f4a07487c",
+    "content-hash": "5bf1c00636832d4e253b7b4a41213ba9",
     "packages": [
         {
             "name": "ntentan/atiaa",
-            "version": "dev-master",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "f2dd2ea5b573722cc8f48f5a41aba437a9315169"
+                "reference": "a32d5e0f1012362c6b24c3e73f895af5a2779060"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/f2dd2ea5b573722cc8f48f5a41aba437a9315169",
-                "reference": "f2dd2ea5b573722cc8f48f5a41aba437a9315169",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/a32d5e0f1012362c6b24c3e73f895af5a2779060",
+                "reference": "a32d5e0f1012362c6b24c3e73f895af5a2779060",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2015-12-16 12:41:15"
+            "time": "2015-12-16 13:51:39"
         },
         {
             "name": "ntentan/kaikai",
@@ -1135,9 +1135,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ntentan/atiaa": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
