@@ -36,7 +36,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     protected $belongsTo = [];
     protected $manyHaveMany = [];
     protected $behaviours = [];
-
     protected $table;
     private $modelData = [];
     private $invalidFields;
@@ -139,12 +138,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __set($name, $value)
     {
         $this->dataSet = true;
-        $this->modelData[$name] = $value;
+        $this->modelData[\ntentan\utils\Text::deCamelize($name)] = $value;
     }
 
     public function __get($name)
     {
-        return $this->retrieveItem($name);
+        return $this->retrieveItem(\ntentan\utils\Text::deCamelize($name));
     }
 
     public function getTable()
@@ -181,6 +180,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $return = $this->__call('save', [$this->hasMultipleData()]);
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
         return $return;
+    }
+    
+    public function isValid()
+    {
+        return $this->__call('isValid', []);
     }
 
     private function hasMultipleData()
