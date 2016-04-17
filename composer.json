@@ -5,7 +5,8 @@
     "require": {
         "ntentan/atiaa": "0.*",
         "ntentan/utils": "0.*",
-        "ntentan/kaikai": "0.*"
+        "ntentan/kaikai": "0.*",
+	"ntentan/panie": "dev-master"
     },
     "require-dev": {
         "symfony/yaml": "^2.0",
