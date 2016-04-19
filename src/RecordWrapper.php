@@ -30,7 +30,7 @@ use ntentan\kaikai\Cache;
 
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
-    use \ntentan\utils\DependencyInjector;
+    use \ntentan\panie\ComponentContainerTrait;
     
     protected $hasMany = [];
     protected $belongsTo = [];
@@ -53,7 +53,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             }
         );
         foreach($this->behaviours as $behaviour) {
-            $behaviourInstance = $this->loadDependency($behaviour);
+            $behaviourInstance = $this->getComponentInstance($behaviour);
             $behaviourInstance->setModel($this);
         }
     }
