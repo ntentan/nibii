@@ -46,12 +46,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function __construct()
     {
-        Utils::factory(
-            $this->table,
-            function() {
-                return Nibii::getModelTable($this);
-            }
-        );
+        $this->table = Nibii::getModelTable($this);
         foreach($this->behaviours as $behaviour) {
             $behaviourInstance = $this->getComponentInstance($behaviour);
             $behaviourInstance->setModel($this);
@@ -123,11 +118,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function __call($name, $arguments)
     {
-        return Utils::factory($this->dynamicOperations,
-            function() {
-                return new Operations($this, $this->getDataAdapter());
-            }
-        )->perform($name, $arguments);
+        if($this->dynamicOperations === null) {
+            $this->dynamicOperations = new Operations($this, $this->getDataAdapter());
+        }
+        return $this->dynamicOperations->perform($name, $arguments);
     }
 
     public static function __callStatic($name, $arguments)

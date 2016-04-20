@@ -15,5 +15,5 @@ namespace ntentan\nibii\interfaces;
  */
 interface ClassResolverInterface 
 {
-    public function getClassName($model, $context);
+    public function getModelClassName($model, $context);
 }

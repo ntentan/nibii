@@ -13,7 +13,7 @@ class Nibii
     
     public static function joinModels($classA, $classB)
     {
-        return InjectionContainer::singleton(interfaces\ModelJoinerInterface::class)->getJunctionClass($classA, $classB);
+        return InjectionContainer::singleton(interfaces\ModelJoinerInterface::class)->getJunctionClassName($classA, $classB);
     }
     
     public static function getModelTable($instance)
@@ -23,7 +23,7 @@ class Nibii
 
     public static function getClassName($model, $context = null)
     {
-        return InjectionContainer::singleton(interfaces\ClassResolverInterface::class)->getClassName($model, $context);
+        return InjectionContainer::singleton(interfaces\ClassResolverInterface::class)->getModelClassName($model, $context);
     }
     
     public static function getModelName($class)

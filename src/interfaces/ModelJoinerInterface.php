@@ -9,5 +9,5 @@ namespace ntentan\nibii\interfaces;
  */
 interface ModelJoinerInterface
 {
-    public function getJunctionClass($classA, $classB);
+    public function getJunctionClassName($classA, $classB);
 }

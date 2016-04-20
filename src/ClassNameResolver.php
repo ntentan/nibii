@@ -17,10 +17,10 @@ use ntentan\nibii\interfaces\TableNameResolverInterface;
  *
  * @author ekow
  */
-class DefaultModelResolvers implements ClassResolverInterface, ModelJoinerInterface,
+class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
     TableNameResolverInterface
 {
-    public function getClassName($default, $context)
+    public function getModelClassName($default, $context)
     {
         if(self::$classResolver !== null && $model[0] !== "\\") {
             $resolver = self::$classResolver;
@@ -41,7 +41,7 @@ class DefaultModelResolvers implements ClassResolverInterface, ModelJoinerInterf
         return ['class' => $class, 'namespace' => implode('\\', $arrayed)];
     }
 
-    public function getJunctionClass($classA, $classB)
+    public function getJunctionClassName($classA, $classB)
     {
         $classA = $this->getClassFileDetails($classA);
         $classB = $this->getClassFileDetails($classB);
