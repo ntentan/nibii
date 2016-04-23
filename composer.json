@@ -3,6 +3,7 @@
     "description": "ORM for ntentan",
     "type": "library",
     "require": {
+        "php" : ">=5.5.0",        
         "ntentan/atiaa": "dev-master",
         "ntentan/utils": "0.*",
         "ntentan/kaikai": "0.*",
