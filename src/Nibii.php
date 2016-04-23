@@ -8,7 +8,7 @@ class Nibii
 {
     public static function load($path)
     {
-        return (new \ReflectionClass(self::getClassName($path)))->newInstance();
+        return InjectionContainer::resolve(self::getClassName($path));
     }
     
     public static function joinModels($classA, $classB)

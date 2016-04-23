@@ -118,14 +118,15 @@ abstract class DriverAdapter
 
     public static function getDefaultInstance()
     {
-        $driver = Db::getDefaultSettings()['driver'];
+        return \ntentan\panie\InjectionContainer::resolve(DriverAdapter::class);
+        /*$driver = Db::getDefaultSettings()['driver'];
         if ($driver) {
             $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize($driver) . "Adapter";
             $instance = new $class();
         } else {
             throw new \Exception("No datastore specified");
         }
-        return $instance;
+        return $instance;*/
     }
 
     /**

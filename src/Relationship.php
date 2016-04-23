@@ -26,6 +26,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\panie\InjectionContainer;
+
 abstract class Relationship
 {
     const BELONGS_TO = 'BelongsTo';
@@ -51,8 +53,7 @@ abstract class Relationship
             $this->runSetup();
             $this->setup = true;
         }
-        $class = Nibii::getClassName($this->options['model'], $this->type);
-        return new $class();
+        return InjectionContainer::resolve(Nibii::getClassName($this->options['model'], $this->type));
     }
     
     public function setup($name, $table, $primaryKey) 

@@ -2,6 +2,7 @@
 
 namespace ntentan\nibii;
 
+
 /**
  * Description of QueryParameters
  *

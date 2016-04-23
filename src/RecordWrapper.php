@@ -27,6 +27,7 @@ namespace ntentan\nibii;
 
 use ntentan\utils\Utils;
 use ntentan\kaikai\Cache;
+use ntentan\panie\InjectionContainer;
 
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
@@ -42,11 +43,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $dynamicOperations;
     private $index = 0;
     private $dataSet = false;
-    private $adapter;
+    protected $adapter;
 
-    public function __construct()
+    public function __construct(DriverAdapter $adapter)
     {
         $this->table = Nibii::getModelTable($this);
+        $this->adapter = $adapter;
         foreach($this->behaviours as $behaviour) {
             $behaviourInstance = $this->getComponentInstance($behaviour);
             $behaviourInstance->setModel($this);
@@ -57,14 +59,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @return \ntentan\nibii\DriverAdapter
      */
-    protected function getDataAdapter()
-    {
-        if(!$this->adapter)
+    //protected function getDataAdapter()
+    //{
+        
+        /*if(!$this->adapter)
         {
             $this->adapter = DriverAdapter::getDefaultInstance();
         }
-        return $this->adapter;
-    }
+        return $this->adapter;*/
+    //}
 
     /**
      * 
@@ -107,7 +110,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public static function createNew()
     {
         $class = get_called_class();
-        return new $class();
+        return InjectionContainer::resolve($class);
     }
 
     /**
@@ -119,7 +122,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __call($name, $arguments)
     {
         if($this->dynamicOperations === null) {
-            $this->dynamicOperations = new Operations($this, $this->getDataAdapter());
+            $this->dynamicOperations = new Operations($this, InjectionContainer::singleton(DriverAdapter::class));
         }
         return $this->dynamicOperations->perform($name, $arguments);
     }

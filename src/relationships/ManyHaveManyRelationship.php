@@ -28,6 +28,7 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\Nibii;
 use ntentan\utils\Text;
+use ntentan\panie\InjectionContainer;
 
 class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
 {
@@ -35,8 +36,7 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
     
     private function getJunctionModel()
     {
-        $class = $this->options['junction_model'];
-        return new $class();
+        return InjectionContainer::resolve($this->options['junction_model']);
     }
     
     public function getQuery($data)

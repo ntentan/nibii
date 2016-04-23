@@ -11,6 +11,8 @@ namespace ntentan\nibii;
 use ntentan\nibii\interfaces\ClassResolverInterface;
 use ntentan\nibii\interfaces\ModelJoinerInterface;
 use ntentan\nibii\interfaces\TableNameResolverInterface;
+use ntentan\config\Config;
+use ntentan\utils\Text;
 
 /**
  * Description of DefaultClassResolver
@@ -63,5 +65,9 @@ class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
         $nameParts = explode("\\", $class->getName());
         return \ntentan\utils\Text::deCamelize(end($nameParts));           
     }
-
+    
+    public static function getDriverAdapterClassName()
+    {
+        return __NAMESPACE__ . '\adapters\\' . Text::ucamelize(Config::get('ntentan:db.driver')) . 'Adapter';
+    }
 }
