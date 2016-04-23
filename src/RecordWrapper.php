@@ -135,12 +135,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __set($name, $value)
     {
         $this->dataSet = true;
-        $this->modelData[\ntentan\utils\Text::deCamelize($name)] = $value;
+        $this->modelData[$name] = $value;
     }
 
     public function __get($name)
     {
-        return $this->retrieveItem(\ntentan\utils\Text::deCamelize($name));
+        return $this->retrieveItem($name);
     }
 
     public function getTable()
@@ -349,6 +349,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     
     public function getBehaviours()
     {
-        return $this->loadedDependencies;
+        return $this->loadedComponents;
     }
 }

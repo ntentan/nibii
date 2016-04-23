@@ -6,21 +6,12 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase
     public function setUp()
     {
         parent::setUp();
-        \ntentan\atiaa\Db::setDefaultSettings(
-            [
-                'driver' => getenv('NIBII_DATASTORE'),
-                'host' => getenv('NIBII_HOST'),
-                'user' => getenv('NIBII_USER'),
-                'password' => getenv('NIBII_PASSWORD'),
-                'file' => getenv('NIBII_FILE'),
-                'dbname' => getenv("NIBII_DBNAME")
-            ]
-        );
     }
 
     public function tearDown()
     {
         \ntentan\atiaa\Db::reset();
+        \ntentan\panie\InjectionContainer::resetSingletons();
     }
 
     protected function getConnection()

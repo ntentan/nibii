@@ -1,9 +1,9 @@
 <?php
 
-/*
+/* 
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2016 ekow.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,20 @@
  * THE SOFTWARE.
  */
 
-namespace ntentan\nibii\relationships;
-
-use ntentan\nibii\QueryParameters;
-use ntentan\utils\Text;
-use ntentan\nibii\Nibii;
-use ntentan\panie\InjectionContainer;
-
-class BelongsToRelationship extends \ntentan\nibii\Relationship
-{
-    protected $type = self::BELONGS_TO;
-
-    public function getQuery($data)
-    {
-        $query = (new QueryParameters($this->getModelInstance()))
-            ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]])
-            ->setFirstOnly(true);
-        return $query;
-    }
-
-    public function runSetup()
-    {
-        $model = InjectionContainer::resolve(Nibii::getClassName($this->options['model'], self::BELONGS_TO));
-        if($this->options['foreign_key'] == null) {
-            $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
-        }
-        if($this->options['local_key'] == null) {
-            $this->options['local_key'] = Text::singularize($model->getTable()) . '_id';
-        }
-    }
-}
+ntentan\config\Config::set('ntentan:db', [
+    'driver' => getenv('NIBII_DATASTORE'),
+    'host' => getenv('NIBII_HOST'),
+    'user' => getenv('NIBII_USER'),
+    'password' => getenv('NIBII_PASSWORD'),
+    'file' => getenv('NIBII_FILE'),
+    'dbname' => getenv("NIBII_DBNAME")
+]);
+ntentan\nibii\Nibii::setupDefaultBindings();
+ntentan\panie\InjectionContainer::bind(
+    ntentan\nibii\DriverAdapter::class, 
+    \ntentan\nibii\ClassNameResolver::getDriverAdapterClassName()
+);
+ntentan\panie\InjectionContainer::bind(
+    \ntentan\atiaa\Driver::class, 
+     \ntentan\atiaa\Db::getDefaultDriverClassName()
+);

@@ -4,12 +4,13 @@ namespace ntentan\nibii\tests\cases;
 
 use ntentan\nibii\tests\models\raw\Users;
 use ntentan\nibii\tests\models\raw\Roles;
+use ntentan\nibii\Nibii;
 
 class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 {
     public function testTableResolution()
     {
-        $users = new Users();
+        $users = Nibii::load(Users::class);
         $description = $users->getDescription();
         $this->assertInstanceOf('\ntentan\nibii\ModelDescription', $description);
     }

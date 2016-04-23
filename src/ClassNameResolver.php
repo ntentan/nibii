@@ -22,14 +22,8 @@ use ntentan\utils\Text;
 class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
     TableNameResolverInterface
 {
-    public function getModelClassName($default, $context)
+    public function getModelClassName($className, $context)
     {
-        if(self::$classResolver !== null && $model[0] !== "\\") {
-            $resolver = self::$classResolver;
-            $className = $resolver($model, $context);
-        } else {
-            $className = $model;
-        }
         return $className;
     }
     
@@ -68,6 +62,10 @@ class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
     
     public static function getDriverAdapterClassName()
     {
-        return __NAMESPACE__ . '\adapters\\' . Text::ucamelize(Config::get('ntentan:db.driver')) . 'Adapter';
+        $driver = Config::get('ntentan:db.driver', false);
+        if($driver) {
+            return __NAMESPACE__ . '\adapters\\' . Text::ucamelize(Config::get('ntentan:db.driver')) . 'Adapter';
+        } 
+        throw new NibiiException("Please specify a driver");
     }
 }

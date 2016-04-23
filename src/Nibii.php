@@ -30,4 +30,11 @@ class Nibii
     {
         return $class;
     }
+    
+    public static function setupDefaultBindings()
+    {
+        InjectionContainer::bind(interfaces\ModelJoinerInterface::class, ClassNameResolver::class);
+        InjectionContainer::bind(interfaces\TableNameResolverInterface::class, ClassNameResolver::class);
+        InjectionContainer::bind(interfaces\ClassResolverInterface::class, ClassNameResolver::class);
+    }
 }
