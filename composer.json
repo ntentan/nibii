@@ -4,10 +4,10 @@
     "type": "library",
     "require": {
         "php" : ">=5.5.0",        
-        "ntentan/atiaa": "dev-master",
+        "ntentan/atiaa": "0.*",
         "ntentan/utils": "0.*",
         "ntentan/kaikai": "0.*",
-	"ntentan/panie": "dev-master"
+	"ntentan/panie": "0.*"
     },
     "require-dev": {
         "symfony/yaml": "^2.0",
@@ -26,6 +26,5 @@
             "ntentan\\nibii\\": "src/",
             "ntentan\\nibii\\tests\\": "tests/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
