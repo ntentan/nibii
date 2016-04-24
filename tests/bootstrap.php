@@ -33,11 +33,7 @@ ntentan\config\Config::set('ntentan:db', [
     'dbname' => getenv("NIBII_DBNAME")
 ]);
 ntentan\nibii\Nibii::setupDefaultBindings();
-ntentan\panie\InjectionContainer::bind(
-    ntentan\nibii\DriverAdapter::class, 
-    \ntentan\nibii\ClassNameResolver::getDriverAdapterClassName()
-);
-ntentan\panie\InjectionContainer::bind(
-    \ntentan\atiaa\Driver::class, 
-     \ntentan\atiaa\Db::getDefaultDriverClassName()
-);
+ntentan\panie\InjectionContainer::bind(ntentan\nibii\DriverAdapter::class)
+    ->to(\ntentan\nibii\ClassNameResolver::getDriverAdapterClassName());
+ntentan\panie\InjectionContainer::bind(\ntentan\atiaa\Driver::class)
+    ->to(\ntentan\atiaa\Db::getDefaultDriverClassName());

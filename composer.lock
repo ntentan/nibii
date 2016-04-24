@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1544b60ebf51126e48839348bd7b04dd",
-    "content-hash": "9531eda4585c01e5b4aa87676186653f",
+    "hash": "4b7cd735ad98bae21518e6a78e3a1d2d",
+    "content-hash": "720ba13aad46d0b7850d16620e09bd87",
     "packages": [
         {
             "name": "ntentan/atiaa",
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "5c9c144148c91bb54fea6868a68b305c65829611"
+                "reference": "d8f82a36edae4c8f3f1f0aea27207dca29b6c204"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/5c9c144148c91bb54fea6868a68b305c65829611",
-                "reference": "5c9c144148c91bb54fea6868a68b305c65829611",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/d8f82a36edae4c8f3f1f0aea27207dca29b6c204",
+                "reference": "d8f82a36edae4c8f3f1f0aea27207dca29b6c204",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2016-04-23 19:46:38"
+            "time": "2016-04-23 19:54:47"
         },
         {
             "name": "ntentan/config",
@@ -57,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/config.git",
-                "reference": "dd1eef4579ed2911e74eca5aba95de65ee638999"
+                "reference": "644a35b73a837ce31e8350e8618b62f97369b52b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/config/zipball/dd1eef4579ed2911e74eca5aba95de65ee638999",
-                "reference": "dd1eef4579ed2911e74eca5aba95de65ee638999",
+                "url": "https://api.github.com/repos/ntentan/config/zipball/644a35b73a837ce31e8350e8618b62f97369b52b",
+                "reference": "644a35b73a837ce31e8350e8618b62f97369b52b",
                 "shasum": ""
             },
             "require-dev": {
@@ -87,7 +87,7 @@
                 }
             ],
             "description": "Configurations manager for ntentan",
-            "time": "2016-04-23 18:53:35"
+            "time": "2016-04-23 21:05:42"
         },
         {
             "name": "ntentan/kaikai",
@@ -128,16 +128,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/panie.git",
-                "reference": "3f54d0215ee3d064dcfa11b01b53bd426844a109"
+                "reference": "d445b85ee469536872922456feead13cc8a64011"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/panie/zipball/3f54d0215ee3d064dcfa11b01b53bd426844a109",
-                "reference": "3f54d0215ee3d064dcfa11b01b53bd426844a109",
+                "url": "https://api.github.com/repos/ntentan/panie/zipball/d445b85ee469536872922456feead13cc8a64011",
+                "reference": "d445b85ee469536872922456feead13cc8a64011",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0"
             },
             "type": "library",
             "autoload": {
@@ -157,7 +160,7 @@
                 }
             ],
             "description": "A thin DI container for NtentanFX",
-            "time": "2016-04-23 19:45:41"
+            "time": "2016-04-24 10:15:26"
         },
         {
             "name": "ntentan/utils",
@@ -1221,6 +1224,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.5.0"
+    },
     "platform-dev": []
 }

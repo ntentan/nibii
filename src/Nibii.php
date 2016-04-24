@@ -33,8 +33,8 @@ class Nibii
     
     public static function setupDefaultBindings()
     {
-        InjectionContainer::bind(interfaces\ModelJoinerInterface::class, ClassNameResolver::class);
-        InjectionContainer::bind(interfaces\TableNameResolverInterface::class, ClassNameResolver::class);
-        InjectionContainer::bind(interfaces\ClassResolverInterface::class, ClassNameResolver::class);
+        InjectionContainer::bind(interfaces\ModelJoinerInterface::class)->to(ClassNameResolver::class);
+        InjectionContainer::bind(interfaces\TableNameResolverInterface::class)->to(ClassNameResolver::class);
+        InjectionContainer::bind(interfaces\ClassResolverInterface::class)->to(ClassNameResolver::class);
     }
 }
