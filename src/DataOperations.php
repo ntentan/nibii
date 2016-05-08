@@ -28,6 +28,7 @@ namespace ntentan\nibii;
 
 use ntentan\utils\Utils;
 use ntentan\atiaa\Db;
+use ntentan\panie\InjectionContainer;
 
 /**
  * Description of DataOperations
@@ -45,7 +46,6 @@ class DataOperations
     private $adapter;
     private $data;
     private $invalidFields;
-    private $validator;
     private $hasMultipleData;
     
     const MODE_SAVE = 0;
@@ -172,10 +172,9 @@ class DataOperations
     private function validate($data, $mode)
     {
         $valid = true;
-        $validator = Utils::factory($this->validator,
-            function() use($mode) {
-                return new ModelValidator($this->wrapper, $mode);
-            }
+        $validator = \ntentan\panie\InjectionContainer::singleton(
+            ModelValidator::class,
+            ['model' => $this->wrapper, 'mode' => $mode]
         );
 
         if(!$validator->validate($data)) {
