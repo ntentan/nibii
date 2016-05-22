@@ -56,20 +56,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
-     *
-     * @return \ntentan\nibii\DriverAdapter
-     */
-    //protected function getDataAdapter()
-    //{
-        
-        /*if(!$this->adapter)
-        {
-            $this->adapter = DriverAdapter::getDefaultInstance();
-        }
-        return $this->adapter;*/
-    //}
-
-    /**
      * 
      * @return ModelDescription
      */
@@ -122,7 +108,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __call($name, $arguments)
     {
         if($this->dynamicOperations === null) {
-            $this->dynamicOperations = new Operations($this, InjectionContainer::singleton(DriverAdapter::class));
+            $this->dynamicOperations = new Operations(
+                $this, InjectionContainer::singleton(DriverAdapter::class)
+            );
         }
         return $this->dynamicOperations->perform($name, $arguments);
     }
