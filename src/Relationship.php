@@ -46,6 +46,11 @@ abstract class Relationship
     {
         $this->options = $options;
     }
+    
+    public function getOptions()
+    {
+        return $this->options;
+    }
 
     public function getModelInstance()
     {

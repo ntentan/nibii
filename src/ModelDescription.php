@@ -10,10 +10,19 @@ class ModelDescription
     private $primaryKey = [];
     private $uniqueKeys = [];
     private $autoPrimaryKey = false;
+    
+    /**
+     *
+     * @var array<Relationship>
+     */
     private $relationships = [];
     private $table;
     private $name;
 
+    /**
+     * 
+     * @param RecordWrapper $model
+     */
     public function __construct($model)
     {
         $this->table = $model->getTable();
@@ -94,6 +103,10 @@ class ModelDescription
         }
     }
 
+    /**
+     * 
+     * @return array<Relationship>
+     */
     public function getRelationships()
     {
         return $this->relationships;
