@@ -24,6 +24,7 @@ class PostgresqlAdapter extends \ntentan\nibii\DriverAdapter
             case 'boolean':
                 return $nativeType;
             case 'timestamp without time zone':
+            case 'timestamp with time zone':
                 return 'datetime';
             default:
                 throw new \Exception("Unknown type {$nativeType}");
