@@ -285,6 +285,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         return isset($this->modelData[$this->index]);
     }
+    
+    public function onValidate()
+    {
+        return true;
+    }
 
     private function fetchRelatedFields($relationship, $index = null)
     {

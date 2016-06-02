@@ -135,7 +135,7 @@ class DataOperations
             $record = $this->runBehaviours('preSaveCallback', [$record]);
         }        
         
-        // Validat the data
+        // Validate the data
         $validity = $this->validate(
             $record, 
             $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
@@ -179,6 +179,10 @@ class DataOperations
 
         if(!$validator->validate($data)) {
             $valid = false;
+        }
+        
+        if($valid) {
+            $valid = $this->wrapper->onValidate();
         }
 
         if($valid === false) {
