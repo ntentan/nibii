@@ -166,11 +166,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
         return $return;
     }
-    
-    public function isValid()
-    {
-        return $this->__call('isValid', []);
-    }
 
     private function hasMultipleData()
     {
