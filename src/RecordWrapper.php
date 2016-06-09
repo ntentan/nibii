@@ -83,11 +83,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private function retrieveItem($key)
     {
         $relationships = $this->getDescription()->getRelationships();
+        $decamelizedKey = Text::deCamelize($key);
         if(isset($relationships[$key])) {
             return $this->fetchRelatedFields($relationships[$key]);
-        } else {
-            return isset($this->modelData[$key]) ? $this->modelData[$key] : null;
         }
+        return isset($this->modelData[$decamelizedKey]) ? $this->modelData[$decamelizedKey] : null;
     }
 
     /**
@@ -129,7 +129,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function __get($name)
     {
-        return $this->retrieveItem(Text::deCamelize($name));
+        return $this->retrieveItem($name);
     }
 
     public function getTable()
