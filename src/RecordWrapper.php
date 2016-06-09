@@ -28,6 +28,7 @@ namespace ntentan\nibii;
 use ntentan\utils\Utils;
 use ntentan\kaikai\Cache;
 use ntentan\panie\InjectionContainer;
+use ntentan\utils\Text;
 
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
@@ -109,7 +110,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         if($this->dynamicOperations === null) {
             $this->dynamicOperations = new Operations(
-                $this, InjectionContainer::singleton(DriverAdapter::class)
+                $this, $this->adapter
             );
         }
         return $this->dynamicOperations->perform($name, $arguments);
@@ -123,12 +124,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __set($name, $value)
     {
         $this->dataSet = true;
-        $this->modelData[$name] = $value;
+        $this->modelData[Text::deCamelize($name)] = $value;
     }
 
     public function __get($name)
     {
-        return $this->retrieveItem($name);
+        return $this->retrieveItem(Text::deCamelize($name));
     }
 
     public function getTable()

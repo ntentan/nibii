@@ -172,7 +172,7 @@ class DataOperations
     private function validate($data, $mode)
     {
         $valid = true;
-        $validator = \ntentan\panie\InjectionContainer::singleton(
+        $validator = \ntentan\panie\InjectionContainer::resolve(
             ModelValidator::class,
             ['model' => $this->wrapper, 'mode' => $mode]
         );
