@@ -8,7 +8,7 @@
 
 namespace ntentan\nibii;
 
-use ntentan\nibii\interfaces\ClassResolverInterface;
+use ntentan\nibii\interfaces\ModelClassResolverInterface;
 use ntentan\nibii\interfaces\ModelJoinerInterface;
 use ntentan\nibii\interfaces\TableNameResolverInterface;
 use ntentan\config\Config;
@@ -19,7 +19,7 @@ use ntentan\utils\Text;
  *
  * @author ekow
  */
-class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
+class Resolver implements ModelClassResolverInterface, ModelJoinerInterface,
     TableNameResolverInterface
 {
     public function getModelClassName($className, $context)

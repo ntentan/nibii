@@ -23,7 +23,7 @@ class Nibii
 
     public static function getClassName($model, $context = null)
     {
-        return InjectionContainer::singleton(interfaces\ClassResolverInterface::class)->getModelClassName($model, $context);
+        return InjectionContainer::singleton(interfaces\ModelClassResolverInterface::class)->getModelClassName($model, $context);
     }
     
     public static function getModelName($class)
@@ -33,8 +33,8 @@ class Nibii
     
     public static function setupDefaultBindings()
     {
-        InjectionContainer::bind(interfaces\ModelJoinerInterface::class)->to(ClassNameResolver::class);
-        InjectionContainer::bind(interfaces\TableNameResolverInterface::class)->to(ClassNameResolver::class);
-        InjectionContainer::bind(interfaces\ClassResolverInterface::class)->to(ClassNameResolver::class);
+        InjectionContainer::bind(interfaces\ModelJoinerInterface::class)->to(Resolver::class);
+        InjectionContainer::bind(interfaces\TableNameResolverInterface::class)->to(Resolver::class);
+        InjectionContainer::bind(interfaces\ModelClassResolverInterface::class)->to(Resolver::class);
     }
 }

@@ -13,7 +13,7 @@ namespace ntentan\nibii\interfaces;
  *
  * @author ekow
  */
-interface ClassResolverInterface 
+interface ModelClassResolverInterface 
 {
     public function getModelClassName($model, $context);
 }
