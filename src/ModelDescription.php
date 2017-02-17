@@ -29,7 +29,7 @@ class ModelDescription
         $this->name = Nibii::getModelName((new \ReflectionClass($model))->getName());
         $relationships = $model->getRelationships();
         $adapter = DriverAdapter::getDefaultInstance();
-        $schema = Db::getDriver()->describeTable($this->table)[$this->table];
+        $schema = array_values(Db::getDriver()->describeTable($this->table))[0];
         $this->autoPrimaryKey = $schema['auto_increment'];
 
         foreach ($schema['columns'] as $field => $details) {

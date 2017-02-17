@@ -23,6 +23,8 @@ class PostgresqlAdapter extends \ntentan\nibii\DriverAdapter
             case 'integer':
             case 'boolean':
                 return $nativeType;
+            case 'numeric':
+                return 'double';
             case 'timestamp without time zone':
             case 'timestamp with time zone':
                 return 'datetime';
