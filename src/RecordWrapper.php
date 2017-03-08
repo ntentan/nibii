@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -30,10 +31,10 @@ use ntentan\kaikai\Cache;
 use ntentan\panie\InjectionContainer;
 use ntentan\utils\Text;
 
-class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
-{
+class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
+
     use \ntentan\panie\ComponentContainerTrait;
-    
+
     protected $hasMany = [];
     protected $belongsTo = [];
     protected $manyHaveMany = [];
@@ -46,11 +47,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $dataSet = false;
     protected $adapter;
 
-    public function __construct(DriverAdapter $adapter)
-    {
+    public function __construct(DriverAdapter $adapter) {
         $this->table = Nibii::getModelTable($this);
         $this->adapter = $adapter;
-        foreach($this->behaviours as $behaviour) {
+        foreach ($this->behaviours as $behaviour) {
             $behaviourInstance = $this->getComponentInstance($behaviour);
             $behaviourInstance->setModel($this);
         }
@@ -60,19 +60,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * 
      * @return ModelDescription
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return Cache::read(
-            (new \ReflectionClass($this))->getName() . '::desc',
-            function() 
-            {
-                return new ModelDescription($this);
-            }
+                        (new \ReflectionClass($this))->getName() . '::desc', function() {
+                    return new ModelDescription($this);
+                }
         );
     }
-    
-    public function count()
-    {
+
+    public function count() {
         if ($this->dataSet) {
             return count($this->getData());
         } else {
@@ -80,11 +76,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
     }
 
-    private function retrieveItem($key)
-    {
+    private function retrieveItem($key) {
         $relationships = $this->getDescription()->getRelationships();
         $decamelizedKey = Text::deCamelize($key);
-        if(isset($relationships[$key])) {
+        if (isset($relationships[$key])) {
             return $this->fetchRelatedFields($relationships[$key]);
         }
         return isset($this->modelData[$decamelizedKey]) ? $this->modelData[$decamelizedKey] : null;
@@ -94,8 +89,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Create a new instance of this Model
      * @return \ntentan\nibii\RecordWrapper
      */
-    public static function createNew()
-    {
+    public static function createNew() {
         $class = get_called_class();
         return InjectionContainer::resolve($class);
     }
@@ -106,52 +100,45 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @param type $arguments
      * @return type
      */
-    public function __call($name, $arguments)
-    {
-        if($this->dynamicOperations === null) {
+    public function __call($name, $arguments) {
+        if ($this->dynamicOperations === null) {
             $this->dynamicOperations = new Operations(
-                $this, $this->adapter
+                    $this, $this->adapter
             );
         }
         return $this->dynamicOperations->perform($name, $arguments);
     }
 
-    public static function __callStatic($name, $arguments)
-    {
+    public static function __callStatic($name, $arguments) {
         return call_user_func_array([self::createNew(), $name], $arguments);
     }
 
-    public function __set($name, $value)
-    {
+    public function __set($name, $value) {
         $this->dataSet = true;
         $this->modelData[Text::deCamelize($name)] = $value;
     }
 
-    public function __get($name)
-    {
+    public function __get($name) {
         return $this->retrieveItem($name);
     }
 
-    public function getTable()
-    {
+    public function getTable() {
         return $this->table;
     }
-    
-    private function expandArrayValue($array, $relationships, $depth, $index = null)
-    {
-        foreach($relationships as $name => $relationship) {
+
+    private function expandArrayValue($array, $relationships, $depth, $index = null) {
+        foreach ($relationships as $name => $relationship) {
             $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
         }
         return $array;
     }
 
-    public function toArray($depth = 0)
-    {
+    public function toArray($depth = 0) {
         $relationships = $this->getDescription()->getRelationships();
         $array = $this->modelData;
-        if($depth > 0) {
-            if($this->hasMultipleData()) {
-                foreach($array as $i => $value) {
+        if ($depth > 0) {
+            if ($this->hasMultipleData()) {
+                foreach ($array as $i => $value) {
                     $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $i);
                 }
             } else {
@@ -160,59 +147,52 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         return $array;
     }
-    
-    public function save()
-    {
+
+    public function save() {
         $return = $this->__call('save', [$this->hasMultipleData()]);
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
         return $return;
     }
 
-    private function hasMultipleData()
-    {
-        if(count($this->modelData) > 0) {
+    private function hasMultipleData() {
+        if (count($this->modelData) > 0) {
             return is_numeric(array_keys($this->modelData)[0]);
         } else {
             return false;
         }
     }
 
-    public function getData()
-    {
+    public function getData() {
         $data = [];
-                
-        if(count($this->modelData) == 0) {
+
+        if (count($this->modelData) == 0) {
             $data = $this->modelData;
-        } else if($this->hasMultipleData()) {
+        } else if ($this->hasMultipleData()) {
             $data = $this->modelData;
-        } else if(count($this->modelData) > 0) {
+        } else if (count($this->modelData) > 0) {
             $data[] = $this->modelData;
         }
-        
+
         return $data;
     }
 
-    public function setData($data)
-    {
+    public function setData($data) {
         $this->dataSet = true;
         $this->modelData = $data;
     }
-    
-    public function mergeData($data)
-    {
-        foreach($data as $key => $value) {
+
+    public function mergeData($data) {
+        foreach ($data as $key => $value) {
             $this->modelData[$key] = $value;
         }
         $this->dataSet = true;
     }
 
-    public function offsetExists($offset)
-    {
+    public function offsetExists($offset) {
         return isset($this->modelData[$offset]);
     }
 
-    public function offsetGet($offset)
-    {
+    public function offsetGet($offset) {
         if (is_numeric($offset)) {
             return $this->wrap($offset);
         } else {
@@ -220,20 +200,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
     }
 
-    public function offsetSet($offset, $value)
-    {
+    public function offsetSet($offset, $value) {
         $this->dataSet = true;
         $this->modelData[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
-    {
+    public function offsetUnset($offset) {
         unset($this->modelData[$offset]);
     }
 
-    private function wrap($offset)
-    {
-        if(isset($this->modelData[$offset])) {
+    private function wrap($offset) {
+        if (isset($this->modelData[$offset])) {
             $newInstance = $this->createNew();
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
@@ -242,102 +219,86 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
     }
 
-    public function getInvalidFields()
-    {
+    public function getInvalidFields() {
         return $this->invalidFields;
     }
 
-    public function getHasMany()
-    {
+    public function getHasMany() {
         return $this->hasMany;
     }
 
-    public function getBelongsTo()
-    {
+    public function getBelongsTo() {
         return $this->belongsTo;
     }
 
-    public function current()
-    {
+    public function current() {
         return $this->wrap($this->index);
     }
 
-    public function key()
-    {
+    public function key() {
         return $this->index;
     }
 
-    public function next()
-    {
+    public function next() {
         $this->index++;
     }
 
-    public function rewind()
-    {
+    public function rewind() {
         $this->index = 0;
     }
 
-    public function valid()
-    {
+    public function valid() {
         return isset($this->modelData[$this->index]);
     }
-    
-    public function onValidate()
-    {
+
+    public function onValidate() {
         return true;
     }
 
-    private function fetchRelatedFields($relationship, $index = null)
-    {
-        if($index === null) {
+    private function fetchRelatedFields($relationship, $index = null) {
+        if ($index === null) {
             $data = $this->modelData;
         } else {
             $data = $this->modelData[$index];
         }
         $model = $relationship->getModelInstance();
-        if(empty($data)) {
+        if (empty($data)) {
             return $model;
         } else {
             return $model->fetch($relationship->getQuery($data));
         }
     }
 
-    public function getRelationships()
-    {
+    public function getRelationships() {
         return [
             'HasMany' => $this->hasMany,
             'BelongsTo' => $this->belongsTo,
             'ManyHaveMany' => $this->manyHaveMany
         ];
     }
-    
-    public function usetField($field)
-    {
+
+    public function usetField($field) {
         unset($this->modelData[$field]);
     }
-    
-    public function preSaveCallback()
-    {
+
+    public function preSaveCallback() {
         
     }
-    
-    public function postSaveCallback($id)
-    {
+
+    public function postSaveCallback($id) {
         
     }
-    
-    public function preUpdateCallback()
-    {
+
+    public function preUpdateCallback() {
         
     }
-    
-    public function postUpdateCallback()
-    {
+
+    public function postUpdateCallback() {
         
     }
-    
-    public function getBehaviours()
-    {
+
+    public function getBehaviours() {
         return $this->loadedComponents;
     }
+
 }

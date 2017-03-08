@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ntentan\nibii;
 
 use ntentan\nibii\interfaces\ModelClassResolverInterface;
@@ -19,53 +13,48 @@ use ntentan\utils\Text;
  *
  * @author ekow
  */
-class Resolver implements ModelClassResolverInterface, ModelJoinerInterface,
-    TableNameResolverInterface
-{
-    public function getModelClassName($className, $context)
-    {
+class Resolver implements ModelClassResolverInterface, ModelJoinerInterface, TableNameResolverInterface {
+
+    public function getModelClassName($className, $context) {
         return $className;
     }
-    
-    private function getClassFileDetails($className)
-    {
+
+    private function getClassFileDetails($className) {
         $arrayed = explode('\\', $className);
         $class = array_pop($arrayed);
-        if($arrayed[0] == '') {
+        if ($arrayed[0] == '') {
             array_shift($arrayed);
         }
         return ['class' => $class, 'namespace' => implode('\\', $arrayed)];
     }
 
-    public function getJunctionClassName($classA, $classB)
-    {
+    public function getJunctionClassName($classA, $classB) {
         $classA = $this->getClassFileDetails($classA);
         $classB = $this->getClassFileDetails($classB);
-        if($classA['namespace'] != $classB['namespace']) {
+        if ($classA['namespace'] != $classB['namespace']) {
             throw new NibiiException(
-                "Cannot automatically join two classes of different "
-                    . "namespaces. Please provide a model joiner or "
-                    . "explicitly specify your joint model."
+            "Cannot automatically join two classes of different "
+            . "namespaces. Please provide a model joiner or "
+            . "explicitly specify your joint model."
             );
         }
         $classes = [$classA['class'], $classB['class']];
         sort($classes);
-        return "{$classA['namespace']}\\" . implode('', $classes);        
+        return "{$classA['namespace']}\\" . implode('', $classes);
     }
 
-    public function getTableName($instance)
-    {
+    public function getTableName($instance) {
         $class = new \ReflectionClass($instance);
         $nameParts = explode("\\", $class->getName());
-        return \ntentan\utils\Text::deCamelize(end($nameParts));           
+        return \ntentan\utils\Text::deCamelize(end($nameParts));
     }
-    
-    public static function getDriverAdapterClassName()
-    {
+
+    public static function getDriverAdapterClassName() {
         $driver = Config::get('ntentan:db.driver', false);
-        if($driver) {
+        if ($driver) {
             return __NAMESPACE__ . '\adapters\\' . Text::ucamelize(Config::get('ntentan:db.driver')) . 'Adapter';
-        } 
+        }
         throw new NibiiException("Please specify a driver");
     }
+
 }
