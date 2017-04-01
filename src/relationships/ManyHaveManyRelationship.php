@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2015 ekow.
@@ -30,56 +30,52 @@ use ntentan\nibii\Nibii;
 use ntentan\utils\Text;
 use ntentan\panie\InjectionContainer;
 
-class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
-{
+class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
+
     protected $type = self::MANY_HAVE_MANY;
-    
-    private function getJunctionModel()
-    {
+
+    private function getJunctionModel() {
         return InjectionContainer::resolve($this->options['junction_model']);
     }
-    
-    public function getQuery($data)
-    {
+
+    public function getQuery($data) {
         $junctionModel = $this->getJunctionModel();
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
-            ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
-            ->fetch();
+                ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
+                ->fetch();
         $foreignKeys = [];
-        foreach($filter->toArray() as $foreignItem) {
+        foreach ($filter->toArray() as $foreignItem) {
             $foreignKeys[] = $foreignItem[$this->options['junction_foreign_key']];
         }
-        $query = (new \ntentan\nibii\QueryParameters($this->getModelInstance()))
-            ->addFilter($this->options['foreign_key'], $foreignKeys);
+        $query = (new \ntentan\nibii\QueryParameters($this->getModelInstance()->getDBStoreInformation()['quoted_table']))
+                ->addFilter($this->options['foreign_key'], $foreignKeys);
         return $query;
     }
 
-    public function runSetup()
-    {
-        if(isset($this->options['through'])) {
+    public function runSetup() {
+        if (isset($this->options['through'])) {
             $junctionModelName = $this->options['through'];
         } else {
             $junctionModelName = Nibii::joinModels($this->setupName, $this->options['model']);
         }
         $this->options['junction_model'] = $junctionModelName;
-        
+
         $foreignModel = Nibii::load($this->options['model']);
-        if($this->options['foreign_key'] == null) {
+        if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $foreignModel->getDescription()->getPrimaryKey()[0];
-        } 
-        
-        if($this->options['local_key'] == null) {
+        }
+
+        if ($this->options['local_key'] == null) {
             $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
-        
-        if(!isset($this->options['junction_local_key'])) {
-            $this->options['junction_local_key'] = 
-                Text::singularize($this->setupTable) . '_id';
+
+        if (!isset($this->options['junction_local_key'])) {
+            $this->options['junction_local_key'] = Text::singularize($this->setupTable) . '_id';
         }
-        
-        if(!isset($this->options['junction_foreign_key'])) {
-            $this->options['junction_foreign_key'] = 
-                Text::singularize($foreignModel->getTable()) . '_id';
+
+        if (!isset($this->options['junction_foreign_key'])) {
+            $this->options['junction_foreign_key'] = Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
         }
     }
+
 }

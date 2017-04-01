@@ -1,7 +1,7 @@
 <?php
+
 namespace ntentan\nibii;
 
-class FilterCompilerException extends \Exception
-{
+class FilterCompilerException extends \Exception {
     
 }

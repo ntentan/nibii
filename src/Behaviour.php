@@ -2,25 +2,22 @@
 
 namespace ntentan\nibii;
 
-class Behaviour 
-{
-    public function preSaveCallback($data)
-    {
+class Behaviour {
+
+    public function preSaveCallback($data) {
         return $data;
     }
-    
-    public function preUpdateCallback($data)
-    {
+
+    public function preUpdateCallback($data) {
         return $data;
     }
-    
-    public function postSaveCallback($data)
-    {
+
+    public function postSaveCallback($data) {
         return $data;
     }
-    
-    public function postUpdateCallback($data)
-    {
+
+    public function postUpdateCallback($data) {
         return $data;
-    }    
+    }
+
 }

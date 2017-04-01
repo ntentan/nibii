@@ -37,7 +37,7 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship
 
     public function getQuery($data)
     {
-        $query = (new QueryParameters($this->getModelInstance()))
+        $query = (new QueryParameters($this->getModelInstance()->getDBStoreInformation()['table']))
             ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]])
             ->setFirstOnly(true);
         return $query;
@@ -46,11 +46,12 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship
     public function runSetup()
     {
         $model = InjectionContainer::resolve(Nibii::getClassName($this->options['model'], self::BELONGS_TO));
+        $table = $model->getDBStoreInformation()['table'];
         if($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }
         if($this->options['local_key'] == null) {
-            $this->options['local_key'] = Text::singularize($model->getTable()) . '_id';
+            $this->options['local_key'] = Text::singularize($table) . '_id';
         }
     }
 }

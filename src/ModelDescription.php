@@ -4,13 +4,13 @@ namespace ntentan\nibii;
 
 use ntentan\atiaa\Db;
 
-class ModelDescription
-{
+class ModelDescription {
+
     private $fields = [];
     private $primaryKey = [];
     private $uniqueKeys = [];
     private $autoPrimaryKey = false;
-    
+
     /**
      *
      * @var array<Relationship>
@@ -23,9 +23,8 @@ class ModelDescription
      * 
      * @param RecordWrapper $model
      */
-    public function __construct($model)
-    {
-        $this->table = $model->getTable();
+    public function __construct($model) {
+        $this->table = $model->getDBStoreInformation()['unquoted_table'];
         $this->name = Nibii::getModelName((new \ReflectionClass($model))->getName());
         $relationships = $model->getRelationships();
         $adapter = DriverAdapter::getDefaultInstance();
@@ -39,10 +38,10 @@ class ModelDescription
                 'default' => $details['default'],
                 'name' => $field
             ];
-            if(isset($details['default'])) {
+            if (isset($details['default'])) {
                 $this->fields[$field]['default'] = $details['default'];
             }
-            if(isset($details['length'])) {
+            if (isset($details['length'])) {
                 $this->fields[$field]['length'] = $details['length'];
             }
         }
@@ -50,14 +49,12 @@ class ModelDescription
         $this->appendConstraints($schema['primary_key'], $this->primaryKey, true);
         $this->appendConstraints($schema['unique_keys'], $this->uniqueKeys);
 
-        foreach($relationships as $type => $relations) {
+        foreach ($relationships as $type => $relations) {
             $this->createRelationships($type, $relations);
         }
-
     }
 
-    private function appendConstraints($constraints, &$key, $flat = false)
-    {
+    private function appendConstraints($constraints, &$key, $flat = false) {
         foreach ($constraints as $constraint) {
             if ($flat) {
                 $key = $constraint['columns'];
@@ -70,30 +67,31 @@ class ModelDescription
         }
     }
 
-    private function getRelationshipDetails($relationship)
-    {
-        if(is_string($relationship))
-        {
-            return [
+    private function getRelationshipDetails($relationship) {
+        $relationshipDetails = [];
+        if (is_string($relationship)) {
+            $relationshipDetails = [
                 'model' => $relationship,
                 'name' => $relationship,
                 'foreign_key' => '',
                 'local_key' => ''
             ];
         } else if (is_array($relationship)) {
-            return [
+            $relationshipDetails = [
                 'model' => $relationship[0],
                 'name' => isset($relationship['as']) ? $relationship['as'] : $relationship[0],
                 'foreign_key' => isset($relationship['foreign_key']) ? $relationship['foreign_key'] : '',
                 'local_key' => isset($relationship['local_key']) ? $relationship['local_key'] : ''
             ];
+        } else {
+            return null;
         }
+        $relationshipDetails['local_table'] = $this->table;
+        return $relationshipDetails;
     }
 
-    private function createRelationships($type, $relationships)
-    {
-        foreach($relationships as $relationship)
-        {
+    private function createRelationships($type, $relationships) {
+        foreach ($relationships as $relationship) {
             $relationship = $this->getRelationshipDetails($relationship);
             $class = "\\ntentan\\nibii\\relationships\\{$type}Relationship";
             $relationshipObject = new $class();
@@ -107,28 +105,24 @@ class ModelDescription
      * 
      * @return array<Relationship>
      */
-    public function getRelationships()
-    {
+    public function getRelationships() {
         return $this->relationships;
     }
 
-    public function getPrimaryKey()
-    {
+    public function getPrimaryKey() {
         return $this->primaryKey;
     }
 
-    public function getAutoPrimaryKey()
-    {
+    public function getAutoPrimaryKey() {
         return $this->autoPrimaryKey;
     }
 
-    public function getFields()
-    {
+    public function getFields() {
         return $this->fields;
     }
-    
-    public function getUniqueKeys()
-    {
+
+    public function getUniqueKeys() {
         return $this->uniqueKeys;
     }
+
 }

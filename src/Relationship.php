@@ -28,47 +28,46 @@ namespace ntentan\nibii;
 
 use ntentan\panie\InjectionContainer;
 
-abstract class Relationship
-{
+abstract class Relationship {
+
     const BELONGS_TO = 'BelongsTo';
     const HAS_MANY = 'HasMany';
     const MANY_HAVE_MANY = 'ManyHaveMany';
-    
+
     protected $options = [];
     protected $type;
     protected $setupName;
     protected $setupTable;
     protected $setupPrimaryKey;
-    
     private $setup = false;
 
-    public function setOptions($options)
-    {
+    public function setOptions($options) {
         $this->options = $options;
     }
-    
-    public function getOptions()
-    {
+
+    public function getOptions() {
         return $this->options;
     }
 
-    public function getModelInstance()
-    {
-        if(!$this->setup) {
+    /**
+     * Gets an instance of the related model accessed through this class.
+     * @return RecordWrapper
+     */
+    public function getModelInstance() {
+        if (!$this->setup) {
             $this->runSetup();
             $this->setup = true;
         }
         return InjectionContainer::resolve(Nibii::getClassName($this->options['model'], $this->type));
     }
-    
-    public function setup($name, $table, $primaryKey) 
-    {
+
+    public function setup($name, $table, $primaryKey) {
         $this->setupName = $name;
         $this->setupTable = $table;
         $this->setupPrimaryKey = $primaryKey;
     }
 
     abstract public function getQuery($data);
+
     abstract public function runSetup();
-    
 }

@@ -1,24 +1,29 @@
 <?php
+
 namespace ntentan\nibii;
 
-class QueryEngine
-{
+class QueryEngine {
 
     private $db;
 
-    public function setDriver($driver)
-    {
+    public function setDriver($driver) {
         $this->db = $driver;
     }
-    
-    private function filter($query)
-    {
+ 
+    private function filter($query) {
         return $query;
     }
 
-    public function getInsertQuery($model)
-    {
+    /**
+     * Generates an SQL insert query string for the model based on the fields
+     * currently stored in the model.
+     * 
+     * @param RecordWrapper $model
+     * @return string
+     */
+    public function getInsertQuery($model) {
         $data = $model->getData();
+        $table = $model->getDBStoreInformation()['quoted_table'];
         $fields = array_keys($data[0]);
         $quotedFields = [];
         $valueFields = [];
@@ -29,28 +34,33 @@ class QueryEngine
         }
 
         return $this->filter(
-            "INSERT INTO " . $this->db->quoteIdentifier($model->getTable()) .
+            "INSERT INTO " . $table .
             " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")"
         );
     }
 
-    public function getBulkUpdateQuery($data, $parameters)
-    {
+    public function getBulkUpdateQuery($data, $parameters) {
         $updateData = [];
-        foreach($data as $field => $value) {
+        foreach ($data as $field => $value) {
             $updateData[] = "{$this->db->quoteIdentifier($field)} = :$field";
         }
 
         return $this->filter(sprintf(
-            "UPDATE %s SET %s %s",
-            $parameters->getTable(),
-            implode(', ', $updateData),
+            "UPDATE %s SET %s %s", 
+            $parameters->getTable(), 
+            implode(', ', $updateData), 
             $parameters->getWhereClause()
         ));
     }
 
-    public function getUpdateQuery($model)
-    {
+    /**
+     * Generates an SQL update query string for the model based on the data
+     * currently stored in the model.
+     * 
+     * @param RecordWrapper $model
+     * @return string
+     */    
+    public function getUpdateQuery($model) {
         $data = $model->getData();
         $fields = array_keys($data[0]);
         $valueFields = [];
@@ -60,7 +70,7 @@ class QueryEngine
         foreach ($fields as $field) {
             $quotedField = $this->db->quoteIdentifier($field);
 
-            if(array_search($field, $primaryKey) !== false) {
+            if (array_search($field, $primaryKey) !== false) {
                 $conditions[] = "{$quotedField} = :{$field}";
             } else {
                 $valueFields[] = "{$quotedField} = :{$field}";
@@ -68,43 +78,41 @@ class QueryEngine
         }
 
         return $this->filter("UPDATE " .
-            $this->db->quoteIdentifier($model->getTable()) .
+            $model->getDBStoreInformation()['quoted_table'] .
             " SET " . implode(', ', $valueFields) .
             " WHERE " . implode(' AND ', $conditions)
         );
     }
 
-    public function getSelectQuery($parameters)
-    {
+    public function getSelectQuery($parameters) {
         return $this->filter(sprintf(
-                "SELECT %s FROM %s%s%s%s%s",
-                $parameters->getFields(),
-                $parameters->getTable(),
-                $parameters->getWhereClause(),
-                $parameters->getSorts(),
-                $parameters->getLimit(),
+                "SELECT %s FROM %s%s%s%s%s", 
+                $parameters->getFields(), 
+                $parameters->getTable(), 
+                $parameters->getWhereClause(), 
+                $parameters->getSorts(), 
+                $parameters->getLimit(), 
                 $parameters->getOffset()
             )
         );
     }
-    
-    public function getCountQuery($parameters)
-    {
+
+    public function getCountQuery($parameters) {
         return $this->filter(sprintf(
-                "SELECT count(*) as count FROM %s%s",
-                $parameters->getTable(),
+                "SELECT count(*) as count FROM %s%s", 
+                $parameters->getTable(), 
                 $parameters->getWhereClause()
             )
         );
     }
 
-    public function getDeleteQuery($parameters)
-    {
+    public function getDeleteQuery($parameters) {
         return $this->filter(sprintf(
-                "DELETE FROM %s%s",
-                $parameters->getTable(),
+                "DELETE FROM %s%s", 
+                $parameters->getTable(), 
                 $parameters->getWhereClause()
             )
         );
     }
+
 }

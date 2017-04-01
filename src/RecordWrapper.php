@@ -30,7 +30,11 @@ use ntentan\utils\Utils;
 use ntentan\kaikai\Cache;
 use ntentan\panie\InjectionContainer;
 use ntentan\utils\Text;
+use ntentan\atiaa\Db;
 
+/**
+ * 
+ */
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
     use \ntentan\panie\ComponentContainerTrait;
@@ -40,6 +44,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     protected $manyHaveMany = [];
     protected $behaviours = [];
     protected $table;
+    protected $schema;
+    private $quotedTable;
+    private $unquotedTable;
     private $modelData = [];
     private $invalidFields;
     private $dynamicOperations;
@@ -48,8 +55,19 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     protected $adapter;
 
     public function __construct(DriverAdapter $adapter) {
-        $this->table = Nibii::getModelTable($this);
+        $table = Nibii::getModelTable($this);
+        $driver = Db::getDriver();
+        if(is_string($table)) {
+            $this->quotedTable = $driver->quoteIdentifier($table);
+            $this->table = $this->unquotedTable = $table;
+        } else {
+            $this->quotedTable = (isset($table['schema']) ? "{$driver->quoteIdentifier($table["schema"])}." : ""). $driver->quoteIdentifier($table["table"]);
+            $this->unquotedTable = (isset($table['schema']) ? "{$table['schema']}." : "") . $table['table'];
+            $this->table = $table['table'];
+            $this->schema = $table['schema'];
+        }
         $this->adapter = $adapter;
+        $this->adapter->setModel($this, $this->quotedTable);
         foreach ($this->behaviours as $behaviour) {
             $behaviourInstance = $this->getComponentInstance($behaviour);
             $behaviourInstance->setModel($this);
@@ -62,9 +80,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      */
     public function getDescription() {
         return Cache::read(
-                        (new \ReflectionClass($this))->getName() . '::desc', function() {
-                    return new ModelDescription($this);
-                }
+            (new \ReflectionClass($this))->getName() . '::desc', function() {
+                return new ModelDescription($this);
+            }
         );
     }
 
@@ -76,6 +94,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
         }
     }
 
+    /**
+     * Retrieve an item stored in the record.
+     * This method returns items that are directly stored in the model or lazy
+     * loads related items. The key could be a field in the model's table or
+     * the name of a related model.
+     * @param string $key A key identifying the item to be retrieved.
+     * @return mixed
+     */
     private function retrieveItem($key) {
         $relationships = $this->getDescription()->getRelationships();
         $decamelizedKey = Text::deCamelize($key);
@@ -103,7 +129,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     public function __call($name, $arguments) {
         if ($this->dynamicOperations === null) {
             $this->dynamicOperations = new Operations(
-                    $this, $this->adapter
+                $this, $this->adapter, $this->quotedTable
             );
         }
         return $this->dynamicOperations->perform($name, $arguments);
@@ -120,10 +146,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
     public function __get($name) {
         return $this->retrieveItem($name);
-    }
-
-    public function getTable() {
-        return $this->table;
     }
 
     private function expandArrayValue($array, $relationships, $depth, $index = null) {
@@ -299,6 +321,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
     public function getBehaviours() {
         return $this->loadedComponents;
+    }
+    
+    public function getDBStoreInformation() {
+        return [
+            'schema' => $this->schema,
+            'table' => $this->table,
+            'quoted_table' => $this->quotedTable,
+            'unquoted_table' => $this->unquotedTable
+        ];
     }
 
 }

@@ -12,8 +12,7 @@ use ntentan\atiaa\Db;
  * data types from the native datatypes of the database to the generic types
  * used in the nibii library.
  */
-abstract class DriverAdapter
-{
+abstract class DriverAdapter {
 
     protected $data;
     private $insertQuery;
@@ -21,8 +20,7 @@ abstract class DriverAdapter
     private $modelInstance;
     protected $queryEngine;
 
-    public function setData($data)
-    {
+    public function setData($data) {
         $this->data = $data;
     }
 
@@ -41,100 +39,78 @@ abstract class DriverAdapter
      * @param type $parameters
      * @return type
      */
-    public function select($parameters)
-    {
+    public function select($parameters) {
         $result = Db::getDriver()->query(
             $this->getQueryEngine()->getSelectQuery($parameters), 
             $parameters->getBoundData()
         );
-        
+
         if ($parameters->getFirstOnly() && isset($result[0])) {
             $result = $result[0];
         }
 
         return $result;
     }
-    
-    public function count($parameters)
-    {
+
+    public function count($parameters) {
         $result = Db::getDriver()->query(
-            $this->getQueryEngine()->getCountQuery($parameters),
-            $parameters->getBoundData()
+                $this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData()
         );
         return $result[0]['count'];
     }
 
-    private function initInsert()
-    {
+    private function initInsert() {
         $this->insertQuery = $this->getQueryEngine()
-            ->getInsertQuery($this->modelInstance);
+                ->getInsertQuery($this->modelInstance);
     }
 
-    private function initUpdate()
-    {
-        $this->updateQuery = $this->getQueryEngine()
-            ->getUpdateQuery($this->modelInstance);
+    private function initUpdate() {
+        $this->updateQuery = $this->getQueryEngine()->getUpdateQuery($this->modelInstance);
     }
 
-    public function insert($record)
-    {
-        if($this->insertQuery === null) {
+    public function insert($record) {
+        if ($this->insertQuery === null) {
             $this->initInsert();
         }
         return Db::getDriver()->query($this->insertQuery, $record);
     }
 
-    public function update($record)
-    {
-        if($this->updateQuery === null) {
+    public function update($record) {
+        if ($this->updateQuery === null) {
             $this->initUpdate();
         }
         return Db::getDriver()->query($this->updateQuery, $record);
     }
 
-    public function bulkUpdate($data, $parameters)
-    {
+    public function bulkUpdate($data, $parameters) {
         return Db::getDriver()->query(
-            $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters),
-            array_merge($data, $parameters->getBoundData())
+                        $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters), array_merge($data, $parameters->getBoundData())
         );
     }
 
-    public function delete($parameters)
-    {
+    public function delete($parameters) {
         return Db::getDriver()->query(
-            $this->getQueryEngine()->getDeleteQuery($parameters),
-            $parameters->getBoundData()
+                        $this->getQueryEngine()->getDeleteQuery($parameters), $parameters->getBoundData()
         );
     }
 
-    public function describe($model, $relationships)
-    {
+    public function describe($model, $relationships) {
         return new ModelDescription(
-            Db::getDriver()->describeTable($table)[$table],
-            $relationships, function($type) { return $this->mapDataTypes($type); }
+                Db::getDriver()->describeTable($table)[$table], $relationships, function($type) {
+            return $this->mapDataTypes($type);
+        }
         );
     }
 
-    public static function getDefaultInstance()
-    {
+    public static function getDefaultInstance() {
         return \ntentan\panie\InjectionContainer::resolve(DriverAdapter::class);
-        /*$driver = Db::getDefaultSettings()['driver'];
-        if ($driver) {
-            $class = "\\ntentan\\nibii\\adapters\\" . Text::ucamelize($driver) . "Adapter";
-            $instance = new $class();
-        } else {
-            throw new \Exception("No datastore specified");
-        }
-        return $instance;*/
     }
 
     /**
      *
      * @return \ntentan\nibii\QueryEngine
      */
-    private function getQueryEngine()
-    {
+    private function getQueryEngine() {
         if ($this->queryEngine === null) {
             $this->queryEngine = new QueryEngine();
             $this->queryEngine->setDriver(Db::getDriver());
@@ -142,8 +118,8 @@ abstract class DriverAdapter
         return $this->queryEngine;
     }
 
-    public function setModel($model)
-    {
+    public function setModel($model) {
         $this->modelInstance = $model;
     }
+
 }

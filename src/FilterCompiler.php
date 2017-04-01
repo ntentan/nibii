@@ -8,8 +8,7 @@ namespace ntentan\nibii;
  * the FilterCompiler ensures that raw data is never passed through queries.
  * This is done in order to minimize injection errors.
  */
-class FilterCompiler
-{
+class FilterCompiler {
 
     private $lookahead;
     private $token;
@@ -51,11 +50,9 @@ class FilterCompiler
         array('in'),
         array('multiply')
     );
-
     private $numPositions = 0;
 
-    public function compile($filter)
-    {
+    public function compile($filter) {
         $this->filter = $filter;
         $this->getToken();
         $expression = $this->parseExpression();
@@ -66,16 +63,14 @@ class FilterCompiler
         return $parsed;
     }
 
-    private function renderExpression($expression)
-    {
+    private function renderExpression($expression) {
         if (is_array($expression)) {
             $expression = $this->renderExpression($expression['left']) . " {$expression['opr']} " . $this->renderExpression($expression['right']);
         }
         return $expression;
     }
 
-    private function match($tokens)
-    {
+    private function match($tokens) {
         if (is_string($tokens)) {
             $tokens = [$tokens];
         }
@@ -84,8 +79,7 @@ class FilterCompiler
         }
     }
 
-    private function parseBetween()
-    {
+    private function parseBetween() {
         $this->match(['named_bind_param', 'number', 'position_bind_param']);
         $left = $this->token;
         $this->getToken();
@@ -97,8 +91,7 @@ class FilterCompiler
         return "$left AND $right";
     }
 
-    private function parseIn()
-    {
+    private function parseIn() {
         $expression = "(";
         $this->match('obracket');
         $this->getToken();
@@ -122,8 +115,7 @@ class FilterCompiler
         return $expression;
     }
 
-    private function parseFunctionParams()
-    {
+    private function parseFunctionParams() {
         $parameters = '';
         $size = 0;
         do {
@@ -139,8 +131,7 @@ class FilterCompiler
         return $parameters;
     }
 
-    private function parseCast()
-    {
+    private function parseCast() {
         $return = 'cast(';
         $this->getToken();
         $this->match('obracket');
@@ -157,33 +148,28 @@ class FilterCompiler
         return $return;
     }
 
-    private function parseFunction()
-    {
+    private function parseFunction() {
         $name = $this->token;
         $this->getToken();
         $parameters = $this->parseFunctionParams();
         return "$name$parameters)";
     }
 
-    private function returnToken()
-    {
+    private function returnToken() {
         return $this->token;
     }
 
-    private function returnPositionTag()
-    {
-        return ":filter_bind_" . (++$this->numPositions);
+    private function returnPositionTag() {
+        return ":filter_bind_" . ( ++$this->numPositions);
     }
 
-    private function parseObracket()
-    {
+    private function parseObracket() {
         $this->getToken();
         $expression = $this->parseExpression();
         return $this->renderExpression($expression);
     }
 
-    private function parseFactor()
-    {
+    private function parseFactor() {
         $return = null;
         $methods = [
             'cast' => 'parseCast',
@@ -195,7 +181,7 @@ class FilterCompiler
             'obracket' => 'parseObracket'
         ];
 
-        if(isset($methods[$this->lookahead])) {
+        if (isset($methods[$this->lookahead])) {
             $method = $methods[$this->lookahead];
             $return = $this->$method();
         }
@@ -204,8 +190,7 @@ class FilterCompiler
         return $return;
     }
 
-    private function parseRightExpression($level, $opr)
-    {
+    private function parseRightExpression($level, $opr) {
         switch ($opr) {
             case 'between': return $this->parseBetween();
             case 'in': return $this->parseIn();
@@ -213,8 +198,7 @@ class FilterCompiler
         }
     }
 
-    private function parseExpression($level = 0)
-    {
+    private function parseExpression($level = 0) {
         if ($level === count($this->operators)) {
             return $this->parseFactor();
         } else {
@@ -240,8 +224,7 @@ class FilterCompiler
         return $expression;
     }
 
-    private function getToken()
-    {
+    private function getToken() {
         $this->eatWhite();
         $this->token = false;
         foreach ($this->tokens as $token => $regex) {
@@ -258,8 +241,7 @@ class FilterCompiler
         }
     }
 
-    private function eatWhite()
-    {
+    private function eatWhite() {
         if (preg_match("/^\s*/", $this->filter, $matches)) {
             $this->filter = substr($this->filter, strlen($matches[0]));
         }
@@ -267,16 +249,14 @@ class FilterCompiler
 
     public function rewriteBoundData($data) {
         $rewritten = [];
-        foreach($data as $key => $value) {
-            if(is_numeric($key))
-            {
+        foreach ($data as $key => $value) {
+            if (is_numeric($key)) {
                 $rewritten["filter_bind_" . ($key + 1)] = $value;
-            }
-            else
-            {
+            } else {
                 $rewritten[$key] = $value;
             }
         }
         return $rewritten;
     }
+
 }

@@ -2,14 +2,13 @@
 
 namespace ntentan\nibii;
 
-
 /**
  * Description of QueryParameters
  *
  * @author ekow
  */
-class QueryParameters
-{
+class QueryParameters {
+
     private $whereClause;
     private $and = '';
     private $boundData = [];
@@ -26,14 +25,12 @@ class QueryParameters
      *
      * @param \ $model
      */
-    public function __construct($wrapper)
-    {
+    public function __construct($table) {
         $this->db = DriverAdapter::getDefaultInstance();
-        $this->table = $wrapper->getTable();
+        $this->table = $table;
     }
 
-    public function getFields()
-    {
+    public function getFields() {
         $fields = '*';
 
         if (count($this->fields) > 0) {
@@ -43,60 +40,51 @@ class QueryParameters
         return $fields;
     }
 
-    public function getEagerLoad()
-    {
+    public function getEagerLoad() {
         return $this->eagerLoad;
     }
 
-    public function setFields($fields)
-    {
+    public function setFields($fields) {
         $this->fields = $fields;
         return $this;
     }
 
-    public function getTable()
-    {
+    public function getTable() {
         return $this->table;
     }
-    
-    public function getLimit()
-    {
+
+    public function getLimit() {
         return $this->limit > 0 ? " LIMIT {$this->limit}" : null;
     }
-    
-    public function getOffset()
-    {
+
+    public function getOffset() {
         return $this->offset > 0 ? " OFFSET {$this->offset}" : null;
     }
 
-    public function getWhereClause()
-    {
+    public function getWhereClause() {
         return $this->whereClause ? " WHERE {$this->whereClause}" : '';
     }
 
-    public function getBoundData()
-    {
+    public function getBoundData() {
         return $this->boundData;
     }
-    
-    public function getSorts()
-    {
+
+    public function getSorts() {
         return count($this->sorts) ? " ORDER BY " . implode(", ", $this->sorts) : null;
     }
 
-    public function addFilter($field, $values = [])
-    {
+    public function addFilter($field, $values = []) {
         $this->whereClause .= $this->and;
         $numValues = count($values);
         $startIndex = count($this->boundData);
 
         if ($numValues === 1) {
             $key = "filter_{$startIndex}";
-            if($values[0] === null) {
-               $this->whereClause .= "{$field} is NULL";
+            if ($values[0] === null) {
+                $this->whereClause .= "{$field} is NULL";
             } else {
-               $this->whereClause .= "{$field} = :$key";
-               $this->boundData[$key] = reset($values);
+                $this->whereClause .= "{$field} = :$key";
+                $this->boundData[$key] = reset($values);
             }
         } else {
             $this->whereClause .= "{$field} IN (";
@@ -113,35 +101,30 @@ class QueryParameters
         return $this;
     }
 
-    public function setRawFilter($filter, $values)
-    {
+    public function setRawFilter($filter, $values) {
         $this->whereClause .= "{$this->and}$filter";
         $this->boundData += $values;
     }
 
-    public function setFirstOnly($firstOnly)
-    {
+    public function setFirstOnly($firstOnly) {
         $this->firstOnly = $firstOnly;
         return $this;
     }
 
-    public function getFirstOnly()
-    {
+    public function getFirstOnly() {
         return $this->firstOnly;
     }
-    
-    public function setLimit($numItems)
-    {
+
+    public function setLimit($numItems) {
         $this->limit = $numItems;
     }
-    
-    public function setOffset($offset)
-    {
+
+    public function setOffset($offset) {
         $this->offset = $offset;
     }
-    
-    public function addSort($field, $direction = 'ASC')
-    {
+
+    public function addSort($field, $direction = 'ASC') {
         $this->sorts[] = "$field $direction";
     }
+
 }

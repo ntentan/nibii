@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="../../tests/bootstrap.php">
+    <php>
+        <env name='NIBII_DATASTORE' value='postgresql' />
+        <env name='NIBII_HOST' value='localhost' />
+        <env name='NIBII_USER' value='postgres' />
+        <env name='NIBII_PASSWORD' value='' />
+        <env name='NIBII_DBNAME' value='ntentan_tests' />
+        <env name='NIBII_PDO_DSN' value='pgsql:host=localhost;dbname=ntentan_tests;user=ekow;password=ainooson' />
+    </php>
+    <testsuites>
+        <testsuite name="Main Test Suite">
+            <directory>../cases</directory>    
+        </testsuite>
+    </testsuites>
+</phpunit>

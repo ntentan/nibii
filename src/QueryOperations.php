@@ -29,8 +29,7 @@ namespace ntentan\nibii;
 use ntentan\utils\Text;
 use ntentan\atiaa\Db;
 
-class QueryOperations
-{
+class QueryOperations {
 
     /**
      *
@@ -40,7 +39,7 @@ class QueryOperations
     private $adapter;
     private $queryParameters;
     private $pendingMethod;
-    private $dynamicMethods = [ 
+    private $dynamicMethods = [
         "/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/"
@@ -53,15 +52,13 @@ class QueryOperations
      * @param DataAdapter $adapter
      * @param DataOperations $dataOperations
      */
-    public function __construct($wrapper, $adapter, $dataOperations)
-    {
+    public function __construct($wrapper, $adapter, $dataOperations) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
         $this->dataOperations = $dataOperations;
     }
 
-    public function doFetch($id = null)
-    {
+    public function doFetch($id = null) {
         $parameters = $this->getFetchQueryParameters($id);
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
@@ -69,21 +66,23 @@ class QueryOperations
         return $this->wrapper;
     }
 
-    private function getFetchQueryParameters($arg)
-    {
+    private function getFetchQueryParameters($arg) {
+        if ($arg instanceof \ntentan\nibii\QueryParameters) {
+            return $arg;
+        }        
+        
         $parameters = $this->getQueryParameters();
+        
         if (is_numeric($arg)) {
-            $parameters = $this->getQueryParameters();
             $description = $this->wrapper->getDescription();
             $parameters->addFilter($description->getPrimaryKey()[0], [$arg]);
             $parameters->setFirstOnly(true);
-        } else if ($arg instanceof \ntentan\nibii\QueryParameters) {
-            $parameters = $arg;
         } else if (is_array($arg)) {
-            foreach($arg as $field => $value) {
+            foreach ($arg as $field => $value) {
                 $parameters->addFilter($field, [$value]);
             }
         }
+        
         return $parameters;
     }
 
@@ -91,42 +90,37 @@ class QueryOperations
      *
      * @return \ntentan\nibii\QueryParameters
      */
-    private function getQueryParameters($instantiate = true)
-    {
+    private function getQueryParameters($instantiate = true) {
         if ($this->queryParameters === null && $instantiate) {
-            $this->queryParameters = new QueryParameters($this->wrapper);
+            $this->queryParameters = new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
         }
         return $this->queryParameters;
     }
 
-    private function resetQueryParameters()
-    {
+    private function resetQueryParameters() {
         $this->queryParameters = null;
     }
 
-    public function doFetchFirst($id = null)
-    {
+    public function doFetchFirst($id = null) {
         $this->getQueryParameters()->setFirstOnly(true);
         return $this->doFetch($id);
     }
 
-    public function doFields()
-    {
+    public function doFields() {
         $fields = [];
         $arguments = func_get_args();
-        foreach($arguments as $argument) {
-            if(is_array($argument)) {
+        foreach ($arguments as $argument) {
+            if (is_array($argument)) {
                 $fields = array_merge($fields, $argument);
             } else {
-                $fields[]=$argument;
+                $fields[] = $argument;
             }
         }
         $this->getQueryParameters()->setFields($fields);
         return $this->wrapper;
     }
 
-    private function getFilter($arguments)
-    {
+    private function getFilter($arguments) {
         if (count($arguments) == 2 && is_array($arguments[1])) {
             $filter = $arguments[0];
             $data = $arguments[1];
@@ -137,8 +131,7 @@ class QueryOperations
         return ['filter' => $filter, 'data' => $data];
     }
 
-    public function doFilter()
-    {
+    public function doFilter() {
         $arguments = func_get_args();
         $details = $this->getFilter($arguments);
         $filterCompiler = new FilterCompiler();
@@ -148,16 +141,14 @@ class QueryOperations
         return $this->wrapper;
     }
 
-    public function doFilterBy()
-    {
+    public function doFilterBy() {
         $arguments = func_get_args();
         $details = $this->getFilter($arguments);
         $this->getQueryParameters()->addFilter($details['filter'], $details['data']);
         return $this->wrapper;
     }
 
-    public function doUpdate($data)
-    {
+    public function doUpdate($data) {
         Db::getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
@@ -165,8 +156,7 @@ class QueryOperations
         $this->resetQueryParameters();
     }
 
-    public function doDelete()
-    {
+    public function doDelete() {
         Db::getDriver()->beginTransaction();
         $parameters = $this->getQueryParameters(false);
 
@@ -192,8 +182,7 @@ class QueryOperations
         $this->resetQueryParameters();
     }
 
-    public function runDynamicMethod($arguments)
-    {
+    public function runDynamicMethod($arguments) {
         switch ($this->pendingMethod['method']) {
             case 'filterBy':
                 $this->getQueryParameters()->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);
@@ -211,8 +200,7 @@ class QueryOperations
         }
     }
 
-    public function initDynamicMethod($method)
-    {
+    public function initDynamicMethod($method) {
         $return = false;
 
         foreach ($this->dynamicMethods as $regexp) {
@@ -226,20 +214,18 @@ class QueryOperations
         return $return;
     }
 
-    public function doCount()
-    {
+    public function doCount() {
         return $this->adapter->count($this->getQueryParameters());
     }
 
-    public function doLimit($numItems)
-    {
+    public function doLimit($numItems) {
         $this->getQueryParameters()->setLimit($numItems);
         return $this->wrapper;
     }
 
-    public function doOffset($offset)
-    {
+    public function doOffset($offset) {
         $this->getQueryParameters()->setOffset($offset);
         return $this->wrapper;
-    }   
+    }
+
 }
