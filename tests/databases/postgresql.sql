@@ -1,5 +1,3 @@
-CREATE SCHEMA test_schema;
-
 CREATE TABLE departments (
     id integer NOT NULL,
     name character varying(255) NOT NULL
@@ -85,21 +83,6 @@ CREATE SEQUENCE projects_id_seq
 
 ALTER SEQUENCE projects_id_seq OWNED BY projects.id;
 
-SET search_path = test_schema, pg_catalog;
-
-
-CREATE TABLE test_table (
-    id integer NOT NULL,
-    test_column character varying
-);
-
-CREATE SEQUENCE test_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
 ALTER TABLE ONLY departments ALTER COLUMN id SET DEFAULT nextval('departments_id_seq'::regclass);
 
 ALTER TABLE ONLY roles ALTER COLUMN id SET DEFAULT nextval('roles_id_seq'::regclass);
@@ -130,3 +113,19 @@ ALTER TABLE ONLY projects
 
 ALTER TABLE ONLY projects_users
     ADD CONSTRAINT projects_users_pkey PRIMARY KEY (id);
+
+CREATE SCHEMA test_schema;
+
+SET search_path = test_schema, pg_catalog;
+
+CREATE TABLE test_table (
+    id integer NOT NULL,
+    test_column character varying
+);
+
+CREATE SEQUENCE test_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
