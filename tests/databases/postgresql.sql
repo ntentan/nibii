@@ -1,3 +1,5 @@
+CREATE SCHEMA test_schema;
+
 CREATE TABLE departments (
     id integer NOT NULL,
     name character varying(255) NOT NULL
