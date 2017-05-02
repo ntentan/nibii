@@ -102,10 +102,6 @@ abstract class DriverAdapter {
         );
     }
 
-    public static function getDefaultInstance() {
-        return \ntentan\panie\InjectionContainer::resolve(DriverAdapter::class);
-    }
-
     /**
      *
      * @return \ntentan\nibii\QueryEngine

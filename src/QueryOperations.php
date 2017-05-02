@@ -28,6 +28,7 @@ namespace ntentan\nibii;
 
 use ntentan\utils\Text;
 use ntentan\atiaa\Db;
+use ntentan\panie\Container;
 
 class QueryOperations {
 
@@ -52,7 +53,7 @@ class QueryOperations {
      * @param DataAdapter $adapter
      * @param DataOperations $dataOperations
      */
-    public function __construct($wrapper, $adapter, $dataOperations) {
+    public function __construct(Container $container, $wrapper, $adapter, $dataOperations) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
         $this->dataOperations = $dataOperations;

@@ -2,6 +2,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\panie\Container;
+
 class Operations {
 
     private $wrapper;
@@ -22,7 +24,7 @@ class Operations {
         'save'
     ];
 
-    public function __construct($wrapper, $adapter, $table) {
+    public function __construct(Container $container, $wrapper, $adapter, $table) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
         $this->dataOperations = new DataOperations($wrapper, $adapter, $table);

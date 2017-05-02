@@ -25,8 +25,8 @@ class QueryParameters {
      *
      * @param \ $model
      */
-    public function __construct($table) {
-        $this->db = DriverAdapter::getDefaultInstance();
+    public function __construct(DriverAdapter $db, $table) {
+        $this->db = $db;
         $this->table = $table;
     }
 

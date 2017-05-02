@@ -26,9 +26,7 @@
 
 namespace ntentan\nibii;
 
-use ntentan\utils\Utils;
 use ntentan\kaikai\Cache;
-use ntentan\panie\InjectionContainer;
 use ntentan\utils\Text;
 use ntentan\atiaa\Db;
 
@@ -53,15 +51,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $index = 0;
     private $dataSet = false;
     protected $adapter;
+    private $container;
 
-    public function __construct(DriverAdapter $adapter) {
-        $table = Nibii::getModelTable($this);
-        $driver = Db::getDriver();
-        if(is_string($table)) {
+    public function __construct(DriverAdapter $adapter, Context $context) {
+        $table = $context->getModelTable($this);
+        $driver = $context->getDbContext()->getDriver();
+        $this->container = $context->getContainer();
+        if (is_string($table)) {
             $this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
         } else {
-            $this->quotedTable = (isset($table['schema']) ? "{$driver->quoteIdentifier($table["schema"])}." : ""). $driver->quoteIdentifier($table["table"]);
+            $this->quotedTable = ( isset($table['schema']) ? "{$driver->quoteIdentifier($table["schema"])}." : "") . $driver->quoteIdentifier($table["table"]);
             $this->unquotedTable = (isset($table['schema']) ? "{$table['schema']}." : "") . $table['table'];
             $this->table = $table['table'];
             $this->schema = $table['schema'];
@@ -117,7 +117,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      */
     public static function createNew() {
         $class = get_called_class();
-        return InjectionContainer::resolve($class);
+        return Context::getInstance()->getContainer()->resolve($class);
     }
 
     /**
@@ -128,8 +128,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      */
     public function __call($name, $arguments) {
         if ($this->dynamicOperations === null) {
-            $this->dynamicOperations = new Operations(
-                $this, $this->adapter, $this->quotedTable
+            $this->dynamicOperations = $this->container->resolve(
+                Operations::class,
+                ['wrapper' => $this, 'adapter' => $this->adapter, 'table' => $this->quotedTable]
             );
         }
         return $this->dynamicOperations->perform($name, $arguments);
@@ -322,7 +323,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     public function getBehaviours() {
         return $this->loadedComponents;
     }
-    
+
     public function getDBStoreInformation() {
         return [
             'schema' => $this->schema,
