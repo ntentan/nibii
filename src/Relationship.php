@@ -26,8 +26,6 @@
 
 namespace ntentan\nibii;
 
-use ntentan\panie\InjectionContainer;
-
 abstract class Relationship {
 
     const BELONGS_TO = 'BelongsTo';

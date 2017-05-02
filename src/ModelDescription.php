@@ -2,8 +2,6 @@
 
 namespace ntentan\nibii;
 
-use ntentan\atiaa\Db;
-
 class ModelDescription {
 
     private $fields = [];

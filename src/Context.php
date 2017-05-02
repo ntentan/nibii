@@ -2,9 +2,9 @@
 
 namespace ntentan\nibii;
 
-use ntentan\panie\Container;
-use ntentan\kaikai\Cache;
 use ntentan\atiaa\DbContext;
+use ntentan\kaikai\Cache;
+use ntentan\panie\Container;
 
 /**
  * A collection of utility methods used as helpers for loading
@@ -21,11 +21,11 @@ class Context {
         $this->container = $container;
         $this->dbContext = $container->resolve(DbContext::class);
         $this->container->bind(interfaces\ModelJoinerInterface::class)
-             ->to(Resolver::class);
+                ->to(Resolver::class);
         $this->container->bind(interfaces\TableNameResolverInterface::class)
-             ->to(Resolver::class);
+                ->to(Resolver::class);
         $this->container->bind(interfaces\ModelClassResolverInterface::class)
-             ->to(Resolver::class);
+                ->to(Resolver::class);
         $this->cache = $this->container->resolve(Cache::class);
         self::$instance = $this;
     }
@@ -56,6 +56,9 @@ class Context {
             ->getJunctionClassName($classA, $classB);
     }
 
+    /**
+     * @param RecordWrapper $instance
+     */
     public function getModelTable($instance) {
         return$this->container->singleton(interfaces\TableNameResolverInterface::class)
             ->getTableName($instance);
@@ -66,6 +69,9 @@ class Context {
             ->getModelClassName($model, $context);
     }
 
+    /**
+     * @param string $class
+     */
     public function getModelName($class) {
         return $class;
     }

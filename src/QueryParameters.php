@@ -22,7 +22,7 @@ class QueryParameters {
 
     /**
      *
-     * @param \ $model
+     * @param string $table
      */
     public function __construct($table) {
         $this->table = $table;
@@ -104,6 +104,9 @@ class QueryParameters {
         $this->boundData += $values;
     }
 
+    /**
+     * @param boolean $firstOnly
+     */
     public function setFirstOnly($firstOnly) {
         $this->firstOnly = $firstOnly;
         return $this;
@@ -121,6 +124,9 @@ class QueryParameters {
         $this->offset = $offset;
     }
 
+    /**
+     * @param string $field
+     */
     public function addSort($field, $direction = 'ASC') {
         $this->sorts[] = "$field $direction";
     }
