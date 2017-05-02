@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8fb880337f7a5895a6aa1747db5f0e4a",
+    "content-hash": "ba99c015eacd7312382e3511911b50c6",
     "packages": [
         {
             "name": "ntentan/atiaa",
@@ -90,16 +90,16 @@
         },
         {
             "name": "ntentan/kaikai",
-            "version": "v0.2.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/kaikai.git",
-                "reference": "fb09470918372aa343771802ea9e34e49aa4b759"
+                "reference": "166a5f4e5012995e38ee0686a87c8f80dfbd7af3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/fb09470918372aa343771802ea9e34e49aa4b759",
-                "reference": "fb09470918372aa343771802ea9e34e49aa4b759",
+                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/166a5f4e5012995e38ee0686a87c8f80dfbd7af3",
+                "reference": "166a5f4e5012995e38ee0686a87c8f80dfbd7af3",
                 "shasum": ""
             },
             "require": {
@@ -119,7 +119,7 @@
                 }
             ],
             "description": "Caching for Ntentan Framework",
-            "time": "2016-04-20T04:43:25+00:00"
+            "time": "2017-04-18 00:01:10"
         },
         {
             "name": "ntentan/panie",
@@ -127,12 +127,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/panie.git",
-                "reference": "8b7e631b1a8179d1aef7e91c2f59fd37094d0840"
+                "reference": "31e60084516a9fa4db60b41d9311875ed5bc9c51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/panie/zipball/8b7e631b1a8179d1aef7e91c2f59fd37094d0840",
-                "reference": "8b7e631b1a8179d1aef7e91c2f59fd37094d0840",
+                "url": "https://api.github.com/repos/ntentan/panie/zipball/31e60084516a9fa4db60b41d9311875ed5bc9c51",
+                "reference": "31e60084516a9fa4db60b41d9311875ed5bc9c51",
                 "shasum": ""
             },
             "require": {
@@ -159,7 +159,7 @@
                 }
             ],
             "description": "A thin DI container for NtentanFX",
-            "time": "2017-05-02 05:43:22"
+            "time": "2017-05-02 16:21:20"
         },
         {
             "name": "ntentan/utils",
@@ -307,7 +307,7 @@
                 "reflection",
                 "static analysis"
             ],
-            "time": "2017-04-30T11:58:12+00:00"
+            "time": "2017-04-30 11:58:12"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -1318,7 +1318,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-05-01T14:31:55+00:00"
+            "time": "2017-05-01 14:31:55"
         },
         {
             "name": "webmozart/assert",
@@ -1375,6 +1375,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "ntentan/atiaa": 20,
+        "ntentan/kaikai": 20,
         "ntentan/panie": 20
     },
     "prefer-stable": false,

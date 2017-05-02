@@ -28,10 +28,16 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\QueryParameters;
 use ntentan\utils\Text;
+use ntentan\nibii\Context;
 
 class HasManyRelationship extends \ntentan\nibii\Relationship
 {
     protected $type = self::HAS_MANY;
+    
+    public function __construct(Context $context) {
+        $this->container = $context->getContainer();
+        $this->context = $context;
+    }    
 
     public function getQuery($data)
     {

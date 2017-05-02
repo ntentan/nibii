@@ -39,6 +39,9 @@ abstract class Relationship {
     protected $setupName;
     protected $setupTable;
     protected $setupPrimaryKey;
+    protected $container;
+    protected $context;
+    
     private $setup = false;
 
     public function setOptions($options) {
@@ -58,7 +61,7 @@ abstract class Relationship {
             $this->runSetup();
             $this->setup = true;
         }
-        return InjectionContainer::resolve(Nibii::getClassName($this->options['model'], $this->type));
+        return $this->container->resolve($this->context->getClassName($this->options['model'], $this->type));
     }
 
     public function setup($name, $table, $primaryKey) {

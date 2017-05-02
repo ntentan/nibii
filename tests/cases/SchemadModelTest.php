@@ -8,16 +8,12 @@ use ntentan\nibii\tests\lib\TestTableNameResolver;
 use ntentan\nibii\tests\models\schemas\Schemad;
 use ntentan\panie\InjectionContainer;
 
-class SchemadModelTest extends \PHPUnit_Framework_TestCase {
+class SchemadModelTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
     
     public function setUp() {
-        InjectionContainer::bind(TableNameResolverInterface::class)
+        parent::setUp();
+        $this->context->getContainer()->bind(TableNameResolverInterface::class)
             ->to(TestTableNameResolver::class);
-    }
-    
-    public function tearDown() {
-        InjectionContainer::bind(TableNameResolverInterface::class)
-            ->to(Resolver::class);        
     }
     
     public function testTable() {

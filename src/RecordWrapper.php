@@ -52,11 +52,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $dataSet = false;
     protected $adapter;
     private $container;
+    private $context;
 
     public function __construct(DriverAdapter $adapter, Context $context) {
         $table = $context->getModelTable($this);
         $driver = $context->getDbContext()->getDriver();
+        $adapter->setContext($context);
         $this->container = $context->getContainer();
+        $this->context = $context;
         if (is_string($table)) {
             $this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
@@ -79,13 +82,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      * @return ModelDescription
      */
     public function getDescription() {
-        return Cache::read(
+        return $this->context->getCache()->read(
             (new \ReflectionClass($this))->getName() . '::desc', function() {
-                return new ModelDescription($this);
+                return $this->container->resolve(ModelDescription::class, ['model' => $this]);
             }
         );
     }
 
+    /**
+     * Return the number of items stored in the model or the query.
+     * @return integer
+     */
     public function count() {
         if ($this->dataSet) {
             return count($this->getData());
@@ -128,10 +135,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      */
     public function __call($name, $arguments) {
         if ($this->dynamicOperations === null) {
+            // Bind to existing instances
+            $this->container->bind(RecordWrapper::class)->to($this);
             $this->dynamicOperations = $this->container->resolve(
-                Operations::class,
-                ['wrapper' => $this, 'adapter' => $this->adapter, 'table' => $this->quotedTable]
+                Operations::class, ['table' => $this->quotedTable, 'adapter' => $this->adapter]
             );
+            // Unbind all bindings (necessary?)
         }
         return $this->dynamicOperations->perform($name, $arguments);
     }

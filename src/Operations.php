@@ -24,11 +24,11 @@ class Operations {
         'save'
     ];
 
-    public function __construct(Container $container, $wrapper, $adapter, $table) {
+    public function __construct(Container $container, RecordWrapper $wrapper, DriverAdapter $adapter, $table) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
-        $this->dataOperations = new DataOperations($wrapper, $adapter, $table);
-        $this->queryOperations = new QueryOperations($wrapper, $adapter, $this->dataOperations);
+        $this->dataOperations = $container->resolve(DataOperations::class, ['adapter' => $adapter]);
+        $this->queryOperations = $container->resolve(QueryOperations::class, ['dataOperations' => $this->dataOperations, 'adapter' => $adapter]);
     }
 
     public function perform($name, $arguments) {

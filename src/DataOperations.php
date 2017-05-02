@@ -26,9 +26,7 @@
 
 namespace ntentan\nibii;
 
-use ntentan\utils\Utils;
 use ntentan\atiaa\Db;
-use ntentan\panie\InjectionContainer;
 
 /**
  * Description of DataOperations
@@ -47,13 +45,17 @@ class DataOperations {
     private $data;
     private $invalidFields;
     private $hasMultipleData;
+    private $driver;
+    private $container;
 
     const MODE_SAVE = 0;
     const MODE_UPDATE = 1;
 
-    public function __construct($wrapper, $adapter) {
+    public function __construct(Context $context, RecordWrapper $wrapper, DriverAdapter $adapter) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
+        $this->driver = $context->getDbContext()->getDriver();
+        $this->container = $context->getContainer();
     }
 
     public function doSave($hasMultipleData) {
@@ -74,7 +76,7 @@ class DataOperations {
             $data = [[]];
         }
 
-        Db::getDriver()->beginTransaction();
+        $this->driver->beginTransaction();
 
         foreach ($data as $i => $datum) {
             $status = $this->saveRecord($datum, $primaryKey);
@@ -83,13 +85,13 @@ class DataOperations {
             if (!$status['success']) {
                 $succesful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
-                Db::getDriver()->rollback();
+                $this->driver->rollback();
                 break;
             }
         }
 
         if ($succesful) {
-            Db::getDriver()->commit();
+            $this->driver->commit();
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
         }
@@ -154,7 +156,7 @@ class DataOperations {
             $this->runBehaviours('postUpdateCallback', [$record]);
         } else {
             $this->adapter->insert($record);
-            $keyValue = Db::getDriver()->getLastInsertId();
+            $keyValue = $this->driver->getLastInsertId();
             $this->wrapper->{$primaryKey[0]} = $keyValue;
             $this->wrapper->postSaveCallback($keyValue);
             $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
@@ -167,8 +169,8 @@ class DataOperations {
 
     private function validate($data, $mode) {
         $valid = true;
-        $validator = \ntentan\panie\InjectionContainer::resolve(
-                        ModelValidator::class, ['model' => $this->wrapper, 'mode' => $mode]
+        $validator = $this->container->resolve(
+            ModelValidator::class, ['model' => $this->wrapper, 'mode' => $mode]
         );
 
         if (!$validator->validate($data)) {

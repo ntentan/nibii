@@ -18,17 +18,19 @@ class ModelDescription {
     private $relationships = [];
     private $table;
     private $name;
+    private $container;
 
     /**
      * 
      * @param RecordWrapper $model
      */
-    public function __construct($model) {
+    public function __construct(Context $context, $model) {
         $this->table = $model->getDBStoreInformation()['unquoted_table'];
-        $this->name = Nibii::getModelName((new \ReflectionClass($model))->getName());
+        $this->name = $context->getModelName((new \ReflectionClass($model))->getName());
+        $this->container = $context->getContainer();
         $relationships = $model->getRelationships();
-        $adapter = DriverAdapter::getDefaultInstance();
-        $schema = array_values(Db::getDriver()->describeTable($this->table))[0];
+        $adapter = $context->getContainer()->resolve(DriverAdapter::class);
+        $schema = array_values($context->getDbContext()->getDriver()->describeTable($this->table))[0];
         $this->autoPrimaryKey = $schema['auto_increment'];
 
         foreach ($schema['columns'] as $field => $details) {
@@ -94,7 +96,7 @@ class ModelDescription {
         foreach ($relationships as $relationship) {
             $relationship = $this->getRelationshipDetails($relationship);
             $class = "\\ntentan\\nibii\\relationships\\{$type}Relationship";
-            $relationshipObject = new $class();
+            $relationshipObject = $this->container->resolve($class);
             $relationshipObject->setOptions($relationship);
             $relationshipObject->setup($this->name, $this->table, $this->primaryKey);
             $this->relationships[$relationship['name']] = $relationshipObject;

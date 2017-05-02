@@ -19,6 +19,11 @@ abstract class DriverAdapter {
     private $updateQuery;
     private $modelInstance;
     protected $queryEngine;
+    private $driver;
+    
+    public function setContext(Context $context) {
+        $this->driver = $context->getDbContext()->getDriver();
+    }
 
     public function setData($data) {
         $this->data = $data;
@@ -40,7 +45,7 @@ abstract class DriverAdapter {
      * @return type
      */
     public function select($parameters) {
-        $result = Db::getDriver()->query(
+        $result = $this->driver->query(
             $this->getQueryEngine()->getSelectQuery($parameters), 
             $parameters->getBoundData()
         );
@@ -53,15 +58,15 @@ abstract class DriverAdapter {
     }
 
     public function count($parameters) {
-        $result = Db::getDriver()->query(
-                $this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData()
+        $result = $this->driver->query(
+            $this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData()
         );
         return $result[0]['count'];
     }
 
     private function initInsert() {
         $this->insertQuery = $this->getQueryEngine()
-                ->getInsertQuery($this->modelInstance);
+            ->getInsertQuery($this->modelInstance);
     }
 
     private function initUpdate() {
@@ -72,33 +77,33 @@ abstract class DriverAdapter {
         if ($this->insertQuery === null) {
             $this->initInsert();
         }
-        return Db::getDriver()->query($this->insertQuery, $record);
+        return $this->driver->query($this->insertQuery, $record);
     }
 
     public function update($record) {
         if ($this->updateQuery === null) {
             $this->initUpdate();
         }
-        return Db::getDriver()->query($this->updateQuery, $record);
+        return $this->driver->query($this->updateQuery, $record);
     }
 
     public function bulkUpdate($data, $parameters) {
-        return Db::getDriver()->query(
-                        $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters), array_merge($data, $parameters->getBoundData())
+        return $this->driver->query(
+            $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters), array_merge($data, $parameters->getBoundData())
         );
     }
 
     public function delete($parameters) {
-        return Db::getDriver()->query(
-                        $this->getQueryEngine()->getDeleteQuery($parameters), $parameters->getBoundData()
+        return $this->driver->query(
+            $this->getQueryEngine()->getDeleteQuery($parameters), $parameters->getBoundData()
         );
     }
 
     public function describe($model, $relationships) {
         return new ModelDescription(
-                Db::getDriver()->describeTable($table)[$table], $relationships, function($type) {
-            return $this->mapDataTypes($type);
-        }
+            $this->driver->describeTable($table)[$table], $relationships, function($type) {
+                return $this->mapDataTypes($type);
+            }
         );
     }
 
@@ -109,7 +114,7 @@ abstract class DriverAdapter {
     private function getQueryEngine() {
         if ($this->queryEngine === null) {
             $this->queryEngine = new QueryEngine();
-            $this->queryEngine->setDriver(Db::getDriver());
+            $this->queryEngine->setDriver($this->driver);
         }
         return $this->queryEngine;
     }

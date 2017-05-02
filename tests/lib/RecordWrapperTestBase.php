@@ -6,7 +6,7 @@ use ntentan\nibii\Context;
 
 class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase {
     
-    private $context;
+    protected $context;
 
     public function setUp() {
         parent::setUp();
@@ -17,11 +17,6 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase {
         $container->bind(\ntentan\atiaa\Driver::class)
             ->to(\ntentan\atiaa\DbContext::getDriverClassName(\ntentan\config\Config::get('ntentan:db.driver')));        
         $this->context = $container->resolve(Context::class,['container' => $container]);
-    }
-
-    public function tearDown() {
-        \ntentan\atiaa\Db::reset();
-        \ntentan\panie\InjectionContainer::resetSingletons();
     }
 
     protected function getConnection() {

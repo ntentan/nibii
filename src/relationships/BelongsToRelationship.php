@@ -28,30 +28,33 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\QueryParameters;
 use ntentan\utils\Text;
-use ntentan\nibii\Nibii;
-use ntentan\panie\InjectionContainer;
+use ntentan\nibii\Context;
 
-class BelongsToRelationship extends \ntentan\nibii\Relationship
-{
+class BelongsToRelationship extends \ntentan\nibii\Relationship {
+
     protected $type = self::BELONGS_TO;
+    
+    public function __construct(Context $context) {
+        $this->container = $context->getContainer();
+        $this->context = $context;
+    }
 
-    public function getQuery($data)
-    {
+    public function getQuery($data) {
         $query = (new QueryParameters($this->getModelInstance()->getDBStoreInformation()['table']))
             ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]])
             ->setFirstOnly(true);
         return $query;
     }
 
-    public function runSetup()
-    {
-        $model = InjectionContainer::resolve(Nibii::getClassName($this->options['model'], self::BELONGS_TO));
+    public function runSetup() {
+        $model = $this->container->resolve($this->context->getClassName($this->options['model'], self::BELONGS_TO));
         $table = $model->getDBStoreInformation()['table'];
-        if($this->options['foreign_key'] == null) {
+        if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }
-        if($this->options['local_key'] == null) {
+        if ($this->options['local_key'] == null) {
             $this->options['local_key'] = Text::singularize($table) . '_id';
         }
     }
+
 }

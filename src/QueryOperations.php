@@ -46,6 +46,7 @@ class QueryOperations {
         "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/"
     ];
     private $dataOperations;
+    private $driver;
 
     /**
      * 
@@ -53,10 +54,11 @@ class QueryOperations {
      * @param DataAdapter $adapter
      * @param DataOperations $dataOperations
      */
-    public function __construct(Container $container, $wrapper, $adapter, $dataOperations) {
+    public function __construct(Context $context, RecordWrapper $wrapper, DriverAdapter $adapter, $dataOperations) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
         $this->dataOperations = $dataOperations;
+        $this->driver = $context->getDbContext()->getDriver();
     }
 
     public function doFetch($id = null) {
@@ -150,15 +152,15 @@ class QueryOperations {
     }
 
     public function doUpdate($data) {
-        Db::getDriver()->beginTransaction();
+        $this->driver->beginTransaction();
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
-        Db::getDriver()->commit();
+        $this->driver->commit();
         $this->resetQueryParameters();
     }
 
     public function doDelete() {
-        Db::getDriver()->beginTransaction();
+        $this->driver->beginTransaction();
         $parameters = $this->getQueryParameters(false);
 
         if ($parameters === null) {
@@ -179,7 +181,7 @@ class QueryOperations {
             $this->adapter->delete($parameters);
         }
 
-        Db::getDriver()->commit();
+        $this->driver->commit();
         $this->resetQueryParameters();
     }
 

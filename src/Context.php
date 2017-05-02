@@ -3,6 +3,8 @@
 namespace ntentan\nibii;
 
 use ntentan\panie\Container;
+use ntentan\kaikai\Cache;
+use ntentan\atiaa\DbContext;
 
 /**
  * A collection of utility methods used as helpers for loading
@@ -13,16 +15,18 @@ class Context {
     private $container;
     private $dbContext;
     private static $instance;
+    private $cache;
     
     public function __construct(Container $container) {
         $this->container = $container;
-        $this->dbContext = $container->resolve(\ntentan\atiaa\DbContext::class);
+        $this->dbContext = $container->resolve(DbContext::class);
         $this->container->bind(interfaces\ModelJoinerInterface::class)
              ->to(Resolver::class);
         $this->container->bind(interfaces\TableNameResolverInterface::class)
              ->to(Resolver::class);
         $this->container->bind(interfaces\ModelClassResolverInterface::class)
              ->to(Resolver::class);
+        $this->cache = $this->container->resolve(Cache::class);
         self::$instance = $this;
     }
 
@@ -73,6 +77,10 @@ class Context {
     
     public function getContainer() {
         return $this->container;
+    }
+    
+    public function getCache() {
+        return $this->cache;
     }
     
     public function getDbContext() {

@@ -28,26 +28,28 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\Nibii;
 use ntentan\utils\Text;
-use ntentan\panie\InjectionContainer;
+use ntentan\nibii\Context;
+use ntentan\nibii\QueryParameters;
 
 class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
     protected $type = self::MANY_HAVE_MANY;
-
-    private function getJunctionModel() {
-        return InjectionContainer::resolve($this->options['junction_model']);
-    }
+    
+    public function __construct(Context $context) {
+        $this->container = $context->getContainer();
+        $this->context = $context;
+    }    
 
     public function getQuery($data) {
-        $junctionModel = $this->getJunctionModel();
+        $junctionModel = $this->container->resolve($this->options['junction_model']);
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
-                ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
-                ->fetch();
+            ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
+            ->fetch();
         $foreignKeys = [];
         foreach ($filter->toArray() as $foreignItem) {
             $foreignKeys[] = $foreignItem[$this->options['junction_foreign_key']];
         }
-        $query = (new \ntentan\nibii\QueryParameters($this->getModelInstance()->getDBStoreInformation()['quoted_table']))
+        $query = (new QueryParameters($this->getModelInstance()->getDBStoreInformation()['quoted_table']))
                 ->addFilter($this->options['foreign_key'], $foreignKeys);
         return $query;
     }
@@ -56,11 +58,11 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         if (isset($this->options['through'])) {
             $junctionModelName = $this->options['through'];
         } else {
-            $junctionModelName = Nibii::joinModels($this->setupName, $this->options['model']);
+            $junctionModelName = $this->context->joinModels($this->setupName, $this->options['model']);
         }
         $this->options['junction_model'] = $junctionModelName;
 
-        $foreignModel = Nibii::load($this->options['model']);
+        $foreignModel = $this->context->load($this->options['model']);
         if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $foreignModel->getDescription()->getPrimaryKey()[0];
         }

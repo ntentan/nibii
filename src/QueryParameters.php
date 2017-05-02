@@ -14,7 +14,6 @@ class QueryParameters {
     private $boundData = [];
     private $fields = [];
     private $table;
-    private $db;
     private $firstOnly = false;
     private $eagerLoad = [];
     private $limit;
@@ -25,8 +24,7 @@ class QueryParameters {
      *
      * @param \ $model
      */
-    public function __construct(DriverAdapter $db, $table) {
-        $this->db = $db;
+    public function __construct($table) {
         $this->table = $table;
     }
 
