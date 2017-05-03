@@ -27,8 +27,6 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\Text;
-use ntentan\atiaa\Db;
-use ntentan\panie\Container;
 
 class QueryOperations {
 
@@ -51,7 +49,7 @@ class QueryOperations {
     /**
      * 
      * @param RecordWrapper $wrapper
-     * @param DataAdapter $adapter
+     * @param DriverAdapter $adapter
      * @param DataOperations $dataOperations
      */
     public function __construct(Context $context, RecordWrapper $wrapper, DriverAdapter $adapter, $dataOperations) {
