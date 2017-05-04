@@ -38,10 +38,11 @@ class Context {
      */
     public function load($path) {
         try {
-            return$this->container->resolve(self::getClassName($path));
+            $className = $this->getClassName($path);
+            return $this->container->resolve($className);
         } catch (\ntentan\panie\exceptions\ResolutionException $e) {
             throw new
-            NibiiException("Failed to load model [$path]. Please specify a valid database driver.");
+            NibiiException("Failed to load model [$path]. The class [$className] could not be found. Ensure that you have properly setup class name resolutions.");
         }
     }
 
@@ -65,7 +66,7 @@ class Context {
     }
 
     public function getClassName($model, $context = null) {
-        return$this->container->singleton(interfaces\ModelClassResolverInterface::class)
+        return $this->container->singleton(interfaces\ModelClassResolverInterface::class)
             ->getModelClassName($model, $context);
     }
 
