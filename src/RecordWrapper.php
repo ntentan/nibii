@@ -74,6 +74,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
             $behaviourInstance->setModel($this);
         }
     }
+    
+    public function __debugInfo() {
+        return $this->getData();
+    }
 
     /**
      * 

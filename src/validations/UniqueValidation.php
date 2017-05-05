@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2015 ekow.
@@ -25,49 +25,51 @@
  */
 
 namespace ntentan\nibii\validations;
+
 use ntentan\utils\validator\Validation;
 
-class UniqueValidation extends Validation
-{
+class UniqueValidation extends Validation {
+
     /**
      *
      * @var \ntentan\nibii\RecordWrapper
      */
     private $model;
     private $mode;
-    
-    public function __construct($params)
-    {
+
+    public function __construct($params) {
         $this->model = $params['model'];
         $this->mode = $params['mode'];
     }
-    
-    public function run($field, $data)
-    {
+
+    public function run($field, $data) {
         $test = [];
-        foreach($field['name'] as $name) {
+        foreach ($field['name'] as $name) {
             $test[$name] = isset($data[$name]) ? $data[$name] : null;
         }
-        
-        if($this->mode == \ntentan\nibii\DataOperations::MODE_UPDATE) {
+
+        if ($test[$name] === null) {
+            return true;
+        }
+
+        if ($this->mode == \ntentan\nibii\DataOperations::MODE_UPDATE) {
             $primaryKeyFields = $this->model->getDescription()->getPrimaryKey();
             $keys = [];
-            foreach($primaryKeyFields as $name) {
+            foreach ($primaryKeyFields as $name) {
                 $keys[$name] = $data[$name];
             }
             $testItem = $this->model->createNew()->fetchFirst($test);
             $intersection = array_intersect($testItem->toArray(), $keys);
-            if(!empty($intersection)) {
+            if (!empty($intersection)) {
                 return true;
-            }                   
+            }
         } else {
             $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
         }
-        
+
         return $this->evaluateResult(
-            $field, 
-            $testItem->count() === 0,
-            "The value of " . implode(', ', $field['name']) . " must be unique"
-        );        
+                        $field, $testItem->count() === 0, "The value of " . implode(', ', $field['name']) . " must be unique"
+        );
     }
+
 }
