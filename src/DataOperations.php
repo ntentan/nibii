@@ -51,7 +51,7 @@ class DataOperations {
     const MODE_SAVE = 0;
     const MODE_UPDATE = 1;
 
-    public function __construct(Context $context, RecordWrapper $wrapper, DriverAdapter $adapter) {
+    public function __construct(ORMContext $context, RecordWrapper $wrapper, DriverAdapter $adapter) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
         $this->driver = $context->getDbContext()->getDriver();

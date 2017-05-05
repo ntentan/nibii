@@ -21,7 +21,7 @@ abstract class DriverAdapter {
     protected $queryEngine;
     private $driver;
     
-    public function setContext(Context $context) {
+    public function setContext(ORMContext $context) {
         $this->driver = $context->getDbContext()->getDriver();
     }
 

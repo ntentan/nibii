@@ -28,14 +28,14 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\Nibii;
 use ntentan\utils\Text;
-use ntentan\nibii\Context;
+use ntentan\nibii\ORMContext;
 use ntentan\nibii\QueryParameters;
 
 class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
     protected $type = self::MANY_HAVE_MANY;
     
-    public function __construct(Context $context) {
+    public function __construct(ORMContext $context) {
         $this->container = $context->getContainer();
         $this->context = $context;
     }    

@@ -10,7 +10,7 @@ use ntentan\atiaa\DbContext;
  * A collection of utility methods used as helpers for loading
  * models.
  */
-class Context {
+class ORMContext {
     
     private $container;
     private $dbContext;

@@ -24,7 +24,7 @@ class ModelDescription {
      * 
      * @param RecordWrapper $model
      */
-    public function __construct(Context $context, $model) {
+    public function __construct(ORMContext $context, $model) {
         $this->table = $model->getDBStoreInformation()['unquoted_table'];
         $this->name = $context->getModelName((new \ReflectionClass($model))->getName());
         $this->container = $context->getContainer();

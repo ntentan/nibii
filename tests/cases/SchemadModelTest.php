@@ -3,10 +3,8 @@
 namespace ntentan\nibii\tests\cases;
 
 use ntentan\nibii\interfaces\TableNameResolverInterface;
-use ntentan\nibii\Resolver;
 use ntentan\nibii\tests\lib\TestTableNameResolver;
 use ntentan\nibii\tests\models\schemas\Schemad;
-use ntentan\panie\InjectionContainer;
 
 class SchemadModelTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
     

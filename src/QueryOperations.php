@@ -54,7 +54,7 @@ class QueryOperations {
      * @param DataAdapter $adapter
      * @param DataOperations $dataOperations
      */
-    public function __construct(Context $context, RecordWrapper $wrapper, DriverAdapter $adapter, $dataOperations) {
+    public function __construct(ORMContext $context, RecordWrapper $wrapper, DriverAdapter $adapter, $dataOperations) {
         $this->wrapper = $wrapper;
         $this->adapter = $adapter;
         $this->dataOperations = $dataOperations;

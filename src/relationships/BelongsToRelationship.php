@@ -28,13 +28,13 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\QueryParameters;
 use ntentan\utils\Text;
-use ntentan\nibii\Context;
+use ntentan\nibii\ORMContext;
 
 class BelongsToRelationship extends \ntentan\nibii\Relationship {
 
     protected $type = self::BELONGS_TO;
     
-    public function __construct(Context $context) {
+    public function __construct(ORMContext $context) {
         $this->container = $context->getContainer();
         $this->context = $context;
     }

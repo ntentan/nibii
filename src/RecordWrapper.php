@@ -54,7 +54,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $container;
     private $context;
 
-    public function __construct(DriverAdapter $adapter, Context $context) {
+    public function __construct(DriverAdapter $adapter, ORMContext $context) {
         $table = $context->getModelTable($this);
         $driver = $context->getDbContext()->getDriver();
         $adapter->setContext($context);
@@ -124,7 +124,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      */
     public static function createNew() {
         $class = get_called_class();
-        return Context::getInstance()->getContainer()->resolve($class);
+        return ORMContext::getInstance()->getContainer()->resolve($class);
     }
 
     /**
