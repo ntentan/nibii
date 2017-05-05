@@ -26,9 +26,7 @@
 
 namespace ntentan\nibii;
 
-use ntentan\kaikai\Cache;
 use ntentan\utils\Text;
-use ntentan\atiaa\Db;
 
 /**
  * 
@@ -64,8 +62,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
             $this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
         } else {
-            $this->quotedTable = ( isset($table['schema']) ? "{$driver->quoteIdentifier($table["schema"])}." : "") . $driver->quoteIdentifier($table["table"]);
-            $this->unquotedTable = (isset($table['schema']) ? "{$table['schema']}." : "") . $table['table'];
+            $this->quotedTable = (isset($table['schema']) ? "{$driver->quoteIdentifier($table["schema"])}." : "").$driver->quoteIdentifier($table["table"]);
+            $this->unquotedTable = (isset($table['schema']) ? "{$table['schema']}." : "").$table['table'];
             $this->table = $table['table'];
             $this->schema = $table['schema'];
         }
@@ -83,7 +81,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      */
     public function getDescription() {
         return $this->context->getCache()->read(
-            (new \ReflectionClass($this))->getName() . '::desc', function() {
+            (new \ReflectionClass($this))->getName().'::desc', function() {
                 return $this->container->resolve(ModelDescription::class, ['model' => $this]);
             }
         );

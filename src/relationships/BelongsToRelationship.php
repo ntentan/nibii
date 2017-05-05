@@ -53,7 +53,7 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }
         if ($this->options['local_key'] == null) {
-            $this->options['local_key'] = Text::singularize($table) . '_id';
+            $this->options['local_key'] = Text::singularize($table).'_id';
         }
     }
 

@@ -2,9 +2,6 @@
 
 namespace ntentan\nibii;
 
-use ntentan\utils\Text;
-use ntentan\atiaa\Db;
-
 /**
  * A DriverAdaptr is a generic database adapter.
  * This adapter implements a lot of its operations through the atiaa library.
@@ -41,7 +38,7 @@ abstract class DriverAdapter {
     /**
      * 
      * 
-     * @param type $parameters
+     * @param QueryParameters $parameters
      * @return type
      */
     public function select($parameters) {
@@ -57,6 +54,9 @@ abstract class DriverAdapter {
         return $result;
     }
 
+    /**
+     * @param QueryParameters $parameters
+     */
     public function count($parameters) {
         $result = $this->driver->query(
             $this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData()
@@ -87,12 +87,18 @@ abstract class DriverAdapter {
         return $this->driver->query($this->updateQuery, $record);
     }
 
+    /**
+     * @param QueryParameters $parameters
+     */
     public function bulkUpdate($data, $parameters) {
         return $this->driver->query(
             $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters), array_merge($data, $parameters->getBoundData())
         );
     }
 
+    /**
+     * @param QueryParameters $parameters
+     */
     public function delete($parameters) {
         return $this->driver->query(
             $this->getQueryEngine()->getDeleteQuery($parameters), $parameters->getBoundData()
@@ -119,6 +125,9 @@ abstract class DriverAdapter {
         return $this->queryEngine;
     }
 
+    /**
+     * @param RecordWrapper $model
+     */
     public function setModel($model) {
         $this->modelInstance = $model;
     }

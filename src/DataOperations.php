@@ -26,8 +26,6 @@
 
 namespace ntentan\nibii;
 
-use ntentan\atiaa\Db;
-
 /**
  * Description of DataOperations
  *

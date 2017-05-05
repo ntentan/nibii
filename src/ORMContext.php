@@ -2,9 +2,9 @@
 
 namespace ntentan\nibii;
 
-use ntentan\panie\Container;
-use ntentan\kaikai\Cache;
 use ntentan\atiaa\DbContext;
+use ntentan\kaikai\Cache;
+use ntentan\panie\Container;
 
 /**
  * A collection of utility methods used as helpers for loading
@@ -21,11 +21,11 @@ class ORMContext {
         $this->container = $container;
         $this->dbContext = $container->resolve(DbContext::class);
         $this->container->bind(interfaces\ModelJoinerInterface::class)
-             ->to(Resolver::class);
+                ->to(Resolver::class);
         $this->container->bind(interfaces\TableNameResolverInterface::class)
-             ->to(Resolver::class);
+                ->to(Resolver::class);
         $this->container->bind(interfaces\ModelClassResolverInterface::class)
-             ->to(Resolver::class);
+                ->to(Resolver::class);
         $this->cache = $this->container->resolve(Cache::class);
         self::$instance = $this;
     }
@@ -38,10 +38,11 @@ class ORMContext {
      */
     public function load($path) {
         try {
-            return$this->container->resolve(self::getClassName($path));
+            $className = $this->getClassName($path);
+            return $this->container->resolve($className);
         } catch (\ntentan\panie\exceptions\ResolutionException $e) {
             throw new
-            NibiiException("Failed to load model [$path]. Please specify a valid database driver.");
+            NibiiException("Failed to load model [$path]. The class [$className] could not be found. Ensure that you have properly setup class name resolutions.");
         }
     }
 
@@ -56,16 +57,22 @@ class ORMContext {
             ->getJunctionClassName($classA, $classB);
     }
 
+    /**
+     * @param RecordWrapper $instance
+     */
     public function getModelTable($instance) {
         return$this->container->singleton(interfaces\TableNameResolverInterface::class)
             ->getTableName($instance);
     }
 
     public function getClassName($model, $context = null) {
-        return$this->container->singleton(interfaces\ModelClassResolverInterface::class)
+        return $this->container->singleton(interfaces\ModelClassResolverInterface::class)
             ->getModelClassName($model, $context);
     }
 
+    /**
+     * @param string $class
+     */
     public function getModelName($class) {
         return $class;
     }
