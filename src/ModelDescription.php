@@ -81,12 +81,15 @@ class ModelDescription {
                 'model' => $relationship[0],
                 'name' => isset($relationship['as']) ? $relationship['as'] : $relationship[0],
                 'foreign_key' => isset($relationship['foreign_key']) ? $relationship['foreign_key'] : '',
-                'local_key' => isset($relationship['local_key']) ? $relationship['local_key'] : ''
+                'local_key' => isset($relationship['local_key']) ? $relationship['local_key'] : '',
             ];
         } else {
             return null;
         }
         $relationshipDetails['local_table'] = $this->table;
+        if(isset($relationship['through'])) {
+            $relationshipDetails['through'] = $relationship['through'];
+        }
         return $relationshipDetails;
     }
 

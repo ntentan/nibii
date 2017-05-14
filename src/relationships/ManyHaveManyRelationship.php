@@ -26,7 +26,6 @@
 
 namespace ntentan\nibii\relationships;
 
-use ntentan\nibii\Nibii;
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 use ntentan\nibii\QueryParameters;
@@ -45,6 +44,9 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
             ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
             ->fetch();
+        if($filter->count() == 0) {
+            return null;
+        }
         $foreignKeys = [];
         foreach ($filter->toArray() as $foreignItem) {
             $foreignKeys[] = $foreignItem[$this->options['junction_foreign_key']];
@@ -56,15 +58,18 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
     public function runSetup() {
         if (isset($this->options['through'])) {
-            $junctionModelName = $this->options['through'];
+            $junctionModelName = 
+                $this->context->getClassName($this->options['through']);
         } else {
-            $junctionModelName = $this->context->joinModels($this->setupName, $this->options['model']);
+            $junctionModelName = 
+                $this->context->joinModels($this->setupName, $this->options['model']);
         }
         $this->options['junction_model'] = $junctionModelName;
 
         $foreignModel = $this->context->load($this->options['model']);
         if ($this->options['foreign_key'] == null) {
-            $this->options['foreign_key'] = $foreignModel->getDescription()->getPrimaryKey()[0];
+            $this->options['foreign_key'] = 
+                $foreignModel->getDescription()->getPrimaryKey()[0];
         }
 
         if ($this->options['local_key'] == null) {
@@ -72,11 +77,13 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         }
 
         if (!isset($this->options['junction_local_key'])) {
-            $this->options['junction_local_key'] = Text::singularize($this->setupTable) . '_id';
+            $this->options['junction_local_key'] = 
+                Text::singularize(explode('.', $this->setupTable)[1]) . '_id';
         }
 
         if (!isset($this->options['junction_foreign_key'])) {
-            $this->options['junction_foreign_key'] = Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
+            $this->options['junction_foreign_key'] = 
+                Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
         }
     }
 

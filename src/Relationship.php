@@ -37,7 +37,17 @@ abstract class Relationship {
     protected $setupName;
     protected $setupTable;
     protected $setupPrimaryKey;
+    
+    /**
+     *
+     * @var \ntentan\panie\Container
+     */
     protected $container;
+    
+    /**
+     *
+     * @var ORMContext
+     */
     protected $context;
     
     private $setup = false;
