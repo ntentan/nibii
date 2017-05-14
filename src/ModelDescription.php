@@ -24,13 +24,18 @@ class ModelDescription {
      * @param RecordWrapper $model
      */
     public function __construct(ORMContext $context, $model) {
-        $this->table = $model->getDBStoreInformation()['table'];
-        $this->schema = $model->getDBStoreInformation()['schema'];
+        $dbInformation = $model->getDBStoreInformation();
+        $this->table = $dbInformation['table'];
+        $this->schema = $dbInformation['schema'];
         $this->name = $context->getModelName((new \ReflectionClass($model))->getName());
         $this->container = $context->getContainer();
         $relationships = $model->getRelationships();
         $adapter = $context->getContainer()->resolve(DriverAdapter::class);
-        $schema = array_values($context->getDbContext()->getDriver()->describeTable($this->table))[0];
+        $schema = array_values(
+            $context->getDbContext()->getDriver()->describeTable(
+                $dbInformation['unquoted_table']
+            )
+        )[0];
         $this->autoPrimaryKey = $schema['auto_increment'];
 
         foreach ($schema['columns'] as $field => $details) {

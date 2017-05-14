@@ -228,5 +228,10 @@ class QueryOperations {
         $this->getQueryParameters()->setOffset($offset);
         return $this->wrapper;
     }
+    
+    public function doWith($model) {
+        $relationship = $this->wrapper->getDescription()->getRelationships()[$model];
+        return $relationship->getQuery();
+    }
 
 }

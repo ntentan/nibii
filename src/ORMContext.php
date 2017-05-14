@@ -90,6 +90,10 @@ class ORMContext {
         return $this->cache;
     }
     
+    /**
+     * 
+     * @return \ntentan\atiaa\DbContext
+     */
     public function getDbContext() {
         return $this->dbContext;
     }

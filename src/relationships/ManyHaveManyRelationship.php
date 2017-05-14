@@ -39,7 +39,7 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         $this->context = $context;
     }    
 
-    public function getQuery($data) {
+    public function prepareQuery($data) {
         $junctionModel = $this->container->resolve($this->options['junction_model']);
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
             ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
@@ -51,7 +51,8 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         foreach ($filter->toArray() as $foreignItem) {
             $foreignKeys[] = $foreignItem[$this->options['junction_foreign_key']];
         }
-        $query = (new QueryParameters($this->getModelInstance()->getDBStoreInformation()['quoted_table']))
+        $query = $this->getQuery
+                ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
                 ->addFilter($this->options['foreign_key'], $foreignKeys);
         return $query;
     }

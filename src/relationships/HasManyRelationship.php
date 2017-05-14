@@ -39,9 +39,10 @@ class HasManyRelationship extends \ntentan\nibii\Relationship
         $this->context = $context;
     }    
 
-    public function getQuery($data)
+    public function prepareQuery($data)
     {
-        $query = (new QueryParameters($this->getModelInstance()->getDBStoreInformation()['quoted_table']))
+        $query = $this->getQuery()
+            ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
             ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]]);
         return $query;
     }

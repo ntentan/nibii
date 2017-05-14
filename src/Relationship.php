@@ -52,9 +52,17 @@ abstract class Relationship {
     protected $context;
     
     private $setup = false;
+    private $query;
 
     public function setOptions($options) {
         $this->options = $options;
+    }
+    
+    public function getQuery() {
+        if(!$this->query) {
+            $this->query = new QueryParameters();
+        }
+        return $this->query;
     }
 
     public function getOptions() {
@@ -80,7 +88,7 @@ abstract class Relationship {
         $this->setupSchema = $schema;
     }
 
-    abstract public function getQuery($data);
+    abstract public function prepareQuery($data);
 
     abstract public function runSetup();
 }

@@ -22,9 +22,9 @@ class QueryParameters {
 
     /**
      *
-     * @param string $table
+     * @param string $table The name of the table
      */
-    public function __construct($table) {
+    public function __construct($table = null) {
         $this->table = $table;
     }
 
@@ -49,6 +49,11 @@ class QueryParameters {
 
     public function getTable() {
         return $this->table;
+    }
+    
+    public function setTable($table) {
+        $this->table = $table;
+        return $this;
     }
 
     public function getLimit() {

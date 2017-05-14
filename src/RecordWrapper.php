@@ -299,7 +299,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
         if (empty($data)) {
             return $model;
         }
-        $query = $relationship->getQuery($data);
+        $query = $relationship->prepareQuery($data);
         return $query ? $model->fetch($query) : $model;
     }
 
