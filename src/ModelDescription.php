@@ -15,6 +15,7 @@ class ModelDescription {
      */
     private $relationships = [];
     private $table;
+    private $schema;
     private $name;
     private $container;
 
@@ -23,7 +24,8 @@ class ModelDescription {
      * @param RecordWrapper $model
      */
     public function __construct(ORMContext $context, $model) {
-        $this->table = $model->getDBStoreInformation()['unquoted_table'];
+        $this->table = $model->getDBStoreInformation()['table'];
+        $this->schema = $model->getDBStoreInformation()['schema'];
         $this->name = $context->getModelName((new \ReflectionClass($model))->getName());
         $this->container = $context->getContainer();
         $relationships = $model->getRelationships();
@@ -99,7 +101,7 @@ class ModelDescription {
             $class = "\\ntentan\\nibii\\relationships\\{$type}Relationship";
             $relationshipObject = $this->container->resolve($class);
             $relationshipObject->setOptions($relationship);
-            $relationshipObject->setup($this->name, $this->table, $this->primaryKey);
+            $relationshipObject->setup($this->name, $this->schema, $this->table, $this->primaryKey);
             $this->relationships[$relationship['name']] = $relationshipObject;
         }
     }

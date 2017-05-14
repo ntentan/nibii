@@ -78,7 +78,7 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
         if (!isset($this->options['junction_local_key'])) {
             $this->options['junction_local_key'] = 
-                Text::singularize(explode('.', $this->setupTable)[1]) . '_id';
+                Text::singularize($this->setupTable) . '_id';
         }
 
         if (!isset($this->options['junction_foreign_key'])) {

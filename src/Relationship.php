@@ -36,6 +36,7 @@ abstract class Relationship {
     protected $type;
     protected $setupName;
     protected $setupTable;
+    protected $setupSchema;
     protected $setupPrimaryKey;
     
     /**
@@ -72,10 +73,11 @@ abstract class Relationship {
         return $this->container->resolve($this->context->getClassName($this->options['model'], $this->type));
     }
 
-    public function setup($name, $table, $primaryKey) {
+    public function setup($name, $schema, $table, $primaryKey) {
         $this->setupName = $name;
         $this->setupTable = $table;
         $this->setupPrimaryKey = $primaryKey;
+        $this->setupSchema = $schema;
     }
 
     abstract public function getQuery($data);
