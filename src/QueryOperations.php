@@ -76,11 +76,11 @@ class QueryOperations {
         
         if (is_numeric($arg)) {
             $description = $this->wrapper->getDescription();
-            $parameters->addFilter($description->getPrimaryKey()[0], [$arg]);
+            $parameters->addFilter($description->getPrimaryKey()[0], $arg);
             $parameters->setFirstOnly(true);
         } else if (is_array($arg)) {
             foreach ($arg as $field => $value) {
-                $parameters->addFilter($field, [$value]);
+                $parameters->addFilter($field, $value);
             }
         }
         
@@ -184,6 +184,7 @@ class QueryOperations {
     }
 
     public function runDynamicMethod($arguments) {
+        $arguments = count($arguments) > 1 ? $arguments : $arguments[0];
         switch ($this->pendingMethod['method']) {
             case 'filterBy':
                 $this->getQueryParameters()->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);

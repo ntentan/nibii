@@ -51,10 +51,19 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         foreach ($filter->toArray() as $foreignItem) {
             $foreignKeys[] = $foreignItem[$this->options['junction_foreign_key']];
         }
-        $query = $this->getQuery
+
+        // @todo throw an exception when the data doesn't have the local key
+        $query = $this->getQuery();
+        if($this->queryPrepared){
+            $query->setBoundData($this->options['foreign_key'], $foreignKeys);
+        } else {
+            $query = $this->getQuery()
                 ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
                 ->addFilter($this->options['foreign_key'], $foreignKeys);
+            $this->queryPrepared = true;
+        }
         return $query;
+        
     }
 
     public function runSetup() {

@@ -12,6 +12,8 @@ class QueryParameters {
     private $whereClause;
     private $and = '';
     private $boundData = [];
+    private $preparedBoundData = false;
+    private $boundArrays = [];
     private $fields = [];
     private $table;
     private $firstOnly = false;
@@ -65,40 +67,69 @@ class QueryParameters {
     }
 
     public function getWhereClause() {
+        if($this->whereClause) {
+            foreach($this->boundArrays as $boundArray) {
+                $where = "";
+                $comma = "";
+                for($i = 0; $i < count($this->boundData[$boundArray]); $i++) {
+                    $where .= "{$comma}:{$boundArray}_{$i}";
+                    $comma = ', ';
+                }
+                $this->whereClause = str_replace("%{$boundArray}%", $where, $this->whereClause);
+            }
+        }
         return $this->whereClause ? " WHERE {$this->whereClause}" : '';
     }
 
     public function getBoundData() {
-        return $this->boundData;
+        if($this->preparedBoundData === false) {
+            $this->preparedBoundData = [];
+            foreach($this->boundData as $key => $value) {
+                if(in_array($key, $this->boundArrays)) {
+                    foreach($value as $i => $v) {
+                        $this->preparedBoundData["{$key}_{$i}"] = $v;
+                    }
+                } else {
+                    $this->preparedBoundData[$key] = $value;
+                }
+            }
+        }        
+        return $this->preparedBoundData;
+    }
+
+    public function setBoundData($key, $value) {
+        if(isset($this->boundData[$key])){
+            $isArray = is_array($value);
+            $boundArray = in_array($key, $this->boundArrays);
+            if($isArray && !$boundArray) {
+                throw new NibiiException("{$key} cannot be bound to an array");
+            } else if (!$isArray && $boundArray) {
+                throw new NibiiException("{$key} must be bound to an array");
+            }
+            $this->boundData[$key] = $value;
+            $this->preparedBoundData = false;
+            return $this;
+        }
+        throw new NibiiException("{$key} has not been bound to the current query");
     }
 
     public function getSorts() {
         return count($this->sorts) ? " ORDER BY " . implode(", ", $this->sorts) : null;
     }
 
-    public function addFilter($field, $values = []) {
+    public function addFilter($field, $values = null) {
         $this->whereClause .= $this->and;
-        $numValues = count($values);
-        $startIndex = count($this->boundData);
+        $this->boundData[$field] = $values;
 
-        if ($numValues === 1) {
-            $key = "filter_{$startIndex}";
-            if ($values[0] === null) {
+        if (is_array($values)) {
+            $this->whereClause .= "{$field} IN (%{$field}%)";
+            $this->boundArrays[] = $field;
+        } else {
+            if ($values === null) {
                 $this->whereClause .= "{$field} is NULL";
             } else {
-                $this->whereClause .= "{$field} = :$key";
-                $this->boundData[$key] = reset($values);
+                $this->whereClause .= "{$field} = :$field";
             }
-        } else {
-            $this->whereClause .= "{$field} IN (";
-            $comma = '';
-            for ($i = 0; $i < $numValues; $i++) {
-                $key = "filter_" . ($startIndex + $i);
-                $this->whereClause .= "$comma:$key";
-                $this->boundData[$key] = $values[$i];
-                $comma = ' ,';
-            }
-            $this->whereClause .= ")";
         }
         $this->and = ' AND ';
         return $this;

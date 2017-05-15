@@ -41,9 +41,15 @@ class HasManyRelationship extends \ntentan\nibii\Relationship
 
     public function prepareQuery($data)
     {
-        $query = $this->getQuery()
-            ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
-            ->addFilter($this->options['foreign_key'], [$data[$this->options['local_key']]]);
+        // @todo throw an exception when the data doesn't have the local key
+        $query = $this->getQuery();
+        if($this->queryPrepared) {
+            $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);
+        } else {
+            $query->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
+                ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']]);
+            $this->queryPrepared = true;
+        }
         return $query;
     }
 

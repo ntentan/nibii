@@ -53,6 +53,7 @@ abstract class Relationship {
     
     private $setup = false;
     private $query;
+    protected $queryPrepared = false;
 
     public function setOptions($options) {
         $this->options = $options;
