@@ -26,7 +26,6 @@
 
 namespace ntentan\nibii\relationships;
 
-use ntentan\nibii\QueryParameters;
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 
