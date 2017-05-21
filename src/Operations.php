@@ -21,7 +21,7 @@ class Operations {
         'delete', 'count', 'update', 'with'
     ];
     private $dataOperationMethods = [
-        'save'
+        'save', 'validate'
     ];
 
     public function __construct(Container $container, RecordWrapper $wrapper, DriverAdapter $adapter, $table) {

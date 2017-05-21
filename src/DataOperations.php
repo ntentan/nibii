@@ -60,7 +60,6 @@ class DataOperations {
         $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
-        //$this->adapter->setModel($this->wrapper);
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
         $succesful = true;
@@ -97,6 +96,15 @@ class DataOperations {
         $this->wrapper->setData($hasMultipleData ? $data : $data[0]);
 
         return $succesful;
+    }
+    
+    public function doValidate() {
+        $record = $this->wrapper->getData()[0];
+        $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
+        $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
+        return $this->validate(
+            $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
+        );
     }
 
     /**
