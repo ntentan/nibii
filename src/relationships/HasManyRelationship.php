@@ -26,7 +26,6 @@
 
 namespace ntentan\nibii\relationships;
 
-use ntentan\nibii\QueryParameters;
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 
@@ -62,4 +61,9 @@ class HasManyRelationship extends \ntentan\nibii\Relationship
             $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
     }
+
+    public function assignModel($model, $relationship) {
+        $model[$this->options['model']][] = $relationship;
+    }        
+
 }

@@ -28,7 +28,6 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
-use ntentan\nibii\QueryParameters;
 
 class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
@@ -96,5 +95,9 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
                 Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
         }
     }
+    
+    public function assignModel($model, $relationship) {
+        $model[$this->options['model']][] = $relationship;
+    }      
 
 }

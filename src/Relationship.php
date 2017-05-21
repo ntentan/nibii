@@ -88,8 +88,9 @@ abstract class Relationship {
         $this->setupPrimaryKey = $primaryKey;
         $this->setupSchema = $schema;
     }
+    
 
     abstract public function prepareQuery($data);
-
     abstract public function runSetup();
+    abstract public function assignModel($model, $relationship);
 }

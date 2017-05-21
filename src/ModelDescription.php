@@ -13,7 +13,7 @@ class ModelDescription {
      *
      * @var array<Relationship>
      */
-    private $relationships = [];
+    private $relationships;
     private $table;
     private $schema;
     private $name;

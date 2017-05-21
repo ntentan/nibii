@@ -63,4 +63,8 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship {
         }
     }
 
+    public function assignModel($model, $relationship) {
+        $model[$this->options['model']] = $relationship;
+    }
+
 }
