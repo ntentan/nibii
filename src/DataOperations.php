@@ -195,20 +195,15 @@ class DataOperations {
     }
 
     private function isPrimaryKeySet($primaryKey, $data) {
-        if (is_string($primaryKey)) {
-            if (isset($data[$primaryKey])) {
-                return true;
-            }
+        if (is_string($primaryKey) && ($data[$primaryKey] !== null || $data[$primaryKey] !== '')) {
+            return true;
         }
         foreach ($primaryKey as $keyField) {
-            if (!isset($data[$keyField])) {
-                break;
-            }
-            if ($data[$keyField] !== '' && $data[$keyField] !== null) {
-                return true;
+            if (!isset($data[$keyField]) || $data[$keyField] === null || $data[$keyField] === '') {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private function assignValue(&$property, $value) {
