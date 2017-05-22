@@ -151,7 +151,15 @@ class DataOperations {
             $status['success'] = false;
             return $status;
         }
-
+        
+        $relationships = $this->wrapper->getDescription()->getRelationships();
+        
+        foreach($relationships as $model => $relationship) {
+            if(isset($record[$model])) {
+                $relationship->preSave($record, $record[$model]);
+            }
+        }
+        
         // Assign the data to the wrapper again
         $this->wrapper->setData($record);
 
@@ -167,6 +175,12 @@ class DataOperations {
             $this->wrapper->postSaveCallback($keyValue);
             $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
         }
+        
+        foreach($relationships as $model => $relationship) {
+            if(isset($record[$model])) {
+                $relationship->postSave($record, $record[$model]);
+            }
+        }        
 
         // Reset the data so it contains any modifications made by callbacks
         $record = $this->wrapper->getData()[0];

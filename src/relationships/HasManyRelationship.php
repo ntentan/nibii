@@ -60,10 +60,6 @@ class HasManyRelationship extends \ntentan\nibii\Relationship
         if($this->options['local_key'] == null) {
             $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
-    }
-
-    public function assignModel($model, $relationship) {
-        $model[$this->options['model']][] = $relationship;
-    }        
+    }   
 
 }

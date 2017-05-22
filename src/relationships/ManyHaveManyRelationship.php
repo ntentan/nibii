@@ -94,10 +94,6 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
             $this->options['junction_foreign_key'] = 
                 Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
         }
-    }
-    
-    public function assignModel($model, $relationship) {
-        $model[$this->options['model']][] = $relationship;
-    }      
+    }  
 
 }

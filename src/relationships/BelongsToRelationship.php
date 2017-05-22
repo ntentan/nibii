@@ -62,9 +62,11 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship {
             $this->options['local_key'] = Text::singularize($table).'_id';
         }
     }
-
-    public function assignModel($model, $relationship) {
-        $model[$this->options['model']] = $relationship;
+    
+    public function preSave(&$wrapper, $value) {
+        $value->save();
+        $wrapper[$this->options['local_key']] = $value[$this->options['foreign_key']];
+        unset($wrapper[$this->options['model']]);
     }
 
 }

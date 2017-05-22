@@ -89,8 +89,14 @@ abstract class Relationship {
         $this->setupSchema = $schema;
     }
     
-
+    public function preSave(&$wrapper, $value) {
+        
+    }
+    
+    public function postSave(&$wrapper, $value) {
+        
+    }
+    
     abstract public function prepareQuery($data);
     abstract public function runSetup();
-    abstract public function assignModel($model, $relationship);
 }
