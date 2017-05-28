@@ -67,12 +67,12 @@ class QueryOperations {
         return $this->wrapper;
     }
 
-    private function getFetchQueryParameters($arg) {
+    private function getFetchQueryParameters($arg, $instantiate = true) {
         if ($arg instanceof \ntentan\nibii\QueryParameters) {
             return $arg;
         }        
         
-        $parameters = $this->getQueryParameters();
+        $parameters = $this->getQueryParameters($instantiate);
         
         if (is_numeric($arg)) {
             $description = $this->wrapper->getDescription();
@@ -137,7 +137,7 @@ class QueryOperations {
         $details = $this->getFilter($arguments);
         $filterCompiler = new FilterCompiler();
         $this->getQueryParameters()->setRawFilter(
-                $filterCompiler->compile($details['filter']), $filterCompiler->rewriteBoundData($details['data'])
+            $filterCompiler->compile($details['filter']), $filterCompiler->rewriteBoundData($details['data'])
         );
         return $this->wrapper;
     }
@@ -157,9 +157,9 @@ class QueryOperations {
         $this->resetQueryParameters();
     }
 
-    public function doDelete() {
+    public function doDelete($args) {
         $this->driver->beginTransaction();
-        $parameters = $this->getQueryParameters(false);
+        $parameters = $this->getFetchQueryParameters($args);
 
         if ($parameters === null) {
             $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();

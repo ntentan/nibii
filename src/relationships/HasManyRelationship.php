@@ -29,37 +29,35 @@ namespace ntentan\nibii\relationships;
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 
-class HasManyRelationship extends \ntentan\nibii\Relationship
-{
+class HasManyRelationship extends \ntentan\nibii\Relationship {
+
     protected $type = self::HAS_MANY;
-    
+
     public function __construct(ORMContext $context) {
         $this->container = $context->getContainer();
         $this->context = $context;
-    }    
+    }
 
-    public function prepareQuery($data)
-    {
+    public function prepareQuery($data) {
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();
-        if($this->queryPrepared) {
+        if ($this->queryPrepared) {
             $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);
         } else {
             $query->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
-                ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']]);
+                    ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']]);
             $this->queryPrepared = true;
         }
         return $query;
     }
 
-    public function runSetup()
-    {
-        if($this->options['foreign_key'] == null) {
+    public function runSetup() {
+        if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = Text::singularize($this->setupTable) . '_id';
         }
-        if($this->options['local_key'] == null) {
+        if ($this->options['local_key'] == null) {
             $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
-    }   
+    }
 
 }

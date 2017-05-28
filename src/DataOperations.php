@@ -152,11 +152,14 @@ class DataOperations {
             return $status;
         }
         
+        // Save any relationships that are attached to the data
         $relationships = $this->wrapper->getDescription()->getRelationships();
+        $presentRelationships = [];
         
-        foreach($relationships as $model => $relationship) {
+        foreach($relationships ?? [] as $model => $relationship) {
             if(isset($record[$model])) {
                 $relationship->preSave($record, $record[$model]);
+                $presentRelationships[$model] = $relationship;
             }
         }
         
@@ -176,10 +179,8 @@ class DataOperations {
             $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
         }
         
-        foreach($relationships as $model => $relationship) {
-            if(isset($record[$model])) {
-                $relationship->postSave($record, $record[$model]);
-            }
+        foreach($presentRelationships as $model => $relationship) {
+            $relationship->postSave($record);
         }        
 
         // Reset the data so it contains any modifications made by callbacks

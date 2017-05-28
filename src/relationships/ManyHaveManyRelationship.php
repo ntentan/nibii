@@ -28,10 +28,13 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
+use ntentan\nibii\NibiiException;
 
 class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
     protected $type = self::MANY_HAVE_MANY;
+    private $tempdata;
+    private $junctionModelInstance;
     
     public function __construct(ORMContext $context) {
         $this->container = $context->getContainer();
@@ -95,5 +98,32 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
                 Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
         }
     }  
+    
+    public function preSave(&$wrapper, $value) {
+        $this->tempdata = $wrapper[$this->options['model']];
+        $this->junctionModelInstance = $this->container->resolve($this->options['junction_model']);
+        $this->junctionModelInstance->delete([
+            $this->options['junction_local_key'] => $wrapper[$this->options['local_key']]
+        ]);
+        unset($wrapper[$this->options['model']]);
+    }
+    
+    public function postSave(&$wrapper) {
+        $jointModelRecords = [];
+        foreach($this->tempdata as $relatedRecord) {
+            $data = $relatedRecord->toArray();
+            if(!isset($data[$this->options['foreign_key']]) || (isset($data[$this->options['foreign_key']]) && count($data) > 1)) {
+                if(!$relatedRecord->save()) {
+                    throw new NibiiException("Failed to save related model {$this->options['model']}");
+                }
+            }
+            $jointModelRecords[] = [
+                $this->options['junction_local_key'] => $wrapper[$this->options['local_key']],
+                $this->options['junction_foreign_key'] => $relatedRecord[$this->options['foreign_key']]
+            ];
+        }
+        $this->junctionModelInstance->setData($jointModelRecords);
+        $this->junctionModelInstance->save();
+    }
 
 }

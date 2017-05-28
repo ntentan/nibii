@@ -93,7 +93,7 @@ abstract class Relationship {
         
     }
     
-    public function postSave(&$wrapper, $value) {
+    public function postSave(&$wrapper) {
         
     }
     
