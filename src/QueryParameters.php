@@ -119,16 +119,17 @@ class QueryParameters {
 
     public function addFilter($field, $values = null) {
         $this->whereClause .= $this->and;
-        $this->boundData[$field] = $values;
 
         if (is_array($values)) {
             $this->whereClause .= "{$field} IN (%{$field}%)";
             $this->boundArrays[] = $field;
+            $this->boundData[$field] = $values;
         } else {
             if ($values === null) {
                 $this->whereClause .= "{$field} is NULL";
             } else {
                 $this->whereClause .= "{$field} = :$field";
+                $this->boundData[$field] = $values;
             }
         }
         $this->and = ' AND ';
