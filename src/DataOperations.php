@@ -179,12 +179,12 @@ class DataOperations {
             $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
         }
         
+        // Reset the data so it contains any modifications made by callbacks
+        $record = $this->wrapper->getData()[0];
         foreach($presentRelationships as $model => $relationship) {
             $relationship->postSave($record);
         }        
 
-        // Reset the data so it contains any modifications made by callbacks
-        $record = $this->wrapper->getData()[0];
         return $status;
     }
 

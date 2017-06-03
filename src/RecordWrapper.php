@@ -29,7 +29,10 @@ namespace ntentan\nibii;
 use ntentan\utils\Text;
 
 /**
- * 
+ * Wraps a record from the database with data manipulation operations.
+ * Wrapping a table with the record wrapper makes it possible to add, edit,
+ * delete and query the underlying database. An MVC framework can use the 
+ * record wrapper as a base for its Model class.
  */
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
@@ -51,6 +54,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     protected $adapter;
     private $container;
     private $context;
+    private $keys = [];
 
     public function __construct(DriverAdapter $adapter, ORMContext $context) {
         $table = $context->getModelTable($this);
@@ -77,7 +81,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     
     public function __debugInfo() {
         $data = $this->getData();
-        return $this->hasMultipleData() ? $data : $data[0];
+        return $this->hasMultipleItems() ? $data : $data[0];
     }
 
     /**
@@ -172,7 +176,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
         $relationships = $this->getDescription()->getRelationships();
         $array = $this->modelData;
         if ($depth > 0) {
-            if ($this->hasMultipleData()) {
+            if ($this->hasMultipleItems()) {
                 foreach ($array as $i => $value) {
                     $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $i);
                 }
@@ -184,12 +188,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     }
 
     public function save() {
-        $return = $this->__call('save', [$this->hasMultipleData()]);
+        $return = $this->__call('save', [$this->hasMultipleItems()]);
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
         return $return;
     }
 
-    private function hasMultipleData() {
+    private function hasMultipleItems() {
         if (count($this->modelData) > 0) {
             return is_numeric(array_keys($this->modelData)[0]);
         } else {
@@ -202,7 +206,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
         if (count($this->modelData) == 0) {
             $data = $this->modelData;
-        } else if ($this->hasMultipleData()) {
+        } else if ($this->hasMultipleItems()) {
             $data = $this->modelData;
         } else if (count($this->modelData) > 0) {
             $data[] = $this->modelData;
@@ -267,11 +271,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     }
 
     public function current() {
-        return $this->wrap($this->index);
+        return $this->wrap($this->keys[$this->index]);
     }
 
     public function key() {
-        return $this->index;
+        return $this->keys[$this->index];
     }
 
     public function next() {
@@ -279,11 +283,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     }
 
     public function rewind() {
+        $this->keys = array_keys($this->modelData);
         $this->index = 0;
     }
 
     public function valid() {
-        return isset($this->modelData[$this->index]);
+        return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
     public function onValidate() {
