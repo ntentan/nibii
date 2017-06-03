@@ -49,7 +49,7 @@ class Resolver implements ModelClassResolverInterface, ModelJoinerInterface, Tab
         return \ntentan\utils\Text::deCamelize(end($nameParts));
     }
 
-    public function getDriverAdapterClassName($driver = false) {
+    public static function getDriverAdapterClassName($driver = false) {
         if ($driver) {
             return __NAMESPACE__ . '\adapters\\' . Text::ucamelize($driver) . 'Adapter';
         }
