@@ -13,8 +13,8 @@ use ntentan\utils\Text;
  *
  * @author ekow
  */
-class Resolver implements ModelClassResolverInterface, ModelJoinerInterface, TableNameResolverInterface {
-
+class Resolver implements ModelClassResolverInterface, ModelJoinerInterface, TableNameResolverInterface 
+{
     public function getModelClassName($className, $context) {
         return $className;
     }
@@ -49,10 +49,9 @@ class Resolver implements ModelClassResolverInterface, ModelJoinerInterface, Tab
         return \ntentan\utils\Text::deCamelize(end($nameParts));
     }
 
-    public static function getDriverAdapterClassName() {
-        $driver = Config::get('ntentan:db.driver', false);
+    public function getDriverAdapterClassName($driver = false) {
         if ($driver) {
-            return __NAMESPACE__ . '\adapters\\' . Text::ucamelize(Config::get('ntentan:db.driver')) . 'Adapter';
+            return __NAMESPACE__ . '\adapters\\' . Text::ucamelize($driver) . 'Adapter';
         }
         throw new NibiiException("Please specify a driver");
     }

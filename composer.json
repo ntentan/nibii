@@ -7,7 +7,6 @@
         "ntentan/atiaa": "dev-master",
         "ntentan/utils": "0.*",
         "ntentan/kaikai": "dev-master",
-        "ntentan/config": "0.*",
 	"ntentan/panie": "dev-master"
     },
     "require-dev": {

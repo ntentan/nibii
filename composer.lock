@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba99c015eacd7312382e3511911b50c6",
+    "content-hash": "8c738939f71d6408a2ea94cb984c2eac",
     "packages": [
         {
             "name": "ntentan/atiaa",
@@ -12,16 +12,15 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "59d6736fd50e77447fcd83ff48c302ab3036e3c4"
+                "reference": "1729d386d2c58a1d8cb8a3c0862a1aba1859632b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/59d6736fd50e77447fcd83ff48c302ab3036e3c4",
-                "reference": "59d6736fd50e77447fcd83ff48c302ab3036e3c4",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/1729d386d2c58a1d8cb8a3c0862a1aba1859632b",
+                "reference": "1729d386d2c58a1d8cb8a3c0862a1aba1859632b",
                 "shasum": ""
             },
             "require": {
-                "ntentan/config": "0.*",
                 "ntentan/panie": "dev-master",
                 "ntentan/utils": "0.*",
                 "php": ">=5.5.0"
@@ -48,45 +47,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2017-05-02 05:44:39"
-        },
-        {
-            "name": "ntentan/config",
-            "version": "v0.3.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ntentan/config.git",
-                "reference": "027d8f30d83bf6c6666c2c47a8d9eba09ddf985b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/config/zipball/027d8f30d83bf6c6666c2c47a8d9eba09ddf985b",
-                "reference": "027d8f30d83bf6c6666c2c47a8d9eba09ddf985b",
-                "shasum": ""
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.0",
-                "symfony/yaml": "~2.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ntentan\\config\\": "src/",
-                    "ntentan\\config\\tests\\": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ekow Abaka Ainooson",
-                    "email": "jainooson@gmail.com"
-                }
-            ],
-            "description": "Configurations manager for ntentan",
-            "time": "2016-04-25T21:35:06+00:00"
+            "time": "2017-06-03 14:27:10"
         },
         {
             "name": "ntentan/kaikai",
@@ -407,12 +368,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "abe41cb27f4e4207c6f54a09272969fe55e0bbff"
+                "reference": "79db5dd907ee977039f77ac8471a739497463429"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/abe41cb27f4e4207c6f54a09272969fe55e0bbff",
-                "reference": "abe41cb27f4e4207c6f54a09272969fe55e0bbff",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/79db5dd907ee977039f77ac8471a739497463429",
+                "reference": "79db5dd907ee977039f77ac8471a739497463429",
                 "shasum": ""
             },
             "require": {
@@ -462,7 +423,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2017-03-03 17:09:02"
+            "time": "2017-05-31T16:22:32+00:00"
         },
         {
             "name": "phpunit/dbunit",
@@ -969,24 +930,24 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "763d7adeb8c35d2af2b04c0f6cafeee059074dfb"
+                "reference": "701689164123fd8597bbc99738ac54d397338060"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/763d7adeb8c35d2af2b04c0f6cafeee059074dfb",
-                "reference": "763d7adeb8c35d2af2b04c0f6cafeee059074dfb",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/701689164123fd8597bbc99738ac54d397338060",
+                "reference": "701689164123fd8597bbc99738ac54d397338060",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3 || ^7.0"
+                "php": "^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0"
+                "phpunit/phpunit": "^6.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev"
+                    "dev-master": "2.0-dev"
                 }
             },
             "autoload": {
@@ -1013,7 +974,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2017-03-07 07:26:53"
+            "time": "2017-06-02T10:27:39+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -1277,12 +1238,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "93ccdde79f4b079c7558da4656a3cb1c50c68e02"
+                "reference": "4c29dec8d489c4e37cf87ccd7166cd0b0e6a45c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/93ccdde79f4b079c7558da4656a3cb1c50c68e02",
-                "reference": "93ccdde79f4b079c7558da4656a3cb1c50c68e02",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/4c29dec8d489c4e37cf87ccd7166cd0b0e6a45c5",
+                "reference": "4c29dec8d489c4e37cf87ccd7166cd0b0e6a45c5",
                 "shasum": ""
             },
             "require": {
@@ -1318,7 +1279,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-05-01 14:31:55"
+            "time": "2017-06-01T20:52:29+00:00"
         },
         {
             "name": "webmozart/assert",

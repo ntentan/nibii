@@ -16,10 +16,12 @@ class ORMContext {
     private $dbContext;
     private static $instance;
     private $cache;
+    private $config;
     
-    public function __construct(Container $container) {
+    public function __construct(Container $container, array $config) {
         $this->container = $container;
-        $this->dbContext = $container->resolve(DbContext::class);
+        $this->config = $config;
+        $this->dbContext = $container->resolve(DbContext::class, ['config' => $config]);
         $this->container->bind(interfaces\ModelJoinerInterface::class)
                 ->to(Resolver::class);
         $this->container->bind(interfaces\TableNameResolverInterface::class)
@@ -88,6 +90,10 @@ class ORMContext {
     
     public function getCache() {
         return $this->cache;
+    }
+
+    public function getConfig() {
+        return $this->config;
     }
     
     /**

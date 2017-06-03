@@ -10,13 +10,25 @@ class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase {
 
     public function setUp() {
         parent::setUp();
+
+        $config = [
+            'driver' => getenv('NIBII_DATASTORE'),
+            'host' => getenv('NIBII_HOST'),
+            'user' => getenv('NIBII_USER'),
+            'password' => getenv('NIBII_PASSWORD'),
+            'file' => getenv('NIBII_FILE'),
+            'dbname' => getenv("NIBII_DBNAME")
+        ];
+
         $container = new Container();
         $container->bind(ORMContext::class)->to(ORMContext::class)->asSingleton();
         $container->bind(\ntentan\nibii\DriverAdapter::class)
-            ->to(\ntentan\nibii\Resolver::getDriverAdapterClassName());
+            ->to(\ntentan\nibii\Resolver::getDriverAdapterClassName($config['driver']));
         $container->bind(\ntentan\atiaa\Driver::class)
-            ->to(\ntentan\atiaa\DbContext::getDriverClassName(\ntentan\config\Config::get('ntentan:db.driver')));        
-        $this->context = $container->resolve(ORMContext::class,['container' => $container]);
+            ->to(\ntentan\atiaa\DbContext::getDriverClassName($config['driver']));        
+        $container->bind(\ntentan\kaikai\CacheBackendInterface::class)
+            ->to(\ntentan\kaikai\backends\VolatileCache::class);
+        $this->context = $container->resolve(ORMContext::class,['container' => $container, 'config' => $config]);
     }
 
     protected function getConnection() {
