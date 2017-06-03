@@ -55,12 +55,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/kaikai.git",
-                "reference": "166a5f4e5012995e38ee0686a87c8f80dfbd7af3"
+                "reference": "656ee2feeaba613fa4a3b21ff6261af4399037b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/166a5f4e5012995e38ee0686a87c8f80dfbd7af3",
-                "reference": "166a5f4e5012995e38ee0686a87c8f80dfbd7af3",
+                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/656ee2feeaba613fa4a3b21ff6261af4399037b0",
+                "reference": "656ee2feeaba613fa4a3b21ff6261af4399037b0",
                 "shasum": ""
             },
             "require": {
@@ -80,7 +80,7 @@
                 }
             ],
             "description": "Caching for Ntentan Framework",
-            "time": "2017-04-18 00:01:10"
+            "time": "2017-06-03 15:02:28"
         },
         {
             "name": "ntentan/panie",
@@ -423,7 +423,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2017-05-31T16:22:32+00:00"
+            "time": "2017-05-31 16:22:32"
         },
         {
             "name": "phpunit/dbunit",
@@ -926,28 +926,28 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "dev-master",
+            "version": "1.4.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "701689164123fd8597bbc99738ac54d397338060"
+                "reference": "7f066a26a962dbe58ddea9f72a4e82874a3975a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/701689164123fd8597bbc99738ac54d397338060",
-                "reference": "701689164123fd8597bbc99738ac54d397338060",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/7f066a26a962dbe58ddea9f72a4e82874a3975a4",
+                "reference": "7f066a26a962dbe58ddea9f72a4e82874a3975a4",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^5.3.3 || ^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.1"
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "1.4-dev"
                 }
             },
             "autoload": {
@@ -974,7 +974,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2017-06-02T10:27:39+00:00"
+            "time": "2017-05-22T07:24:03+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -1279,7 +1279,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-06-01T20:52:29+00:00"
+            "time": "2017-06-01 20:52:29"
         },
         {
             "name": "webmozart/assert",
