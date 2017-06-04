@@ -55,13 +55,16 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $container;
     private $context;
     private $keys = [];
+    private $initialized = false;
 
-    public function __construct(DriverAdapter $adapter, ORMContext $context) {
-        $table = $context->getModelTable($this);
-        $driver = $context->getDbContext()->getDriver();
-        $adapter->setContext($context);
-        $this->container = $context->getContainer();
-        $this->context = $context;
+    public function initialize() {
+        if($this->initialized) return;
+        $this->context = ORMContext::getInstance();
+        $this->container = $this->context->getContainer();
+        $this->adapter = $this->container->resolve(DriverAdapter::class);
+        $table = $this->context->getModelTable($this);
+        $driver = $this->context->getDbContext()->getDriver();
+        $this->adapter->setContext($this->context);
         if (is_string($table)) {
             $this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
@@ -71,12 +74,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
             $this->table = $table['table'];
             $this->schema = $table['schema'];
         }
-        $this->adapter = $adapter;
         $this->adapter->setModel($this, $this->quotedTable);
         foreach ($this->behaviours as $behaviour) {
             $behaviourInstance = $this->getComponentInstance($behaviour);
             $behaviourInstance->setModel($this);
         }
+        $this->initialized = true;
     }
     
     public function __debugInfo() {
@@ -89,6 +92,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      * @return ModelDescription
      */
     public function getDescription() {
+        $this->initialize();
         return $this->context->getCache()->read(
             (new \ReflectionClass($this))->getName().'::desc', function() {
                 return $this->container->resolve(ModelDescription::class, ['model' => $this]);
@@ -130,8 +134,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      * @return \ntentan\nibii\RecordWrapper
      */
     public static function createNew() {
-        $class = get_called_class();
-        return ORMContext::getInstance()->getContainer()->resolve($class);
+        $instance = ORMContext::getInstance()->getContainer()->resolve(get_called_class());
+        $instance->initialize();
+        return $instance;
     }
 
     /**
@@ -141,6 +146,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
      * @return type
      */
     public function __call($name, $arguments) {
+        $this->initialize();
         if ($this->dynamicOperations === null) {
             // Bind to existing instances
             $this->container->bind(RecordWrapper::class)->to($this);
@@ -337,11 +343,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
         
     }
 
-    public function getBehaviours() {
-        return $this->loadedComponents;
-    }
-
     public function getDBStoreInformation() {
+        $this->initialize();
         return [
             'schema' => $this->schema,
             'table' => $this->table,

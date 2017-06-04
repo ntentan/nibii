@@ -132,12 +132,10 @@ class DataOperations {
             $this->wrapper->preUpdateCallback();
             $record = $this->wrapper->getData();
             $record = reset($record) === false ? [] : reset($record);
-            $record = $this->runBehaviours('preUpdateCallback', [$record]);
         } else {
             $this->wrapper->preSaveCallback();
             $record = $this->wrapper->getData();
             $record = reset($record) === false ? [] : reset($record);
-            $record = $this->runBehaviours('preSaveCallback', [$record]);
         }
 
         // Validate the data
@@ -170,13 +168,11 @@ class DataOperations {
         if ($pkSet) {
             $this->adapter->update($record);
             $this->wrapper->postUpdateCallback();
-            $this->runBehaviours('postUpdateCallback', [$record]);
         } else {
             $this->adapter->insert($record);
             $keyValue = $this->driver->getLastInsertId();
             $this->wrapper->{$primaryKey[0]} = $keyValue;
             $this->wrapper->postSaveCallback($keyValue);
-            $this->runBehaviours('postSaveCallback', [$record, $keyValue]);
         }
         
         // Reset the data so it contains any modifications made by callbacks
@@ -243,13 +239,6 @@ class DataOperations {
         } else {
             return false;
         }
-    }
-
-    private function runBehaviours($event, $args) {
-        foreach ($this->wrapper->getBehaviours() as $behaviour) {
-            $args[0] = call_user_func_array([$behaviour, $event], $args);
-        }
-        return $args[0];
     }
 
 }
