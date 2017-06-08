@@ -196,9 +196,7 @@ class DataOperations {
 
         if ($valid) {
             $valid = $this->wrapper->onValidate();
-        }
-
-        if ($valid === false) {
+        } else {
             $valid = $validator->getInvalidFields();
         }
 
