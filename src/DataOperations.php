@@ -185,22 +185,16 @@ class DataOperations {
     }
 
     private function validate($data, $mode) {
-        $valid = true;
         $validator = $this->container->resolve(
             ModelValidator::class, ['model' => $this->wrapper, 'mode' => $mode]
         );
+        $errors = [];
 
         if (!$validator->validate($data)) {
-            $valid = false;
+            $errors = $this->getInvalidFields();
         }
-
-        if ($valid) {
-            $valid = $this->wrapper->onValidate();
-        } else {
-            $valid = $validator->getInvalidFields();
-        }
-
-        return $valid;
+        $errors = $this->wrapper->onValidate($errors);
+        return empty($errors) ? true : $errors;
     }
 
     private function isPrimaryKeySet($primaryKey, $data) {

@@ -51,13 +51,18 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $dynamicOperations;
     private $index = 0;
     private $dataSet = false;
-    protected $adapter;
+    
+    /**
+     *
+     * @var DriverAdapter
+     */
+    private $adapter;
     private $container;
     private $context;
     private $keys = [];
     private $initialized = false;
 
-    public function initialize() {
+    private function initialize() {
         if($this->initialized) return;
         $this->context = ORMContext::getInstance();
         $this->container = $this->context->getContainer();
@@ -297,8 +302,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
         return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
-    public function onValidate() {
-        return true;
+    public function onValidate($errors) {
+        return $errors;
     }
 
     private function fetchRelatedFields($relationship, $index = null) {
@@ -351,6 +356,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
             'quoted_table' => $this->quotedTable,
             'unquoted_table' => $this->unquotedTable
         ];
+    }
+    
+    /**
+     * 
+     * @return DataAdapter
+     */
+    public function getAdapter() {
+        $this->initialize();
+        return $this->adapter;
     }
 
 }

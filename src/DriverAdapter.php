@@ -131,5 +131,9 @@ abstract class DriverAdapter {
     public function setModel($model) {
         $this->modelInstance = $model;
     }
+    
+    public function getDriver() {
+        return $this->driver;
+    }
 
 }

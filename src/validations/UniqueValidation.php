@@ -68,7 +68,7 @@ class UniqueValidation extends Validation {
         }
 
         return $this->evaluateResult(
-                        $field, $testItem->count() === 0, "The value of " . implode(', ', $field['name']) . " must be unique"
+            $field, $testItem->count() === 0, "The value of " . implode(', ', $field['name']) . " must be unique"
         );
     }
 
