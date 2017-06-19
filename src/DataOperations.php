@@ -60,6 +60,11 @@ class DataOperations {
         $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
+
+        if(empty($data)) {
+            return true;
+        }
+        
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
         $succesful = true;
