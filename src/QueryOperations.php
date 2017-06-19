@@ -120,6 +120,10 @@ class QueryOperations {
         $this->getQueryParameters()->setFields($fields);
         return $this->wrapper;
     }
+    
+    public function doSortBy($field, $direction = 'ASC') {
+        $this->getQueryParameters()->addSort($field, $direction);
+    }
 
     private function getFilter($arguments) {
         if (count($arguments) == 2 && is_array($arguments[1])) {
@@ -135,10 +139,7 @@ class QueryOperations {
     public function doFilter() {
         $arguments = func_get_args();
         $details = $this->getFilter($arguments);
-        $filterCompiler = new FilterCompiler();
-        $this->getQueryParameters()->setRawFilter(
-            $filterCompiler->compile($details['filter']), $filterCompiler->rewriteBoundData($details['data'])
-        );
+        $this->getQueryParameters()->setFilter($details['filter'], $details['data']);
         return $this->wrapper;
     }
 

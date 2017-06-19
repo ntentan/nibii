@@ -136,9 +136,12 @@ class QueryParameters {
         return $this;
     }
 
-    public function setRawFilter($filter, $values) {
-        $this->whereClause .= "{$this->and}$filter";
-        $this->boundData += $values;
+    public function setFilter($filter, $values) {
+        $filterCompiler = new FilterCompiler();
+        $compiledFilter = $filterCompiler->compile($filter);
+        $compiledValues = $filterCompiler->rewriteBoundData($values);
+        $this->whereClause .= "{$this->and}$compiledFilter";
+        $this->boundData += $compiledValues;
     }
 
     /**

@@ -42,7 +42,7 @@ class FilterCompiler {
         'comma' => ','
     );
     private $operators = array(
-        array('between', 'or' /* , 'like' */),
+        array('between', 'or' , 'like'),
         array('and'),
         array('not'),
         array('equals', 'greater', 'less', 'greater_or_equal', 'less_or_equal', 'not_equal', 'is'),
