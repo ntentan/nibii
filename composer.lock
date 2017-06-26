@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7511109476f0064ac711eab3a598fbfb",
+    "content-hash": "dea6159856784bb16e12bd7ef29ded4a",
     "packages": [
         {
             "name": "ntentan/atiaa",
@@ -1338,7 +1338,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.0"
+        "php": ">=7.0"
     },
     "platform-dev": []
 }

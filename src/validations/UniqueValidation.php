@@ -66,7 +66,7 @@ class UniqueValidation extends Validation {
         } else {
             $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
         }
-
+        
         return $this->evaluateResult(
             $field, $testItem->count() === 0, "The value of " . implode(', ', $field['name']) . " must be unique"
         );

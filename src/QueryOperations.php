@@ -158,7 +158,7 @@ class QueryOperations {
         $this->resetQueryParameters();
     }
 
-    public function doDelete($args) {
+    public function doDelete($args = null) {
         $this->driver->beginTransaction();
         $parameters = $this->getFetchQueryParameters($args);
 

@@ -36,10 +36,16 @@ class DataOperations {
     private $wrapper;
 
     /**
+     * Private instance of driver adapter
      *
      * @var DriverAdapter
      */
     private $adapter;
+
+    /**
+     *
+     * @var array
+     */
     private $data;
     private $invalidFields;
     private $hasMultipleData;
@@ -60,10 +66,6 @@ class DataOperations {
         $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
-
-        if(empty($data)) {
-            return true;
-        }
         
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
@@ -194,9 +196,9 @@ class DataOperations {
             ModelValidator::class, ['model' => $this->wrapper, 'mode' => $mode]
         );
         $errors = [];
-
+        
         if (!$validator->validate($data)) {
-            $errors = $this->getInvalidFields();
+            $errors = $validator->getInvalidFields();
         }
         $errors = $this->wrapper->onValidate($errors);
         return empty($errors) ? true : $errors;

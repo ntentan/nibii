@@ -3,6 +3,7 @@ sudo: false
 dist: trusty
 php:
  - "hhvm"
+ - "7.0"
 
 env:
  - NIBII_DATASTORE=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root' NIBII_NO_SCHEMAS=yes
@@ -11,9 +12,9 @@ env:
 
 matrix:
  include:
-  - php: "7"
+  - php: "7.1"
     env: NIBII_DATASTORE=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root' COVERAGE=yes NIBII_NO_SCHEMAS=yes
-  - php: "7"
+  - php: "7.1"
     env: NIBII_DATASTORE=postgresql NIBII_HOST=localhost NIBII_USER=postgres NIBII_DBNAME=nibii_test NIBII_PDO_DSN='pgsql:host=localhost;dbname=nibii_test;user=root' COVERAGE=yes
  exclude:
   - php: "hhvm"

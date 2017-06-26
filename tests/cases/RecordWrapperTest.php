@@ -167,32 +167,32 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
         $response = $user->save();
         $this->assertEquals(false, $response);
         $this->assertEquals(
+            array(
+                'email' =>
                 array(
-            'email' =>
-            array(
-                0 => 'The email field is required',
-            ),
-            'firstname' =>
-            array(
-                0 => 'The firstname field is required',
-            ),
-            'lastname' =>
-            array(
-                0 => 'The lastname field is required',
-            ),
-            'password' =>
-            array(
-                0 => 'The password field is required',
-            ),
-            'role_id' =>
-            array(
-                0 => 'The role_id field is required',
-            ),
-            'username' =>
-            array(
-                0 => 'The username field is required',
-            ),
-                ), $user->getInvalidFields()
+                    0 => 'The email field is required',
+                ),
+                'firstname' =>
+                array(
+                    0 => 'The firstname field is required',
+                ),
+                'lastname' =>
+                array(
+                    0 => 'The lastname field is required',
+                ),
+                'password' =>
+                array(
+                    0 => 'The password field is required',
+                ),
+                'role_id' =>
+                array(
+                    0 => 'The role_id field is required',
+                ),
+                'username' =>
+                array(
+                    0 => 'The username field is required',
+                ),
+            ), $user->getInvalidFields()
         );
     }
 
@@ -203,12 +203,12 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
 
         $this->assertEquals(false, $response);
         $this->assertEquals(
-                array(
-            'name' =>
             array(
-                0 => 'The value of name must be unique',
-            ),
-                ), $role->getInvalidFields()
+                'name' =>
+                array(
+                    0 => 'The value of name must be unique',
+                ),
+            ), $role->getInvalidFields()
         );
     }
 
@@ -220,11 +220,11 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
                 'users', 'SELECT username FROM users WHERE id = 1'
         );
         $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['username' => 'jamie']
-                    ]
-                ])->getTable('users'), $queryTable
+            $this->createArrayDataSet([
+                'users' => [
+                    ['username' => 'jamie']
+                ]
+            ])->getTable('users'), $queryTable
         );
     }
 
@@ -232,66 +232,66 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
         Users::update(['role_id' => 15]);
 
         $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT role_id FROM users'
+            'users', 'SELECT role_id FROM users'
         );
         $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                        ['role_id' => 15]
-                    ]
-                ])->getTable('users'), $queryTable
+            $this->createArrayDataSet([
+                'users' => [
+                    ['role_id' => 15],
+                    ['role_id' => 15],
+                    ['role_id' => 15],
+                    ['role_id' => 15]
+                ]
+            ])->getTable('users'), $queryTable
         );
     }
 
     public function testBulkUpdate2() {
         Users::filterByRoleId(11, 12)->update(['role_id' => 15]);
         $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT role_id FROM users ORDER BY role_id'
+            'users', 'SELECT role_id FROM users ORDER BY role_id'
         );
         $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['role_id' => 10],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                        ['role_id' => 15]
-                    ]
-                ])->getTable('users'), $queryTable
+            $this->createArrayDataSet([
+                'users' => [
+                    ['role_id' => 10],
+                    ['role_id' => 15],
+                    ['role_id' => 15],
+                    ['role_id' => 15]
+                ]
+            ])->getTable('users'), $queryTable
         );
     }
 
     public function testBulkUpdate3() {
         Users::filter('id < ?', 3)->update(['role_id' => 15]);
         $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT role_id FROM users ORDER BY role_id'
+            'users', 'SELECT role_id FROM users ORDER BY role_id'
         );
         $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['role_id' => 12],
-                        ['role_id' => 12],
-                        ['role_id' => 15],
-                        ['role_id' => 15]
-                    ]
-                ])->getTable('users'), $queryTable
+            $this->createArrayDataSet([
+                'users' => [
+                    ['role_id' => 12],
+                    ['role_id' => 12],
+                    ['role_id' => 15],
+                    ['role_id' => 15]
+                ]
+            ])->getTable('users'), $queryTable
         );
     }
 
     public function testDelete() {
         Users::filter('id < ?', 3)->delete();
         $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT id, username, role_id, firstname FROM users'
+            'users', 'SELECT id, username, role_id, firstname FROM users'
         );
         $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame'],
-                        ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa'],
-                    ]
-                ])->getTable('users'), $queryTable
+            $this->createArrayDataSet([
+                'users' => [
+                    ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame'],
+                    ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa'],
+                ]
+            ])->getTable('users'), $queryTable
         );
     }
 
