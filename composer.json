@@ -3,11 +3,10 @@
     "description": "ORM for ntentan",
     "type": "library",
     "require": {
-        "php" : ">=7.0",        
         "ntentan/atiaa": "0.*",
         "ntentan/utils": "0.*",
         "ntentan/kaikai": "0.*",
-	    "ntentan/panie": "0.*"
+	"ntentan/panie": "0.*"
     },
     "require-dev": {
         "symfony/yaml": "^2.0",
