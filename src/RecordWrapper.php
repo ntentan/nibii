@@ -36,8 +36,6 @@ use ntentan\utils\Text;
  */
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
-    use \ntentan\panie\ComponentContainerTrait;
-
     protected $hasMany = [];
     protected $belongsTo = [];
     protected $manyHaveMany = [];
@@ -89,7 +87,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     
     public function __debugInfo() {
         $data = $this->getData();
-        return $this->hasMultipleItems() ? $data : $data[0];
+        return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
     }
 
     /**
