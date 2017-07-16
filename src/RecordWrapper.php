@@ -60,7 +60,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $keys = [];
     private $initialized = false;
 
-    private function initialize() {
+    protected function initialize() {
         if($this->initialized) return;
         $this->context = ORMContext::getInstance();
         $this->container = $this->context->getContainer();
