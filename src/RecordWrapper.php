@@ -62,21 +62,21 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
     private function initialize() {
         if($this->initialized) return;
-        $this->context = ORMContext::getInstance();
+        $this->context = ORMContext::getInstance($this->container);
         $this->container = $this->context->getContainer();
         $this->adapter = $this->container->resolve(DriverAdapter::class);
-        $table = $this->context->getModelTable($this);
+        $table = $this->table ?? $this->context->getModelTable($this);
         $driver = $this->context->getDbContext()->getDriver();
         $this->adapter->setContext($this->context);
         if (is_string($table)) {
-            $this->quotedTable = $driver->quoteIdentifier($table);
+            //$this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
         } else {
-            $this->quotedTable = (isset($table['schema']) ? "{$driver->quoteIdentifier($table["schema"])}." : "").$driver->quoteIdentifier($table["table"]);
-            $this->unquotedTable = (isset($table['schema']) ? "{$table['schema']}." : "").$table['table'];
             $this->table = $table['table'];
             $this->schema = $table['schema'];
         }
+        $this->quotedTable = ($this->schema ? "{$driver->quoteIdentifier($this->schema)}." : "").$driver->quoteIdentifier($this->table);
+        $this->unquotedTable = ($this->schema ? "{$this->schema}." : "").$this->table;
         $this->adapter->setModel($this, $this->quotedTable);
         foreach ($this->behaviours as $behaviour) {
             $behaviourInstance = $this->getComponentInstance($behaviour);

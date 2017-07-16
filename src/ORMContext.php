@@ -22,12 +22,12 @@ class ORMContext {
         $this->container = $container;
         $this->config = $config;
         $this->dbContext = $container->resolve(DbContext::class, ['config' => $config]);
-        $this->container->bind(interfaces\ModelJoinerInterface::class)
+        /*$this->container->bind(interfaces\ModelJoinerInterface::class)
                 ->to(Resolver::class);
         $this->container->bind(interfaces\TableNameResolverInterface::class)
                 ->to(Resolver::class);
         $this->container->bind(interfaces\ModelClassResolverInterface::class)
-                ->to(Resolver::class);
+                ->to(Resolver::class);*/
         $this->cache = $this->container->resolve(Cache::class);
         self::$instance = $this;
     }
@@ -79,8 +79,12 @@ class ORMContext {
         return $class;
     }
     
-    public static function getInstance() {
-        if(self::$instance === null) throw new NibiiException("A context has not yet been initialized");
+    public static function getInstance($container = null) {
+        if(self::$instance === null && $container !== null){ 
+            $container->resolve(self::class);
+        } elseif (self::$instance === null) {
+            throw new NibiiException("A context has not yet been initialized");
+        }
         return self::$instance;
     }
     
