@@ -133,16 +133,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     }
 
     /**
-     * Create a new instance of this Model
-     * @return \ntentan\nibii\RecordWrapper
-     */
-    public static function createNew() {
-        $instance = ORMContext::getInstance()->getContainer()->resolve(get_called_class());
-        $instance->initialize();
-        return $instance;
-    }
-
-    /**
      * @method
      * @param type $name
      * @param type $arguments
@@ -159,10 +149,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
             // Unbind all bindings (necessary?)
         }
         return $this->dynamicOperations->perform($name, $arguments);
-    }
-
-    public static function __callStatic($name, $arguments) {
-        return call_user_func_array([self::createNew(), $name], $arguments);
     }
 
     public function __set($name, $value) {
