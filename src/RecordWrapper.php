@@ -42,9 +42,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     protected $behaviours = [];
     protected $table;
     protected $schema;
+    protected $modelData = [];
     private $quotedTable;
     private $unquotedTable;
-    private $modelData = [];
     private $invalidFields;
     private $dynamicOperations;
     private $index = 0;
@@ -62,7 +62,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
     protected function initialize() {
         if($this->initialized) return;
-        $this->context = ORMContext::getInstance($this->container);
+        $this->context = ORMContext::getInstance();
         $this->container = $this->context->getContainer();
         $this->adapter = $this->container->resolve(DriverAdapter::class);
         $table = $this->table ?? $this->context->getModelTable($this);

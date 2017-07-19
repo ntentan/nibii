@@ -79,10 +79,8 @@ class ORMContext {
         return $class;
     }
     
-    public static function getInstance($container = null) {
-        if(self::$instance === null && $container !== null){ 
-            $container->resolve(self::class);
-        } elseif (self::$instance === null) {
+    public static function getInstance() {
+        if(self::$instance === null){ 
             throw new NibiiException("A context has not yet been initialized");
         }
         return self::$instance;
