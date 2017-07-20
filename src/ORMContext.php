@@ -22,12 +22,11 @@ class ORMContext {
         $this->container = $container;
         $this->config = $config;
         $this->dbContext = $container->resolve(DbContext::class, ['config' => $config]);
-        /*$this->container->bind(interfaces\ModelJoinerInterface::class)
-                ->to(Resolver::class);
-        $this->container->bind(interfaces\TableNameResolverInterface::class)
-                ->to(Resolver::class);
-        $this->container->bind(interfaces\ModelClassResolverInterface::class)
-                ->to(Resolver::class);*/
+        $this->container->setup([
+            interfaces\ModelJoinerInterface::class => Resolver::class,
+            interfaces\TableNameResolverInterface::class => Resolver::class,
+            interfaces\ModelClassResolverInterface::class => Resolver::class
+        ], false);
         $this->cache = $this->container->resolve(Cache::class);
         self::$instance = $this;
     }
