@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace ntentan\nibii\validations;
+namespace ntentan\nibii;
 
 use ntentan\utils\validator\Validation;
 use ntentan\panie\Container;
@@ -38,7 +38,7 @@ class UniqueValidation extends Validation
      */
     private $model;
     private $mode;
-    private $context;
+    private $container;
 
     public function __construct(Container $container, $params)
     {

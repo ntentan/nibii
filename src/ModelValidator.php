@@ -37,7 +37,7 @@ class ModelValidator extends \ntentan\utils\Validator
         $this->setRules($rules);
         $this->registerValidation(
             'unique', 
-            '\ntentan\nibii\validations\UniqueValidation', 
+            '\ntentan\nibii\UniqueValidation', 
             ['model' => $model, 'mode' => $mode]
         );
     }
