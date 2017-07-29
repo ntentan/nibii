@@ -2,6 +2,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\panie\Container;
+
 class ModelValidator extends \ntentan\utils\Validator
 {
 
@@ -11,7 +13,8 @@ class ModelValidator extends \ntentan\utils\Validator
      * 
      * @param RecordWrapper
      */
-    public function __construct($model, $mode) {
+    public function __construct(Container $container, $model, $mode) {
+        parent::__construct($container);
         $pk = null;
         $rules = [];
         $this->model = $model;

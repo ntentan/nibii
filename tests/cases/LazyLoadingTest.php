@@ -11,7 +11,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
             ['id' => 12, 'name' => 'Rematch'],
             ['id' => 12, 'name' => 'Rematch']
         ];
-        $users = \ntentan\nibii\tests\models\raw\Users::fetch();
+        $users = (new \ntentan\nibii\tests\models\raw\Users())->fetch();
         $i = 0;
         foreach ($users as $user) {
             $this->assertEquals(
@@ -21,7 +21,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
     }
 
     public function testHasMany() {
-        $role = \ntentan\nibii\tests\models\raw\Roles::fetch(12);
+        $role = (new \ntentan\nibii\tests\models\raw\Roles())->fetch(12);
         $results = array(
             0 =>
             array(
@@ -66,7 +66,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
             ['id' => 12, 'name' => 'Rematch'],
             ['id' => 12, 'name' => 'Rematch']
         ];
-        $users = \ntentan\nibii\tests\models\aliased\Users::fetch();
+        $users = (new \ntentan\nibii\tests\models\aliased\Users())->fetch();
         $i = 0;
         foreach ($users as $user) {
             $this->assertEquals(
@@ -76,7 +76,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
     }
 
     public function testAliasedHasMany() {
-        $role = \ntentan\nibii\tests\models\aliased\Roles::fetch(12);
+        $role = (new \ntentan\nibii\tests\models\aliased\Roles())->fetch(12);
         $results = array(
             0 =>
             array(

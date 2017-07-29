@@ -27,8 +27,10 @@
 namespace ntentan\nibii\validations;
 
 use ntentan\utils\validator\Validation;
+use ntentan\panie\Container;
 
-class UniqueValidation extends Validation {
+class UniqueValidation extends Validation
+{
 
     /**
      *
@@ -36,13 +38,17 @@ class UniqueValidation extends Validation {
      */
     private $model;
     private $mode;
+    private $context;
 
-    public function __construct($params) {
+    public function __construct(Container $container, $params)
+    {
         $this->model = $params['model'];
         $this->mode = $params['mode'];
+        $this->container = $container;
     }
 
-    public function run($field, $data) {
+    public function run($field, $data)
+    {
         $test = [];
         foreach ($field['name'] as $name) {
             $test[$name] = isset($data[$name]) ? $data[$name] : null;
@@ -64,9 +70,10 @@ class UniqueValidation extends Validation {
                 return true;
             }
         } else {
-            $testItem = $this->model->createNew()->fields(array_keys($test))->fetchFirst($test);
+            $testItem = $this->container->resolve((new \ReflectionClass($this->model))->getName())
+                            ->fields(array_keys($test))->fetchFirst($test);
         }
-        
+
         return $this->evaluateResult(
             $field, $testItem->count() === 0, "The value of " . implode(', ', $field['name']) . " must be unique"
         );

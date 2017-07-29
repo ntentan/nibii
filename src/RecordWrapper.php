@@ -245,7 +245,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
 
     private function wrap($offset) {
         if (isset($this->modelData[$offset])) {
-            $newInstance = $this->createNew();
+            $newInstance = $this->container->resolve(self::class);
+            $newInstance->initialize();
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
         } else {

@@ -19,6 +19,6 @@ class SchemadModelTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase {
             $this->markTestSkipped();
             return;
         }        
-        $model = Schemad::fetch();
+        $model = (new Schemad())->fetch();
     }
 }

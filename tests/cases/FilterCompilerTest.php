@@ -3,8 +3,9 @@
 namespace ntentan\nibii\tests\cases;
 
 use ntentan\nibii\FilterCompiler;
+use PHPUnit\Framework\TestCase;
 
-class FilterCompilerTest extends \PHPUnit_Framework_TestCase
+class FilterCompilerTest extends TestCase
 {
     private $compiler;
     

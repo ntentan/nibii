@@ -9,9 +9,8 @@
 	"ntentan/panie": "0.*"
     },
     "require-dev": {
-        "symfony/yaml": "^2.0",
-        "phpunit/phpunit": "4.*",
-        "phpunit/dbunit" : "1.*"
+        "phpunit/phpunit": "@stable",
+        "phpunit/dbunit" : "@stable"
     },
     "license": "MIT",
     "authors": [

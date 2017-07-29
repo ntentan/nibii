@@ -3,8 +3,9 @@
 namespace ntentan\nibii\tests\lib;
 use ntentan\panie\Container;
 use ntentan\nibii\ORMContext;
+use PHPUnit\DbUnit\TestCase;
 
-class RecordWrapperTestBase extends \PHPUnit_Extensions_Database_TestCase {
+class RecordWrapperTestBase extends TestCase {
     
     protected $context;
 

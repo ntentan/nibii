@@ -36,7 +36,7 @@ class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 {
     public function testManyHaveMany()
     {
-        $projects = \ntentan\nibii\tests\models\raw\Projects::fetchFirstWithId(1);
+        $projects = (new \ntentan\nibii\tests\models\raw\Projects())->fetchFirstWithId(1);
         $this->assertEquals(
             array (
               'id' => 1,
@@ -100,7 +100,7 @@ class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
     
     public function testAliasedManyHaveMany()
     {
-        $projects = \ntentan\nibii\tests\models\aliased\Projects::fetchFirstWithId(1);
+        $projects = (new \ntentan\nibii\tests\models\aliased\Projects())->fetchFirstWithId(1);
         $this->assertEquals(
             array (
               'id' => 1,
