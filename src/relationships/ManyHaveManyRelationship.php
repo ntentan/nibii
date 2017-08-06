@@ -30,23 +30,26 @@ use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 use ntentan\nibii\NibiiException;
 
-class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
+class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
+{
 
     protected $type = self::MANY_HAVE_MANY;
     private $tempdata;
     private $junctionModelInstance;
-    
-    public function __construct(ORMContext $context) {
+
+    public function __construct(ORMContext $context)
+    {
         $this->container = $context->getContainer();
         $this->context = $context;
-    }    
+    }
 
-    public function prepareQuery($data) {
+    public function prepareQuery($data)
+    {
         $junctionModel = $this->container->resolve($this->options['junction_model']);
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
-            ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
-            ->fetch();
-        if($filter->count() == 0) {
+                ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
+                ->fetch();
+        if ($filter->count() == 0) {
             return null;
         }
         $foreignKeys = [];
@@ -56,32 +59,29 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
 
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();
-        if($this->queryPrepared){
+        if ($this->queryPrepared) {
             $query->setBoundData($this->options['foreign_key'], $foreignKeys);
         } else {
             $query = $this->getQuery()
-                ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
-                ->addFilter($this->options['foreign_key'], $foreignKeys);
+                    ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
+                    ->addFilter($this->options['foreign_key'], $foreignKeys);
             $this->queryPrepared = true;
         }
         return $query;
-        
     }
 
-    public function runSetup() {
+    public function runSetup()
+    {
         if (isset($this->options['through'])) {
-            $junctionModelName = 
-                $this->context->getClassName($this->options['through']);
+            $junctionModelName = $this->context->getClassName($this->options['through']);
         } else {
-            $junctionModelName = 
-                $this->context->joinModels($this->setupName, $this->options['model']);
+            $junctionModelName = $this->context->joinModels($this->setupName, $this->options['model']);
         }
         $this->options['junction_model'] = $junctionModelName;
 
         $foreignModel = $this->context->load($this->options['model']);
         if ($this->options['foreign_key'] == null) {
-            $this->options['foreign_key'] = 
-                $foreignModel->getDescription()->getPrimaryKey()[0];
+            $this->options['foreign_key'] = $foreignModel->getDescription()->getPrimaryKey()[0];
         }
 
         if ($this->options['local_key'] == null) {
@@ -89,17 +89,16 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         }
 
         if (!isset($this->options['junction_local_key'])) {
-            $this->options['junction_local_key'] = 
-                Text::singularize($this->setupTable) . '_id';
+            $this->options['junction_local_key'] = Text::singularize($this->setupTable) . '_id';
         }
 
         if (!isset($this->options['junction_foreign_key'])) {
-            $this->options['junction_foreign_key'] = 
-                Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
+            $this->options['junction_foreign_key'] = Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
         }
-    }  
-    
-    public function preSave(&$wrapper, $value) {
+    }
+
+    public function preSave(&$wrapper, $value)
+    {
         $this->tempdata = $wrapper[$this->options['model']];
         $this->junctionModelInstance = $this->container->resolve($this->options['junction_model']);
         $this->junctionModelInstance->delete([
@@ -107,13 +106,15 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship {
         ]);
         unset($wrapper[$this->options['model']]);
     }
-    
-    public function postSave(&$wrapper) {
+
+    public function postSave(&$wrapper)
+    {
         $jointModelRecords = [];
-        foreach($this->tempdata as $relatedRecord) {
+        foreach ($this->tempdata as $relatedRecord) {
+            var_dump($relatedRecord);
             $data = $relatedRecord->toArray();
-            if(!isset($data[$this->options['foreign_key']]) || (isset($data[$this->options['foreign_key']]) && count($data) > 1)) {
-                if(!$relatedRecord->save()) {
+            if (!isset($data[$this->options['foreign_key']]) || (isset($data[$this->options['foreign_key']]) && count($data) > 1)) {
+                if (!$relatedRecord->save()) {
                     throw new NibiiException("Failed to save related model {$this->options['model']}");
                 }
             }

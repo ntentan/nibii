@@ -49,6 +49,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     private $dynamicOperations;
     private $index = 0;
     private $dataSet = false;
+    private $className;
     
     /**
      *
@@ -68,6 +69,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
         $table = $this->table ?? $this->context->getModelTable($this);
         $driver = $this->context->getDbContext()->getDriver();
         $this->adapter->setContext($this->context);
+        $this->className = (new \ReflectionClass($this))->getName();
         if (is_string($table)) {
             //$this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
@@ -244,8 +246,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator {
     }
 
     private function wrap($offset) {
+        $this->initialize();
         if (isset($this->modelData[$offset])) {
-            $newInstance = $this->container->resolve(self::class);
+            $newInstance = $this->container->resolve($this->className);
             $newInstance->initialize();
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
