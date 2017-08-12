@@ -111,7 +111,6 @@ class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
     {
         $jointModelRecords = [];
         foreach ($this->tempdata as $relatedRecord) {
-            var_dump($relatedRecord);
             $data = $relatedRecord->toArray();
             if (!isset($data[$this->options['foreign_key']]) || (isset($data[$this->options['foreign_key']]) && count($data) > 1)) {
                 if (!$relatedRecord->save()) {
