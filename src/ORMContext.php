@@ -13,24 +13,22 @@ use ntentan\panie\Container;
 class ORMContext
 {
 
-    private $container;
     private $dbContext;
     private static $instance;
     private $cache;
-    private $config;
+    private $modelFactory;
 
-    public function __construct(Container $container, array $config)
+    private function __construct(ModelFactoryInterface $modelFactory, DbContext $dbContext, Cache $cache)
     {
-        $this->container = $container;
-        $this->config = $config;
-        $this->dbContext = $container->resolve(DbContext::class, ['config' => $config]);
-        $this->container->setup([
-            interfaces\ModelJoinerInterface::class => Resolver::class,
-            interfaces\TableNameResolverInterface::class => Resolver::class,
-            interfaces\ModelClassResolverInterface::class => Resolver::class
-                ], false);
-        $this->cache = $this->container->resolve(Cache::class);
-        self::$instance = $this;
+        $this->modelFactory = $modelFactory;
+        $this->dbContext = $dbContext;
+        $this->cache = $cache;
+    }
+
+    public static function initialize(ModelFactoryInterface $modelFactory, DbContext $dbContext, Cache $cache) : ORMContext
+    {
+        self::$instance = new self($modelFactory, $dbContext, $cache);
+        return self::$instance;
     }
 
     /**
@@ -42,8 +40,7 @@ class ORMContext
     public function load($path)
     {
         try {
-            $className = $this->getClassName($path);
-            return $this->container->resolve($className);
+            return $this->modelFactory->createModel($path, null);
         } catch (\ntentan\panie\exceptions\ResolutionException $e) {
             throw new
             NibiiException("Failed to load model [$path]. The class [$className] could not be found. Ensure that you have properly setup class name resolutions.");
@@ -71,11 +68,11 @@ class ORMContext
                         ->getTableName($instance);
     }
 
-    public function getClassName($model, $context = null)
+    /*public function getClassName($model, $context = null)
     {
         return $this->container->singleton(interfaces\ModelClassResolverInterface::class)
                         ->getModelClassName($model, $context);
-    }
+    }*/
 
     /**
      * @param string $class
@@ -91,11 +88,6 @@ class ORMContext
             throw new NibiiException("A context has not yet been initialized");
         }
         return self::$instance;
-    }
-
-    public function getContainer()
-    {
-        return $this->container;
     }
 
     public function getCache()

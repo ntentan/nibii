@@ -73,7 +73,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             return;
         }
         $this->context = ORMContext::getInstance();
-        $this->container = $this->context->getContainer();
         $this->adapter = $this->container->resolve(DriverAdapter::class);
         $table = $this->table ?? $this->context->getModelTable($this);
         $driver = $this->context->getDbContext()->getDriver();
