@@ -31,7 +31,7 @@ use ntentan\utils\Text;
 /**
  * Wraps a record from the database with data manipulation operations.
  * Wrapping a table with the record wrapper makes it possible to add, edit,
- * delete and query the underlying database. An MVC framework can use the 
+ * delete and query the underlying database. An MVC framework can use the
  * record wrapper as a base for its Model class.
  */
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
@@ -64,22 +64,21 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
-     * 
+     *
      * @return void
      */
-    protected function initialize() : void
+    protected function initialize(): void
     {
         if ($this->initialized) {
             return;
         }
         $this->context = ORMContext::getInstance();
-        $this->adapter = $this->container->resolve(DriverAdapter::class);
+        $this->adapter = $this->context->getDriverAdapter();
         $table = $this->table ?? $this->context->getModelTable($this);
         $driver = $this->context->getDbContext()->getDriver();
         $this->adapter->setContext($this->context);
         $this->className = (new \ReflectionClass($this))->getName();
         if (is_string($table)) {
-            //$this->quotedTable = $driver->quoteIdentifier($table);
             $this->table = $this->unquotedTable = $table;
         } else {
             $this->table = $table['table'];
@@ -102,16 +101,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
-     * 
+     *
      * @return ModelDescription
      */
     public function getDescription()
     {
         $this->initialize();
         return $this->context->getCache()->read(
-                        (new \ReflectionClass($this))->getName() . '::desc', function() {
-                    return $this->container->resolve(ModelDescription::class, ['model' => $this]);
-                }
+            "{$this->className}::desc",
+            function () {
+                return $this->context->getModelDescription($this);
+            }
         );
     }
 
@@ -156,12 +156,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $this->initialize();
         if ($this->dynamicOperations === null) {
-            // Bind to existing instances
-            $this->container->bind(RecordWrapper::class)->to($this);
-            $this->dynamicOperations = $this->container->resolve(
-                    Operations::class, ['table' => $this->quotedTable, 'adapter' => $this->adapter]
-            );
-            // Unbind all bindings (necessary?)
+            $this->dynamicOperations = new Operations($this, $this->quotedTable);
         }
         return $this->dynamicOperations->perform($name, $arguments);
     }
@@ -361,22 +356,22 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function preSaveCallback()
     {
-        
+
     }
 
     public function postSaveCallback($id)
     {
-        
+
     }
 
     public function preUpdateCallback()
     {
-        
+
     }
 
     public function postUpdateCallback()
     {
-        
+
     }
 
     public function getDBStoreInformation()
@@ -391,7 +386,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
-     * 
+     *
      * @return DataAdapter
      */
     public function getAdapter()

@@ -25,6 +25,7 @@
  */
 
 namespace ntentan\nibii;
+use ntentan\atiaa\Driver;
 
 /**
  * Description of DataOperations
@@ -50,16 +51,14 @@ class DataOperations {
     private $invalidFields;
     private $hasMultipleData;
     private $driver;
-    private $container;
 
     const MODE_SAVE = 0;
     const MODE_UPDATE = 1;
 
-    public function __construct(ORMContext $context, RecordWrapper $wrapper, DriverAdapter $adapter) {
+    public function __construct(RecordWrapper $wrapper, Driver $driver) {
         $this->wrapper = $wrapper;
-        $this->adapter = $adapter;
-        $this->driver = $context->getDbContext()->getDriver();
-        $this->container = $context->getContainer();
+        $this->adapter = $wrapper->getAdapter();
+        $this->driver = $driver;
     }
 
     public function doSave($hasMultipleData) {

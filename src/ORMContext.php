@@ -7,8 +7,7 @@ use ntentan\kaikai\Cache;
 use ntentan\panie\Container;
 
 /**
- * A collection of utility methods used as helpers for loading
- * models.
+ * A collection of utility methods used as helpers for loading models.
  */
 class ORMContext
 {
@@ -17,17 +16,19 @@ class ORMContext
     private static $instance;
     private $cache;
     private $modelFactory;
+    private $driverAdapterFactory;
 
-    private function __construct(ModelFactoryInterface $modelFactory, DbContext $dbContext, Cache $cache)
+    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, DbContext $dbContext, Cache $cache)
     {
         $this->modelFactory = $modelFactory;
         $this->dbContext = $dbContext;
         $this->cache = $cache;
+        $this->driverAdapterFactory = $driverAdapterFactory;
     }
 
-    public static function initialize(ModelFactoryInterface $modelFactory, DbContext $dbContext, Cache $cache) : ORMContext
+    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, DbContext $dbContext, Cache $cache) : ORMContext
     {
-        self::$instance = new self($modelFactory, $dbContext, $cache);
+        self::$instance = new self($modelFactory, $driverAdapterFactory, $dbContext, $cache);
         return self::$instance;
     }
 
@@ -43,7 +44,7 @@ class ORMContext
             return $this->modelFactory->createModel($path, null);
         } catch (\ntentan\panie\exceptions\ResolutionException $e) {
             throw new
-            NibiiException("Failed to load model [$path]. The class [$className] could not be found. Ensure that you have properly setup class name resolutions.");
+            NibiiException("Failed to load model [$path]. The class [$className] could not be found.");
         }
     }
 
@@ -64,15 +65,13 @@ class ORMContext
      */
     public function getModelTable($instance)
     {
-        return$this->container->singleton(interfaces\TableNameResolverInterface::class)
-                        ->getTableName($instance);
+        return $this->modelFactory->getModelTable($instance);
     }
 
-    /*public function getClassName($model, $context = null)
+    public function getDriverAdapter()
     {
-        return $this->container->singleton(interfaces\ModelClassResolverInterface::class)
-                        ->getModelClassName($model, $context);
-    }*/
+        return $this->driverAdapterFactory->createDriverAdapter();
+    }
 
     /**
      * @param string $class
@@ -98,6 +97,11 @@ class ORMContext
     public function getConfig()
     {
         return $this->config;
+    }
+
+    public function getModelDescription($model)
+    {
+        return new ModelDescription($model);
     }
 
     /**

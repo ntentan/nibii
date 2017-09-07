@@ -26,6 +26,7 @@
 
 namespace ntentan\nibii;
 
+use ntentan\atiaa\Driver;
 use ntentan\utils\Text;
 
 class QueryOperations {
@@ -52,11 +53,11 @@ class QueryOperations {
      * @param DriverAdapter $adapter
      * @param DataOperations $dataOperations
      */
-    public function __construct(ORMContext $context, RecordWrapper $wrapper, DriverAdapter $adapter, $dataOperations) {
+    public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver) {
         $this->wrapper = $wrapper;
-        $this->adapter = $adapter;
+        $this->adapter = $wrapper->getAdapter();
         $this->dataOperations = $dataOperations;
-        $this->driver = $context->getDbContext()->getDriver();
+        $this->driver = $driver;
     }
 
     public function doFetch($id = null) {

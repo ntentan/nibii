@@ -24,11 +24,12 @@ class Operations {
         'save', 'validate'
     ];
 
-    public function __construct(Container $container, RecordWrapper $wrapper, DriverAdapter $adapter, $table) {
+    public function __construct(RecordWrapper $wrapper, $table) {
         $this->wrapper = $wrapper;
-        $this->adapter = $adapter;
-        $this->dataOperations = $container->resolve(DataOperations::class, ['adapter' => $adapter]);
-        $this->queryOperations = $container->resolve(QueryOperations::class, ['dataOperations' => $this->dataOperations, 'adapter' => $adapter]);
+        $this->adapter = $wrapper->getAdapter();
+        $driver = ORMContext::getInstance()->getDbContext()->getDriver();
+        $this->dataOperations = new DataOperations($wrapper, $driver);
+        $this->queryOperations = new QueryOperations($wrapper, $this->dataOperations, $driver);
     }
 
     public function perform($name, $arguments) {

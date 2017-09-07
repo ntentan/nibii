@@ -2,7 +2,8 @@
 
 namespace ntentan\nibii;
 
-class ModelDescription {
+class ModelDescription
+{
 
     private $fields = [];
     private $primaryKey = [];
@@ -17,20 +18,20 @@ class ModelDescription {
     private $table;
     private $schema;
     private $name;
-    private $container;
 
     /**
-     * 
+     *
      * @param RecordWrapper $model
      */
-    public function __construct(ORMContext $context, $model) {
+    public function __construct($model)
+    {
+        $context = ORMContext::getInstance();
         $dbInformation = $model->getDBStoreInformation();
         $this->table = $dbInformation['table'];
         $this->schema = $dbInformation['schema'];
         $this->name = $context->getModelName((new \ReflectionClass($model))->getName());
-        $this->container = $context->getContainer();
         $relationships = $model->getRelationships();
-        $adapter = $context->getContainer()->resolve(DriverAdapter::class);
+        $adapter = $model->getAdapter();
         $schema = array_values(
             $context->getDbContext()->getDriver()->describeTable(
                 $dbInformation['unquoted_table']
@@ -61,7 +62,8 @@ class ModelDescription {
         }
     }
 
-    private function appendConstraints($constraints, &$key, $flat = false) {
+    private function appendConstraints($constraints, &$key, $flat = false)
+    {
         foreach ($constraints as $constraint) {
             if ($flat) {
                 $key = $constraint['columns'];
@@ -74,7 +76,8 @@ class ModelDescription {
         }
     }
 
-    private function getRelationshipDetails($relationship) {
+    private function getRelationshipDetails($relationship)
+    {
         $relationshipDetails = [];
         if (is_string($relationship)) {
             $relationshipDetails = [
@@ -94,13 +97,14 @@ class ModelDescription {
             return null;
         }
         $relationshipDetails['local_table'] = $this->table;
-        if(isset($relationship['through'])) {
+        if (isset($relationship['through'])) {
             $relationshipDetails['through'] = $relationship['through'];
         }
         return $relationshipDetails;
     }
 
-    private function createRelationships($type, $relationships) {
+    private function createRelationships($type, $relationships)
+    {
         foreach ($relationships as $relationship) {
             $relationship = $this->getRelationshipDetails($relationship);
             $class = "\\ntentan\\nibii\\relationships\\{$type}Relationship";
@@ -112,26 +116,31 @@ class ModelDescription {
     }
 
     /**
-     * 
+     *
      * @return array<Relationship>
      */
-    public function getRelationships() {
+    public function getRelationships()
+    {
         return $this->relationships;
     }
 
-    public function getPrimaryKey() {
+    public function getPrimaryKey()
+    {
         return $this->primaryKey;
     }
 
-    public function getAutoPrimaryKey() {
+    public function getAutoPrimaryKey()
+    {
         return $this->autoPrimaryKey;
     }
 
-    public function getFields() {
+    public function getFields()
+    {
         return $this->fields;
     }
 
-    public function getUniqueKeys() {
+    public function getUniqueKeys()
+    {
         return $this->uniqueKeys;
     }
 

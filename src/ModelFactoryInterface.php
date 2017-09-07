@@ -12,4 +12,5 @@ namespace ntentan\nibii;
 interface ModelFactoryInterface
 {
     public function createModel($name, $context);
+    public function getModelTable($instance);
 }
