@@ -8,12 +8,14 @@
 
 namespace ntentan\nibii\interfaces;
 
+use ntentan\nibii\RecordWrapper;
+
 /**
- * Description of ClassResolverInterface
+ * Description of ModelValidatorFactoryInterface
  *
  * @author ekow
  */
-interface ModelClassResolverInterface 
+interface ValidatorFactoryInterface
 {
-    public function getModelClassName($model, $context);
+    public function createModelValidator(RecordWrapper $model, $mode);
 }

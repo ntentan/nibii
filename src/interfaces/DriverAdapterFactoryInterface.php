@@ -6,7 +6,7 @@
  * Time: 9:03 AM
  */
 
-namespace ntentan\nibii;
+namespace ntentan\nibii\interfaces;
 
 
 interface DriverAdapterFactoryInterface

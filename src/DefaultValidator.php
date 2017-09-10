@@ -2,9 +2,10 @@
 
 namespace ntentan\nibii;
 
-use ntentan\panie\Container;
+use ntentan\nibii\RecordWrapper;
+use ntentan\utils\Validator;
 
-class ModelValidator extends \ntentan\utils\Validator
+class DefaultValidator extends Validator
 {
 
     private $model;
@@ -13,12 +14,17 @@ class ModelValidator extends \ntentan\utils\Validator
      * 
      * @param RecordWrapper
      */
-    public function __construct(Container $container, $model, $mode) {
-        parent::__construct($container);
+    public function __construct(RecordWrapper $model, $mode)
+    {
+        $this->model = $model;   
+        $this->registerValidation('unique', '\ntentan\nibii\UniqueValidation', ['model' => $model, 'mode' => $mode]);
+    }
+    
+    public function extractRules()
+    {
         $pk = null;
         $rules = [];
-        $this->model = $model;
-        $description = $model->getDescription();
+        $description = $this->model->getDescription();
 
         if ($description->getAutoPrimaryKey()) {
             $pk = $description->getPrimaryKey()[0];
@@ -33,16 +39,12 @@ class ModelValidator extends \ntentan\utils\Validator
         foreach ($unique as $constraints) {
             $rules['unique'][] = [$constraints['fields']];
         }
-        
+
         $this->setRules($rules);
-        $this->registerValidation(
-            'unique', 
-            '\ntentan\nibii\UniqueValidation', 
-            ['model' => $model, 'mode' => $mode]
-        );
     }
 
-    private function getFieldRules(&$rules, $field, $pk) {
+    private function getFieldRules(&$rules, $field, $pk)
+    {
         if ($field['required'] && $field['name'] != $pk && $field['default'] === null) {
             $rules['required'][] = $field['name'];
         }

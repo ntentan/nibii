@@ -27,7 +27,6 @@
 namespace ntentan\nibii;
 
 use ntentan\utils\validator\Validation;
-use ntentan\panie\Container;
 
 class UniqueValidation extends Validation
 {
@@ -38,13 +37,11 @@ class UniqueValidation extends Validation
      */
     private $model;
     private $mode;
-    private $container;
 
-    public function __construct(Container $container, $params)
+    public function __construct($params)
     {
         $this->model = $params['model'];
         $this->mode = $params['mode'];
-        $this->container = $container;
     }
 
     public function run($field, $data)
@@ -70,8 +67,7 @@ class UniqueValidation extends Validation
                 return true;
             }
         } else {
-            $testItem = $this->container->resolve((new \ReflectionClass($this->model))->getName())
-                            ->fields(array_keys($test))->fetchFirst($test);
+            $testItem = ((new \ReflectionClass($this->model))->newInstance())->fields(array_keys($test))->fetchFirst($test);
         }
 
         return $this->evaluateResult(

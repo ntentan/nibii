@@ -6,7 +6,7 @@
  * Time: 8:14 AM
  */
 
-namespace ntentan\nibii;
+namespace ntentan\nibii\interfaces;
 
 
 interface ModelFactoryInterface

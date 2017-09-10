@@ -25,6 +25,7 @@
  */
 
 namespace ntentan\nibii;
+
 use ntentan\atiaa\Driver;
 
 /**
@@ -32,7 +33,8 @@ use ntentan\atiaa\Driver;
  *
  * @author ekow
  */
-class DataOperations {
+class DataOperations
+{
 
     private $wrapper;
 
@@ -50,22 +52,25 @@ class DataOperations {
     private $data;
     private $invalidFields;
     private $hasMultipleData;
+    private $validator;
     private $driver;
 
     const MODE_SAVE = 0;
     const MODE_UPDATE = 1;
 
-    public function __construct(RecordWrapper $wrapper, Driver $driver) {
+    public function __construct(RecordWrapper $wrapper, Driver $driver)
+    {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();
         $this->driver = $driver;
     }
 
-    public function doSave($hasMultipleData) {
+    public function doSave($hasMultipleData)
+    {
         $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
-        
+
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $singlePrimaryKey = null;
         $succesful = true;
@@ -103,13 +108,14 @@ class DataOperations {
 
         return $succesful;
     }
-    
-    public function doValidate() {
+
+    public function doValidate()
+    {
         $record = $this->wrapper->getData()[0];
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
         return $this->validate(
-            $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
+                $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
         );
     }
 
@@ -120,7 +126,8 @@ class DataOperations {
      * @param type $primaryKey The primary keys of the record
      * @return boolean
      */
-    private function saveRecord(&$record, $primaryKey) {
+    private function saveRecord(&$record, $primaryKey)
+    {
         $status = [
             'success' => true,
             'pk_assigned' => null,
@@ -155,18 +162,18 @@ class DataOperations {
             $status['success'] = false;
             return $status;
         }
-        
+
         // Save any relationships that are attached to the data
         $relationships = $this->wrapper->getDescription()->getRelationships();
         $presentRelationships = [];
-        
-        foreach($relationships ?? [] as $model => $relationship) {
-            if(isset($record[$model])) {
+
+        foreach ($relationships ?? [] as $model => $relationship) {
+            if (isset($record[$model])) {
                 $relationship->preSave($record, $record[$model]);
                 $presentRelationships[$model] = $relationship;
             }
         }
-        
+
         // Assign the data to the wrapper again
         $this->wrapper->setData($record);
 
@@ -180,22 +187,24 @@ class DataOperations {
             $this->wrapper->{$primaryKey[0]} = $keyValue;
             $this->wrapper->postSaveCallback($keyValue);
         }
-        
+
         // Reset the data so it contains any modifications made by callbacks
         $record = $this->wrapper->getData()[0];
-        foreach($presentRelationships as $model => $relationship) {
+        foreach ($presentRelationships as $model => $relationship) {
             $relationship->postSave($record);
-        }        
+        }
 
         return $status;
     }
 
-    private function validate($data, $mode) {
-        $validator = $this->container->resolve(
+    private function validate($data, $mode)
+    {
+        /*$validator = $this->container->resolve(
             ModelValidator::class, ['model' => $this->wrapper, 'mode' => $mode]
-        );
+        );*/
+        $validator = ORMContext::getInstance()->getModelValidatorFactory()->createModelValidator($this->wrapper, $mode);
         $errors = [];
-        
+
         if (!$validator->validate($data)) {
             $errors = $validator->getInvalidFields();
         }
@@ -203,7 +212,8 @@ class DataOperations {
         return empty($errors) ? true : $errors;
     }
 
-    private function isPrimaryKeySet($primaryKey, $data) {
+    private function isPrimaryKeySet($primaryKey, $data)
+    {
         if (is_string($primaryKey) && ($data[$primaryKey] !== null || $data[$primaryKey] !== '')) {
             return true;
         }
@@ -215,7 +225,8 @@ class DataOperations {
         return true;
     }
 
-    private function assignValue(&$property, $value) {
+    private function assignValue(&$property, $value)
+    {
         if ($this->hasMultipleData) {
             $property = $value;
         } else {
@@ -223,15 +234,18 @@ class DataOperations {
         }
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function getInvalidFields() {
+    public function getInvalidFields()
+    {
         return $this->invalidFields;
     }
 
-    public function isItemDeletable($primaryKey, $data) {
+    public function isItemDeletable($primaryKey, $data)
+    {
         if ($this->isPrimaryKeySet($primaryKey, $data)) {
             return true;
         } else {

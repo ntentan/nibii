@@ -4,7 +4,9 @@ namespace ntentan\nibii;
 
 use ntentan\atiaa\DbContext;
 use ntentan\kaikai\Cache;
-use ntentan\panie\Container;
+use ntentan\nibii\interfaces\ModelFactoryInterface;
+use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
+use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 
 /**
  * A collection of utility methods used as helpers for loading models.
@@ -16,19 +18,21 @@ class ORMContext
     private static $instance;
     private $cache;
     private $modelFactory;
+    private $modelValidatorFactory;
     private $driverAdapterFactory;
 
-    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, DbContext $dbContext, Cache $cache)
+    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, DbContext $dbContext, Cache $cache)
     {
         $this->modelFactory = $modelFactory;
         $this->dbContext = $dbContext;
         $this->cache = $cache;
         $this->driverAdapterFactory = $driverAdapterFactory;
+        $this->modelValidatorFactory = $modelValidatorFactory;
     }
 
-    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, DbContext $dbContext, Cache $cache) : ORMContext
+    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, DbContext $dbContext, Cache $cache): ORMContext
     {
-        self::$instance = new self($modelFactory, $driverAdapterFactory, $dbContext, $cache);
+        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $dbContext, $cache);
         return self::$instance;
     }
 
@@ -57,7 +61,7 @@ class ORMContext
     public function joinModels($classA, $classB)
     {
         return$this->container->singleton(interfaces\ModelJoinerInterface::class)
-                        ->getJunctionClassName($classA, $classB);
+                ->getJunctionClassName($classA, $classB);
     }
 
     /**
@@ -102,6 +106,11 @@ class ORMContext
     public function getModelDescription($model)
     {
         return new ModelDescription($model);
+    }
+    
+    public function getModelValidatorFactory()
+    {
+        return $this->modelValidatorFactory;
     }
 
     /**

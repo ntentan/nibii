@@ -108,8 +108,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $this->initialize();
         return $this->context->getCache()->read(
-            "{$this->className}::desc",
-            function () {
+                "{$this->className}::desc", function () {
                 return $this->context->getModelDescription($this);
             }
         );
@@ -356,22 +355,22 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function preSaveCallback()
     {
-
+        
     }
 
     public function postSaveCallback($id)
     {
-
+        
     }
 
     public function preUpdateCallback()
     {
-
+        
     }
 
     public function postUpdateCallback()
     {
-
+        
     }
 
     public function getDBStoreInformation()

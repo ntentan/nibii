@@ -21,6 +21,6 @@ class DefaultModelFactory implements ModelFactoryInterface
     {
         $class = new \ReflectionClass($instance);
         $nameParts = explode("\\", $class->getName());
-        return \ntentan\utils\Text::deCamelize(end($nameParts));
+        return Text::deCamelize(end($nameParts));
     }
 }

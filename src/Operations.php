@@ -2,9 +2,8 @@
 
 namespace ntentan\nibii;
 
-use ntentan\panie\Container;
-
-class Operations {
+class Operations
+{
 
     private $wrapper;
 
@@ -24,7 +23,8 @@ class Operations {
         'save', 'validate'
     ];
 
-    public function __construct(RecordWrapper $wrapper, $table) {
+    public function __construct(RecordWrapper $wrapper, $table)
+    {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();
         $driver = ORMContext::getInstance()->getDbContext()->getDriver();
@@ -32,7 +32,8 @@ class Operations {
         $this->queryOperations = new QueryOperations($wrapper, $this->dataOperations, $driver);
     }
 
-    public function perform($name, $arguments) {
+    public function perform($name, $arguments)
+    {
         //@todo Think of using a hash here in future
         if (array_search($name, $this->queryOperationMethods) !== false) {
             return call_user_func_array([$this->queryOperations, "do$name"], $arguments);
@@ -45,11 +46,13 @@ class Operations {
         }
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->dataOperations->getData();
     }
 
-    public function getInvalidFields() {
+    public function getInvalidFields()
+    {
         return $this->dataOperations->getInvalidFields();
     }
 

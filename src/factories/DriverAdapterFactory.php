@@ -6,9 +6,10 @@
  * Time: 8:58 AM
  */
 
-namespace ntentan\nibii;
+namespace ntentan\nibii\factories;
 
 use ntentan\utils\Text;
+use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 
 
 class DriverAdapterFactory implements DriverAdapterFactoryInterface
@@ -22,7 +23,7 @@ class DriverAdapterFactory implements DriverAdapterFactoryInterface
 
     public function createDriverAdapter()
     {
-        $class = __NAMESPACE__ . '\adapters\\' . Text::ucamelize($this->driverName) . 'Adapter';
+        $class = 'ntentan\nibii\adapters\\' . Text::ucamelize($this->driverName) . 'Adapter';
         return new $class();
     }
 }
