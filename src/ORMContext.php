@@ -14,25 +14,23 @@ use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 class ORMContext
 {
 
-    private $dbContext;
     private static $instance;
     private $cache;
     private $modelFactory;
     private $modelValidatorFactory;
     private $driverAdapterFactory;
 
-    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, DbContext $dbContext, Cache $cache)
+    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache)
     {
         $this->modelFactory = $modelFactory;
-        $this->dbContext = $dbContext;
         $this->cache = $cache;
         $this->driverAdapterFactory = $driverAdapterFactory;
         $this->modelValidatorFactory = $modelValidatorFactory;
     }
 
-    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, DbContext $dbContext, Cache $cache): ORMContext
+    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache): ORMContext
     {
-        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $dbContext, $cache);
+        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
         return self::$instance;
     }
 
@@ -119,7 +117,7 @@ class ORMContext
      */
     public function getDbContext()
     {
-        return $this->dbContext;
+        return DbContext::getInstance();
     }
 
     public function __destruct()
