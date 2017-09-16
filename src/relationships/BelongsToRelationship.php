@@ -33,11 +33,6 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship {
 
     protected $type = self::BELONGS_TO;
     
-    public function __construct(ORMContext $context) {
-        $this->container = $context->getContainer();
-        $this->context = $context;
-    }
-
     public function prepareQuery($data) {
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();
@@ -53,7 +48,7 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship {
     }
 
     public function runSetup() {
-        $model = $this->container->resolve($this->context->getClassName($this->options['model'], self::BELONGS_TO));
+        $model = ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], self::BELONGS_TO);
         $table = $model->getDBStoreInformation()['table'];
         if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];

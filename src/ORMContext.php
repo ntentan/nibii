@@ -106,9 +106,14 @@ class ORMContext
         return new ModelDescription($model);
     }
     
-    public function getModelValidatorFactory()
+    public function getModelValidatorFactory() : ValidatorFactoryInterface
     {
         return $this->modelValidatorFactory;
+    }
+    
+    public function getModelFactory() : ModelFactoryInterface
+    {
+        return $this->modelFactory;
     }
 
     /**

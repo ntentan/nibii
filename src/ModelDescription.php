@@ -108,7 +108,7 @@ class ModelDescription
         foreach ($relationships as $relationship) {
             $relationship = $this->getRelationshipDetails($relationship);
             $class = "\\ntentan\\nibii\\relationships\\{$type}Relationship";
-            $relationshipObject = $this->container->resolve($class);
+            $relationshipObject = new $class();
             $relationshipObject->setOptions($relationship);
             $relationshipObject->setup($this->name, $this->schema, $this->table, $this->primaryKey);
             $this->relationships[$relationship['name']] = $relationshipObject;

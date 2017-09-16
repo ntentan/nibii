@@ -27,21 +27,15 @@
 namespace ntentan\nibii\relationships;
 
 use ntentan\utils\Text;
-use ntentan\nibii\ORMContext;
 use ntentan\nibii\NibiiException;
+use ntentan\nibii\Relationship;
 
-class ManyHaveManyRelationship extends \ntentan\nibii\Relationship
+class ManyHaveManyRelationship extends Relationship
 {
 
     protected $type = self::MANY_HAVE_MANY;
     private $tempdata;
     private $junctionModelInstance;
-
-    public function __construct(ORMContext $context)
-    {
-        $this->container = $context->getContainer();
-        $this->context = $context;
-    }
 
     public function prepareQuery($data)
     {
