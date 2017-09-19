@@ -87,10 +87,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->quotedTable = ($this->schema ? "{$driver->quoteIdentifier($this->schema)}." : "") . $driver->quoteIdentifier($this->table);
         $this->unquotedTable = ($this->schema ? "{$this->schema}." : "") . $this->table;
         $this->adapter->setModel($this, $this->quotedTable);
-        foreach ($this->behaviours as $behaviour) {
-            $behaviourInstance = $this->getComponentInstance($behaviour);
-            $behaviourInstance->setModel($this);
-        }
         $this->initialized = true;
     }
 
