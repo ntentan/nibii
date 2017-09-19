@@ -33,11 +33,6 @@ class HasManyRelationship extends \ntentan\nibii\Relationship {
 
     protected $type = self::HAS_MANY;
 
-    public function __construct(ORMContext $context) {
-        $this->container = $context->getContainer();
-        $this->context = $context;
-    }
-
     public function prepareQuery($data) {
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();

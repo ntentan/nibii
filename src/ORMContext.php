@@ -51,18 +51,6 @@ class ORMContext
     }
 
     /**
-     * Returns a class name for junction models needed to perform joint queries.
-     * @param string $classA
-     * @param string $classB
-     * @return string
-     */
-    public function joinModels($classA, $classB)
-    {
-        return$this->container->singleton(interfaces\ModelJoinerInterface::class)
-                ->getJunctionClassName($classA, $classB);
-    }
-
-    /**
      * @param RecordWrapper $instance
      */
     public function getModelTable($instance)
@@ -83,7 +71,7 @@ class ORMContext
         return $class;
     }
 
-    public static function getInstance()
+    public static function getInstance() : ORMContext
     {
         if (self::$instance === null) {
             throw new NibiiException("A context has not yet been initialized");
@@ -101,7 +89,7 @@ class ORMContext
         return $this->config;
     }
 
-    public function getModelDescription($model)
+    public function getModelDescription($model) : ModelDescription
     {
         return new ModelDescription($model);
     }

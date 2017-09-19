@@ -16,9 +16,9 @@ class DriverAdapterFactory implements DriverAdapterFactoryInterface
 {
     private $driverName;
 
-    public function __construct($config)
+    public function __construct(string $driverName)
     {
-        $this->driverName = $config['driver'];
+        $this->driverName = $driverName;
     }
 
     public function createDriverAdapter()

@@ -10,7 +10,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 
     public function testTableResolution()
     {
-        $users = $this->context->load(Users::class);
+        $users = \ntentan\nibii\ORMContext::getInstance()->load(Users::class);
         $description = $users->getDescription();
         $this->assertInstanceOf('\ntentan\nibii\ModelDescription', $description);
     }

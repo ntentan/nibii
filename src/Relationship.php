@@ -39,18 +39,6 @@ abstract class Relationship {
     protected $setupSchema;
     protected $setupPrimaryKey;
     
-    /**
-     *
-     * @var \ntentan\panie\Container
-     */
-    protected $container;
-    
-    /**
-     *
-     * @var ORMContext
-     */
-    protected $context;
-    
     private $setup = false;
     private $query;
     protected $queryPrepared = false;
@@ -79,7 +67,7 @@ abstract class Relationship {
             $this->runSetup();
             $this->setup = true;
         }
-        return $this->container->resolve($this->context->getClassName($this->options['model'], $this->type));
+        return ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], $this->type);
     }
 
     public function setup($name, $schema, $table, $primaryKey) {

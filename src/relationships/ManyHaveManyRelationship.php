@@ -29,6 +29,7 @@ namespace ntentan\nibii\relationships;
 use ntentan\utils\Text;
 use ntentan\nibii\NibiiException;
 use ntentan\nibii\Relationship;
+use ntentan\nibii\ORMContext;
 
 class ManyHaveManyRelationship extends Relationship
 {
@@ -39,7 +40,8 @@ class ManyHaveManyRelationship extends Relationship
 
     public function prepareQuery($data)
     {
-        $junctionModel = $this->container->resolve($this->options['junction_model']);
+        $junctionModelClass = $this->options['junction_model'];
+        $junctionModel = new $junctionModelClass();
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
                 ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
                 ->fetch();
@@ -66,14 +68,15 @@ class ManyHaveManyRelationship extends Relationship
 
     public function runSetup()
     {
+        $context = ORMContext::getInstance();
         if (isset($this->options['through'])) {
-            $junctionModelName = $this->context->getClassName($this->options['through']);
+            $junctionModelName = $context->getModelFactory()->getClassName($this->options['through']);
         } else {
-            $junctionModelName = $this->context->joinModels($this->setupName, $this->options['model']);
+            $junctionModelName = $context->getModelFactory()->getJunctionClassName($this->setupName, $this->options['model']);
         }
         $this->options['junction_model'] = $junctionModelName;
 
-        $foreignModel = $this->context->load($this->options['model']);
+        $foreignModel = $context->load($this->options['model']);
         if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $foreignModel->getDescription()->getPrimaryKey()[0];
         }

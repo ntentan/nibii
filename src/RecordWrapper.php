@@ -269,7 +269,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $this->initialize();
         if (isset($this->modelData[$offset])) {
-            $newInstance = $this->container->resolve($this->className);
+            $className = $this->className;
+            $newInstance = new $className();
             $newInstance->initialize();
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;

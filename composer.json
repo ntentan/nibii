@@ -5,8 +5,7 @@
     "require": {
         "ntentan/atiaa": "0.*",
         "ntentan/utils": "0.*",
-        "ntentan/kaikai": "0.*",
-	"ntentan/panie": "0.*"
+        "ntentan/kaikai": "0.*"
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",

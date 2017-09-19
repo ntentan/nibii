@@ -21,7 +21,7 @@ class RecordWrapperTestBase extends TestCase {
             'dbname' => getenv("NIBII_DBNAME")
         ];
 
-        $container = new Container();
+        /*$container = new Container();
         $container->bind(ORMContext::class)->to(ORMContext::class)->asSingleton();
         $container->bind(\ntentan\nibii\DriverAdapter::class)
             ->to(\ntentan\nibii\Resolver::getDriverAdapterClassName($config['driver']));
@@ -29,7 +29,13 @@ class RecordWrapperTestBase extends TestCase {
             ->to(\ntentan\atiaa\DbContext::getDriverClassName($config['driver']));        
         $container->bind(\ntentan\kaikai\CacheBackendInterface::class)
             ->to(\ntentan\kaikai\backends\VolatileCache::class);
-        $this->context = $container->resolve(ORMContext::class,['container' => $container, 'config' => $config]);
+        $this->context = $container->resolve(ORMContext::class,['container' => $container, 'config' => $config]);*/
+        $modelFactory = new \ntentan\nibii\factories\DefaultModelFactory();
+        $driverAdapterFactory = new \ntentan\nibii\factories\DriverAdapterFactory($config['driver']);
+        $modelValidatorFactory = new \ntentan\nibii\factories\DefaultValidatorFactory();
+        $cache = new \ntentan\kaikai\Cache(new \ntentan\kaikai\backends\VolatileCache());
+        \ntentan\atiaa\DbContext::initialize(new \ntentan\atiaa\DriverFactory($config));
+        ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
     }
 
     protected function getConnection() {
