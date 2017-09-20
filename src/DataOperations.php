@@ -55,7 +55,7 @@ class DataOperations
      * Fields that contained errors after save or update operations were performed.
      * @var array
      */
-    private $invalidFields;
+    private $invalidFields = [];
 
     /**
      * Set to true when the model holds multiple records.
@@ -69,9 +69,21 @@ class DataOperations
      */
     private $driver;
 
+    /**
+     * Used to indicate save operation is in save mode to create new items.
+     */
     const MODE_SAVE = 0;
+    
+    /**
+     * Used to indicate save operation is in update mode to update existing items.
+     */
     const MODE_UPDATE = 1;
 
+    /**
+     * 
+     * @param \ntentan\nibii\RecordWrapper $wrapper
+     * @param Driver $driver
+     */
     public function __construct(RecordWrapper $wrapper, Driver $driver)
     {
         $this->wrapper = $wrapper;
@@ -79,6 +91,11 @@ class DataOperations
         $this->driver = $driver;
     }
 
+    /**
+     * 
+     * @param bool $hasMultipleData
+     * @return bool
+     */
     public function doSave(bool $hasMultipleData): bool
     {
         $this->hasMultipleData = $hasMultipleData;
@@ -118,14 +135,16 @@ class DataOperations
         return $succesful;
     }
 
+    /**
+     * 
+     * @return bool|array
+     */
     public function doValidate()
     {
         $record = $this->wrapper->getData()[0];
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
-        return $this->validate(
-            $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
-        );
+        return $this->validate($record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
     }
 
     /**
@@ -204,7 +223,13 @@ class DataOperations
         return $status;
     }
 
-    private function validate($data, $mode)
+    /**
+     * 
+     * @param array $data
+     * @param type $mode
+     * @return bool|array
+     */
+    private function validate(array $data, int $mode)
     {
         $validator = ORMContext::getInstance()->getModelValidatorFactory()->createModelValidator($this->wrapper, $mode);
         $errors = [];
@@ -216,7 +241,13 @@ class DataOperations
         return empty($errors) ? true : $errors;
     }
 
-    private function isPrimaryKeySet($primaryKey, $data)
+    /**
+     * 
+     * @param string|array $primaryKey
+     * @param array $data
+     * @return bool
+     */
+    private function isPrimaryKeySet($primaryKey, array $data) : bool
     {
         if (is_string($primaryKey) && ($data[$primaryKey] !== null || $data[$primaryKey] !== '')) {
             return true;
@@ -228,8 +259,13 @@ class DataOperations
         }
         return true;
     }
-
-    private function assignValue(&$property, $value)
+    
+    /**
+     * 
+     * @param mixed $property
+     * @param mixed $value
+     */
+    private function assignValue(&$property, $value) : void
     {
         if ($this->hasMultipleData) {
             $property = $value;
@@ -238,17 +274,31 @@ class DataOperations
         }
     }
 
-    public function getData()
+    /**
+     * 
+     * @return array
+     */
+    public function getData() : array
     {
         return $this->data;
     }
 
-    public function getInvalidFields()
+    /**
+     * 
+     * @return array
+     */
+    public function getInvalidFields() : array
     {
         return $this->invalidFields;
     }
 
-    public function isItemDeletable($primaryKey, $data)
+    /**
+     * 
+     * @param string $primaryKey
+     * @param array $data
+     * @return bool
+     */
+    public function isItemDeletable(string $primaryKey, array $data) : bool
     {
         if ($this->isPrimaryKeySet($primaryKey, $data)) {
             return true;
