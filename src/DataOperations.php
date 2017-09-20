@@ -46,13 +46,27 @@ class DataOperations
     private $adapter;
 
     /**
-     *
+     * Copy of data to be manipulated in the operations.
      * @var array
      */
     private $data;
+
+    /**
+     * Fields that contained errors after save or update operations were performed.
+     * @var array
+     */
     private $invalidFields;
+
+    /**
+     * Set to true when the model holds multiple records.
+     * @var bool
+     */
     private $hasMultipleData;
-    private $validator;
+
+    /**
+     * An instance of the atiaa driver.
+     * @var Driver
+     */
     private $driver;
 
     const MODE_SAVE = 0;
@@ -65,19 +79,14 @@ class DataOperations
         $this->driver = $driver;
     }
 
-    public function doSave($hasMultipleData)
+    public function doSave(bool $hasMultipleData): bool
     {
         $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
 
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
-        $singlePrimaryKey = null;
         $succesful = true;
-
-        if (count($primaryKey) == 1) {
-            $singlePrimaryKey = $primaryKey[0];
-        }
 
         // Assign an empty array to force a validation error for empty models
         if (empty($data)) {
@@ -115,7 +124,7 @@ class DataOperations
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
         return $this->validate(
-                $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
+            $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
         );
     }
 
@@ -123,10 +132,10 @@ class DataOperations
      * Save an individual record.
      * 
      * @param array $record The record to be saved
-     * @param type $primaryKey The primary keys of the record
-     * @return boolean
+     * @param array $primaryKey The primary keys of the record
+     * @return array
      */
-    private function saveRecord(&$record, $primaryKey)
+    private function saveRecord(array &$record, array $primaryKey): array
     {
         $status = [
             'success' => true,
@@ -152,9 +161,7 @@ class DataOperations
         }
 
         // Validate the data
-        $validity = $this->validate(
-            $record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE
-        );
+        $validity = $this->validate($record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
 
         // Exit if data is invalid
         if ($validity !== true) {
@@ -199,9 +206,6 @@ class DataOperations
 
     private function validate($data, $mode)
     {
-        /*$validator = $this->container->resolve(
-            ModelValidator::class, ['model' => $this->wrapper, 'mode' => $mode]
-        );*/
         $validator = ORMContext::getInstance()->getModelValidatorFactory()->createModelValidator($this->wrapper, $mode);
         $errors = [];
 

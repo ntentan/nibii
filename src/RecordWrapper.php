@@ -57,7 +57,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @var DriverAdapter
      */
     private $adapter;
-    private $container;
     private $context;
     private $keys = [];
     private $initialized = false;
