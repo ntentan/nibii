@@ -139,7 +139,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertArrayNotHasKey('other', $role);
 
         $users = (new Users())->fetch();
-        //$this->assertEquals(4, count($users));
+        $this->assertEquals(4, count($users->toArray()));
         $this->assertEquals(1, count($users[0]));
 
         $users = (new Users())->fields('id', 'username')->filterByUsername('james')->fetchFirst();
