@@ -13,6 +13,11 @@ class DefaultModelFactory implements ModelFactoryInterface
         return new $className();
     }
 
+    public function getClassName($model)
+    {
+        return $model;
+    }
+
     public function getModelTable($instance)
     {
         $class = new \ReflectionClass($instance);
