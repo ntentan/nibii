@@ -29,14 +29,16 @@ namespace ntentan\nibii\relationships;
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 
-class BelongsToRelationship extends \ntentan\nibii\Relationship {
+class BelongsToRelationship extends \ntentan\nibii\Relationship
+{
 
     protected $type = self::BELONGS_TO;
-    
-    public function prepareQuery($data) {
+
+    public function prepareQuery($data)
+    {
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();
-        if($this->queryPrepared){
+        if ($this->queryPrepared) {
             $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);
         } else {
             $query->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
@@ -47,18 +49,20 @@ class BelongsToRelationship extends \ntentan\nibii\Relationship {
         return $query;
     }
 
-    public function runSetup() {
+    public function runSetup()
+    {
         $model = ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], self::BELONGS_TO);
         $table = $model->getDBStoreInformation()['table'];
         if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }
         if ($this->options['local_key'] == null) {
-            $this->options['local_key'] = Text::singularize($table).'_id';
+            $this->options['local_key'] = Text::singularize($table) . '_id';
         }
     }
-    
-    public function preSave(&$wrapper, $value) {
+
+    public function preSave(&$wrapper, $value)
+    {
         $value->save();
         $wrapper[$this->options['local_key']] = $value[$this->options['foreign_key']];
         unset($wrapper[$this->options['model']]);

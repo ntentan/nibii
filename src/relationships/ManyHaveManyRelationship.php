@@ -97,7 +97,8 @@ class ManyHaveManyRelationship extends Relationship
     public function preSave(&$wrapper, $value)
     {
         $this->tempdata = $wrapper[$this->options['model']];
-        $this->junctionModelInstance = $this->container->resolve($this->options['junction_model']);
+        $junctionModelClass = $this->options['junction_model'];
+        $this->junctionModelInstance = new $junctionModelClass();
         $this->junctionModelInstance->delete([
             $this->options['junction_local_key'] => $wrapper[$this->options['local_key']]
         ]);
