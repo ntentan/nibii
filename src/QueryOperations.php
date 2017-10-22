@@ -29,7 +29,8 @@ namespace ntentan\nibii;
 use ntentan\atiaa\Driver;
 use ntentan\utils\Text;
 
-class QueryOperations {
+class QueryOperations
+{
 
     /**
      *
@@ -48,19 +49,21 @@ class QueryOperations {
     private $driver;
 
     /**
-     * 
+     *
      * @param RecordWrapper $wrapper
      * @param DriverAdapter $adapter
      * @param DataOperations $dataOperations
      */
-    public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver) {
+    public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver)
+    {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();
         $this->dataOperations = $dataOperations;
         $this->driver = $driver;
     }
 
-    public function doFetch($id = null) {
+    public function doFetch($id = null)
+    {
         $parameters = $this->getFetchQueryParameters($id);
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
@@ -68,13 +71,14 @@ class QueryOperations {
         return $this->wrapper;
     }
 
-    private function getFetchQueryParameters($arg, $instantiate = true) {
+    private function getFetchQueryParameters($arg, $instantiate = true)
+    {
         if ($arg instanceof \ntentan\nibii\QueryParameters) {
             return $arg;
-        }        
-        
+        }
+
         $parameters = $this->getQueryParameters($instantiate);
-        
+
         if (is_numeric($arg)) {
             $description = $this->wrapper->getDescription();
             $parameters->addFilter($description->getPrimaryKey()[0], $arg);
@@ -84,7 +88,7 @@ class QueryOperations {
                 $parameters->addFilter($field, $value);
             }
         }
-        
+
         return $parameters;
     }
 
@@ -92,23 +96,27 @@ class QueryOperations {
      *
      * @return \ntentan\nibii\QueryParameters
      */
-    private function getQueryParameters($instantiate = true) {
+    private function getQueryParameters($instantiate = true)
+    {
         if ($this->queryParameters === null && $instantiate) {
             $this->queryParameters = new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
         }
         return $this->queryParameters;
     }
 
-    private function resetQueryParameters() {
+    private function resetQueryParameters()
+    {
         $this->queryParameters = null;
     }
 
-    public function doFetchFirst($id = null) {
+    public function doFetchFirst($id = null)
+    {
         $this->getQueryParameters()->setFirstOnly(true);
         return $this->doFetch($id);
     }
 
-    public function doFields() {
+    public function doFields()
+    {
         $fields = [];
         $arguments = func_get_args();
         foreach ($arguments as $argument) {
@@ -121,12 +129,14 @@ class QueryOperations {
         $this->getQueryParameters()->setFields($fields);
         return $this->wrapper;
     }
-    
-    public function doSortBy($field, $direction = 'ASC') {
+
+    public function doSortBy($field, $direction = 'ASC')
+    {
         $this->getQueryParameters()->addSort($field, $direction);
     }
 
-    private function getFilter($arguments) {
+    private function getFilter($arguments)
+    {
         if (count($arguments) == 2 && is_array($arguments[1])) {
             $filter = $arguments[0];
             $data = $arguments[1];
@@ -137,21 +147,24 @@ class QueryOperations {
         return ['filter' => $filter, 'data' => $data];
     }
 
-    public function doFilter() {
+    public function doFilter()
+    {
         $arguments = func_get_args();
         $details = $this->getFilter($arguments);
         $this->getQueryParameters()->setFilter($details['filter'], $details['data']);
         return $this->wrapper;
     }
 
-    public function doFilterBy() {
+    public function doFilterBy()
+    {
         $arguments = func_get_args();
         $details = $this->getFilter($arguments);
         $this->getQueryParameters()->addFilter($details['filter'], $details['data']);
         return $this->wrapper;
     }
 
-    public function doUpdate($data) {
+    public function doUpdate($data)
+    {
         $this->driver->beginTransaction();
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
@@ -159,7 +172,8 @@ class QueryOperations {
         $this->resetQueryParameters();
     }
 
-    public function doDelete($args = null) {
+    public function doDelete($args = null)
+    {
         $this->driver->beginTransaction();
         $parameters = $this->getFetchQueryParameters($args);
 
@@ -185,7 +199,8 @@ class QueryOperations {
         $this->resetQueryParameters();
     }
 
-    public function runDynamicMethod($arguments) {
+    public function runDynamicMethod($arguments)
+    {
         $arguments = count($arguments) > 1 ? $arguments : $arguments[0];
         switch ($this->pendingMethod['method']) {
             case 'filterBy':
@@ -204,7 +219,8 @@ class QueryOperations {
         }
     }
 
-    public function initDynamicMethod($method) {
+    public function initDynamicMethod($method)
+    {
         $return = false;
 
         foreach ($this->dynamicMethods as $regexp) {
@@ -218,21 +234,25 @@ class QueryOperations {
         return $return;
     }
 
-    public function doCount() {
+    public function doCount()
+    {
         return $this->adapter->count($this->getQueryParameters());
     }
 
-    public function doLimit($numItems) {
+    public function doLimit($numItems)
+    {
         $this->getQueryParameters()->setLimit($numItems);
         return $this->wrapper;
     }
 
-    public function doOffset($offset) {
+    public function doOffset($offset)
+    {
         $this->getQueryParameters()->setOffset($offset);
         return $this->wrapper;
     }
-    
-    public function doWith($model) {
+
+    public function doWith($model)
+    {
         $relationship = $this->wrapper->getDescription()->getRelationships()[$model];
         return $relationship->getQuery();
     }
