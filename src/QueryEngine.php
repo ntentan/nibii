@@ -2,22 +2,25 @@
 
 namespace ntentan\nibii;
 
-class QueryEngine {
+class QueryEngine
+{
 
     private $db;
 
-    public function setDriver($driver) {
+    public function setDriver($driver)
+    {
         $this->db = $driver;
     }
 
     /**
      * Generates an SQL insert query string for the model based on the fields
      * currently stored in the model.
-     * 
+     *
      * @param RecordWrapper $model
      * @return string
      */
-    public function getInsertQuery($model) {
+    public function getInsertQuery($model)
+    {
         $data = $model->getData();
         $table = $model->getDBStoreInformation()['quoted_table'];
         $fields = array_keys($data[0]);
@@ -33,16 +36,17 @@ class QueryEngine {
             " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")";
     }
 
-    public function getBulkUpdateQuery($data, $parameters) {
+    public function getBulkUpdateQuery($data, $parameters)
+    {
         $updateData = [];
         foreach ($data as $field => $value) {
             $updateData[] = "{$this->db->quoteIdentifier($field)} = :$field";
         }
 
         return sprintf(
-            "UPDATE %s SET %s %s", 
-            $parameters->getTable(), 
-            implode(', ', $updateData), 
+            "UPDATE %s SET %s %s",
+            $parameters->getTable(),
+            implode(', ', $updateData),
             $parameters->getWhereClause()
         );
     }
@@ -50,11 +54,12 @@ class QueryEngine {
     /**
      * Generates an SQL update query string for the model based on the data
      * currently stored in the model.
-     * 
+     *
      * @param RecordWrapper $model
      * @return string
-     */    
-    public function getUpdateQuery($model) {
+     */
+    public function getUpdateQuery($model)
+    {
         $data = $model->getData();
         $fields = array_keys($data[0]);
         $valueFields = [];
@@ -77,30 +82,33 @@ class QueryEngine {
             " WHERE " . implode(' AND ', $conditions);
     }
 
-    public function getSelectQuery($parameters) {
+    public function getSelectQuery($parameters)
+    {
         return sprintf(
-            "SELECT %s FROM %s%s%s%s%s", 
-            $parameters->getFields(), 
-            $parameters->getTable(), 
-            $parameters->getWhereClause(), 
-            $parameters->getSorts(), 
-            $parameters->getLimit(), 
+            "SELECT %s FROM %s%s%s%s%s",
+            $parameters->getFields(),
+            $parameters->getTable(),
+            $parameters->getWhereClause(),
+            $parameters->getSorts(),
+            $parameters->getLimit(),
             $parameters->getOffset()
         );
     }
 
-    public function getCountQuery($parameters) {
+    public function getCountQuery($parameters)
+    {
         return sprintf(
-            "SELECT count(*) as count FROM %s%s", 
-            $parameters->getTable(), 
+            "SELECT count(*) as count FROM %s%s",
+            $parameters->getTable(),
             $parameters->getWhereClause()
         );
     }
 
-    public function getDeleteQuery($parameters) {
+    public function getDeleteQuery($parameters)
+    {
         return sprintf(
-            "DELETE FROM %s%s", 
-            $parameters->getTable(), 
+            "DELETE FROM %s%s",
+            $parameters->getTable(),
             $parameters->getWhereClause()
         );
     }

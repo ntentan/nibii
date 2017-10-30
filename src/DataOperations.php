@@ -226,7 +226,7 @@ class DataOperations
     /**
      * 
      * @param array $data
-     * @param type $mode
+     * @param int $mode
      * @return bool|array
      */
     private function validate(array $data, int $mode)

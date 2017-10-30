@@ -29,30 +29,66 @@ namespace ntentan\nibii;
 use ntentan\atiaa\Driver;
 use ntentan\utils\Text;
 
+/**
+ * Performs operations that query the database.
+ *
+ * @package ntentan\nibii
+ */
 class QueryOperations
 {
 
     /**
-     *
+     * An instance of the record wrapper being used.
      * @var RecordWrapper
      */
     private $wrapper;
+
+    /**
+     * An instance of the driver adapter used in the database connection.
+     * @var DriverAdapter
+     */
     private $adapter;
+
+    /**
+     * An instance of query parameters used to perform the various queries.
+     * @var QueryParameters
+     */
     private $queryParameters;
+
+    /**
+     * The name of a method initialized through a dynamic method waiting to be executed.
+     * @var string
+     */
     private $pendingMethod;
+
+    /**
+     * Regular expressions for matching dynamic methods.
+     * @var array
+     */
     private $dynamicMethods = [
         "/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/",
         "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/"
     ];
+
+    /**
+     * An instance of the dataoperations used for filtered deletes.
+     * @var DataOperations
+     */
     private $dataOperations;
+
+    /**
+     * An instance of the database driver used for the connection.
+     * @var Driver
+     */
     private $driver;
 
     /**
-     *
+     * QueryOperations constructor
      * @param RecordWrapper $wrapper
-     * @param DriverAdapter $adapter
      * @param DataOperations $dataOperations
+     * @param Driver $driver
+     * @internal param DriverAdapter $adapter
      */
     public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver)
     {
@@ -62,9 +98,13 @@ class QueryOperations
         $this->driver = $driver;
     }
 
-    public function doFetch($id = null)
+    /**
+     * @param int|array|QueryParameters $query
+     * @return RecordWrapper
+     */
+    public function doFetch($query = null)
     {
-        $parameters = $this->getFetchQueryParameters($id);
+        $parameters = $this->getFetchQueryParameters($query);
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
         $this->resetQueryParameters();
@@ -73,7 +113,7 @@ class QueryOperations
 
     private function getFetchQueryParameters($arg, $instantiate = true)
     {
-        if ($arg instanceof \ntentan\nibii\QueryParameters) {
+        if ($arg instanceof QueryParameters) {
             return $arg;
         }
 
@@ -94,7 +134,7 @@ class QueryOperations
 
     /**
      *
-     * @return \ntentan\nibii\QueryParameters
+     * @return QueryParameters
      */
     private function getQueryParameters($instantiate = true)
     {
@@ -234,9 +274,9 @@ class QueryOperations
         return $return;
     }
 
-    public function doCount()
+    public function doCount($query = null)
     {
-        return $this->adapter->count($this->getQueryParameters());
+        return $this->adapter->count($this->getFetchQueryParameters($query));
     }
 
     public function doLimit($numItems)

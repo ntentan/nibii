@@ -3,13 +3,11 @@
 namespace ntentan\nibii;
 
 /**
- * A DriverAdaptr is a generic database adapter.
- * This adapter implements a lot of its operations through the atiaa library.
- * Driver specific implementation of this class only handle the conversion of
- * data types from the native datatypes of the database to the generic types
- * used in the nibii library.
+ * DriverAdapter provides a generic interface through which specific database operations can be performed.
+ * It
  */
-abstract class DriverAdapter {
+abstract class DriverAdapter
+{
 
     protected $data;
     private $insertQuery;
@@ -17,12 +15,14 @@ abstract class DriverAdapter {
     private $modelInstance;
     protected $queryEngine;
     private $driver;
-    
-    public function setContext(ORMContext $context) {
+
+    public function setContext(ORMContext $context)
+    {
         $this->driver = $context->getDbContext()->getDriver();
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
 
@@ -36,14 +36,15 @@ abstract class DriverAdapter {
     abstract public function mapDataTypes($nativeType);
 
     /**
-     * 
-     * 
+     *
+     *
      * @param QueryParameters $parameters
      * @return type
      */
-    public function select($parameters) {
+    public function select($parameters)
+    {
         $result = $this->driver->query(
-            $this->getQueryEngine()->getSelectQuery($parameters), 
+            $this->getQueryEngine()->getSelectQuery($parameters),
             $parameters->getBoundData()
         );
 
@@ -57,30 +58,32 @@ abstract class DriverAdapter {
     /**
      * @param QueryParameters $parameters
      */
-    public function count($parameters) {
-        $result = $this->driver->query(
-            $this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData()
-        );
+    public function count($parameters)
+    {
+        $result = $this->driver->query($this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData());
         return $result[0]['count'];
     }
 
-    private function initInsert() {
-        $this->insertQuery = $this->getQueryEngine()
-            ->getInsertQuery($this->modelInstance);
+    private function initInsert()
+    {
+        $this->insertQuery = $this->getQueryEngine()->getInsertQuery($this->modelInstance);
     }
 
-    private function initUpdate() {
+    private function initUpdate()
+    {
         $this->updateQuery = $this->getQueryEngine()->getUpdateQuery($this->modelInstance);
     }
 
-    public function insert($record) {
+    public function insert($record)
+    {
         if ($this->insertQuery === null) {
             $this->initInsert();
         }
         return $this->driver->query($this->insertQuery, $record);
     }
 
-    public function update($record) {
+    public function update($record)
+    {
         if ($this->updateQuery === null) {
             $this->initUpdate();
         }
@@ -90,7 +93,8 @@ abstract class DriverAdapter {
     /**
      * @param QueryParameters $parameters
      */
-    public function bulkUpdate($data, $parameters) {
+    public function bulkUpdate($data, $parameters)
+    {
         return $this->driver->query(
             $this->getQueryEngine()->getBulkUpdateQuery($data, $parameters), array_merge($data, $parameters->getBoundData())
         );
@@ -99,17 +103,19 @@ abstract class DriverAdapter {
     /**
      * @param QueryParameters $parameters
      */
-    public function delete($parameters) {
+    public function delete($parameters)
+    {
         return $this->driver->query(
             $this->getQueryEngine()->getDeleteQuery($parameters), $parameters->getBoundData()
         );
     }
 
-    public function describe($model, $relationships) {
+    public function describe($model, $relationships)
+    {
         return new ModelDescription(
-            $this->driver->describeTable($table)[$table], $relationships, function($type) {
-                return $this->mapDataTypes($type);
-            }
+            $this->driver->describeTable($table)[$table], $relationships, function ($type) {
+            return $this->mapDataTypes($type);
+        }
         );
     }
 
@@ -117,7 +123,8 @@ abstract class DriverAdapter {
      *
      * @return \ntentan\nibii\QueryEngine
      */
-    private function getQueryEngine() {
+    private function getQueryEngine()
+    {
         if ($this->queryEngine === null) {
             $this->queryEngine = new QueryEngine();
             $this->queryEngine->setDriver($this->driver);
@@ -128,11 +135,13 @@ abstract class DriverAdapter {
     /**
      * @param RecordWrapper $model
      */
-    public function setModel($model) {
+    public function setModel($model)
+    {
         $this->modelInstance = $model;
     }
-    
-    public function getDriver() {
+
+    public function getDriver()
+    {
         return $this->driver;
     }
 

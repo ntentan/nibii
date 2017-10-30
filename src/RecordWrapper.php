@@ -110,16 +110,21 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
-     * Return the number of items stored in the model or the query.
-     * @return integer
+     * Return the number of items stored in the model or matched by the query.
+     * Depending on the state of the model, the count method will return different values. For models that have data
+     * values set with calls to setData, this method returns the number of records that were added. On the other hand,
+     * for models that do not have data set, this method queries the database to find out the number of records that
+     * are either in the model, or for models that have been filtered, the number of records that match the filter.
+     *
+     * @param int|array|QueryParameters $query
+     * @return int
      */
-    public function count()
+    public function count($query = null)
     {
         if ($this->dataSet) {
             return count($this->getData());
-        } else {
-            return $this->__call('count', []);
         }
+        return $this->__call('count', [$query]);
     }
 
     /**
@@ -142,8 +147,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * @method
-     * @param type $name
-     * @param type $arguments
+     * @param string $name
+     * @param array $arguments
      * @return type
      */
     public function __call($name, $arguments)
@@ -382,7 +387,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      *
-     * @return DataAdapter
+     * @return DriverAdapter
      */
     public function getAdapter()
     {
