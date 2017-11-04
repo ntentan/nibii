@@ -39,30 +39,35 @@ class QueryOperations
 
     /**
      * An instance of the record wrapper being used.
+     *
      * @var RecordWrapper
      */
     private $wrapper;
 
     /**
      * An instance of the driver adapter used in the database connection.
+     *
      * @var DriverAdapter
      */
     private $adapter;
 
     /**
      * An instance of query parameters used to perform the various queries.
+     *
      * @var QueryParameters
      */
     private $queryParameters;
 
     /**
      * The name of a method initialized through a dynamic method waiting to be executed.
+     *
      * @var string
      */
     private $pendingMethod;
 
     /**
      * Regular expressions for matching dynamic methods.
+     *
      * @var array
      */
     private $dynamicMethods = [
@@ -72,19 +77,22 @@ class QueryOperations
     ];
 
     /**
-     * An instance of the dataoperations used for filtered deletes.
+     * An instance of the DataOperations class used for filtered deletes.
+     *
      * @var DataOperations
      */
     private $dataOperations;
 
     /**
-     * An instance of the database driver used for the connection.
+     * An instance of the Driver class used for establishing database connections.
+     *
      * @var Driver
      */
     private $driver;
 
     /**
      * QueryOperations constructor
+     *
      * @param RecordWrapper $wrapper
      * @param DataOperations $dataOperations
      * @param Driver $driver
@@ -99,6 +107,8 @@ class QueryOperations
     }
 
     /**
+     * Fetches items from the database.
+     *
      * @param int|array|QueryParameters $query
      * @return RecordWrapper
      */
@@ -111,6 +121,16 @@ class QueryOperations
         return $this->wrapper;
     }
 
+    /**
+     * The method takes multiple types of arguments and converts it to a QueryParametersObject.
+     * When this method receives null, it returns a new instance of QueryParameters. When it receives an integer, it
+     * returns a QueryParameters object that points the primary key to the integer. When it receives an associative
+     * array, it builds a series of conditions with array key-value pairs.
+     *
+     * @param int|array|QueryParameters $arg
+     * @param bool $instantiate
+     * @return QueryParameters
+     */
     private function getFetchQueryParameters($arg, $instantiate = true)
     {
         if ($arg instanceof QueryParameters) {
@@ -134,6 +154,7 @@ class QueryOperations
 
     /**
      *
+     * @param bool $instantiate
      * @return QueryParameters
      */
     private function getQueryParameters($instantiate = true)
