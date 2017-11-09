@@ -29,21 +29,58 @@ namespace ntentan\nibii;
 use ntentan\utils\Text;
 
 /**
- * Wraps a record from the database with data manipulation operations.
- * Wrapping a table with the record wrapper makes it possible to add, edit,
- * delete and query the underlying database. An MVC framework can use the
- * record wrapper as a base for its Model class.
+ * An active record wrapper for database records.
  */
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
 
+    /**
+     * An associative array of models to which this model has a one to may relationship.
+     *
+     * @var array
+     */
     protected $hasMany = [];
+
+    /**
+     * An associative array of models which have a one-to-many relationship with this model.
+     *
+     * @var array
+     */
     protected $belongsTo = [];
+
+    /**
+     * An associative array of models with which this model has a many to many relationship.
+     *
+     * @var array
+     */
     protected $manyHaveMany = [];
-    protected $behaviours = [];
+
+    /**
+     * The name of the database table.
+     *
+     * @var string
+     */
     protected $table;
+
+    /**
+     * The name of the schema to which this table belongs.
+     *
+     * @var string
+     */
     protected $schema;
+
+    /**
+     * Temporary data held in the model object.
+     *
+     * @var array
+     */
     protected $modelData = [];
+
+    /**
+     * A quoted string of the table name used for building queries.
+     *
+     * @var string
+     */
     private $quotedTable;
     private $unquotedTable;
     private $invalidFields;
@@ -53,7 +90,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $className;
 
     /**
-     *
+     * An instance of the driver adapter for interacting with the database.
      * @var DriverAdapter
      */
     private $adapter;
@@ -63,7 +100,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
-     *
      * @return void
      */
     protected function initialize(): void
@@ -96,7 +132,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
-     *
+     * Return a description of the model wrapped by this wrapper.
      * @return ModelDescription
      */
     public function getDescription()
@@ -228,7 +264,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function setData($data)
     {
-        $this->dataSet = true;
+        $this->dataSet = $data ? true : false;
         $this->modelData = $data;
     }
 

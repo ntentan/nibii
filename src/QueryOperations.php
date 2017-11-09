@@ -114,7 +114,7 @@ class QueryOperations
      */
     public function doFetch($query = null)
     {
-        $parameters = $this->getFetchQueryParameters($query);
+        $parameters = $this->buildFetchQueryParameters($query);
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
         $this->resetQueryParameters();
@@ -131,7 +131,7 @@ class QueryOperations
      * @param bool $instantiate
      * @return QueryParameters
      */
-    private function getFetchQueryParameters($arg, $instantiate = true)
+    private function buildFetchQueryParameters($arg, $instantiate = true)
     {
         if ($arg instanceof QueryParameters) {
             return $arg;
@@ -153,29 +153,44 @@ class QueryOperations
     }
 
     /**
+     * Creates a new instance of the QueryParameters if required or just returns an already instance.
      *
-     * @param bool $instantiate
+     * @param bool $forceInstantiation
      * @return QueryParameters
      */
-    private function getQueryParameters($instantiate = true)
+    private function getQueryParameters($forceInstantiation = true)
     {
-        if ($this->queryParameters === null && $instantiate) {
+        if ($this->queryParameters === null && $forceInstantiation) {
             $this->queryParameters = new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
         }
         return $this->queryParameters;
     }
 
+    /**
+     * Clears up the query parameters.
+     */
     private function resetQueryParameters()
     {
         $this->queryParameters = null;
     }
 
+    /**
+     * Performs the fetch operation and returns just the first item.
+     *
+     * @param mixed $id
+     * @return RecordWrapper
+     */
     public function doFetchFirst($id = null)
     {
         $this->getQueryParameters()->setFirstOnly(true);
         return $this->doFetch($id);
     }
 
+    /**
+     * Set the fields that should be returned for each record.
+     *
+     * @return RecordWrapper
+     */
     public function doFields()
     {
         $fields = [];
@@ -191,11 +206,23 @@ class QueryOperations
         return $this->wrapper;
     }
 
+    /**
+     * Sort the query by a given field in a given directory.
+     *
+     * @param string $field
+     * @param string $direction
+     */
     public function doSortBy($field, $direction = 'ASC')
     {
         $this->getQueryParameters()->addSort($field, $direction);
     }
 
+    /**
+     *
+     *
+     * @param mixed $arguments
+     * @return array
+     */
     private function getFilter($arguments)
     {
         if (count($arguments) == 2 && is_array($arguments[1])) {
@@ -211,8 +238,14 @@ class QueryOperations
     public function doFilter()
     {
         $arguments = func_get_args();
-        $details = $this->getFilter($arguments);
-        $this->getQueryParameters()->setFilter($details['filter'], $details['data']);
+        if(count($arguments) == 1 && is_array($arguments[0])) {
+            foreach($arguments[0] as $field => $value) {
+                $this->getQueryParameters()->addFilter($field, $value);
+            }
+        } else {
+            $details = $this->getFilter($arguments);
+            $this->getQueryParameters()->setFilter($details['filter'], $details['data']);
+        }
         return $this->wrapper;
     }
 
@@ -236,7 +269,7 @@ class QueryOperations
     public function doDelete($args = null)
     {
         $this->driver->beginTransaction();
-        $parameters = $this->getFetchQueryParameters($args);
+        $parameters = $this->buildFetchQueryParameters($args);
 
         if ($parameters === null) {
             $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
@@ -297,7 +330,7 @@ class QueryOperations
 
     public function doCount($query = null)
     {
-        return $this->adapter->count($this->getFetchQueryParameters($query));
+        return $this->adapter->count($this->buildFetchQueryParameters($query));
     }
 
     public function doLimit($numItems)

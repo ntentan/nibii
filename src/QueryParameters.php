@@ -3,7 +3,7 @@
 namespace ntentan\nibii;
 
 /**
- * Description of QueryParameters
+ * Holds parameters used for the where, limit and offset sections of queries
  *
  * @author ekow
  */
@@ -24,6 +24,7 @@ class QueryParameters
     private $sorts = [];
 
     /**
+     * QueryParameters constructor
      *
      * @param string $table The name of the table
      */
@@ -161,6 +162,7 @@ class QueryParameters
 
     /**
      * @param boolean $firstOnly
+     * @return $this
      */
     public function setFirstOnly($firstOnly)
     {
@@ -185,6 +187,7 @@ class QueryParameters
 
     /**
      * @param string $field
+     * @param string $direction
      */
     public function addSort($field, $direction = 'ASC')
     {
