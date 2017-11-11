@@ -27,6 +27,8 @@
 namespace ntentan\nibii;
 
 use ntentan\atiaa\Driver;
+use ntentan\nibii\exceptions\ModelNotFoundException;
+use ntentan\nibii\exceptions\NibiiException;
 use ntentan\utils\Text;
 
 /**
@@ -347,6 +349,9 @@ class QueryOperations
 
     public function doWith($model)
     {
+        if(!isset($this->wrapper->getDescription()->getRelationships()[$model])) {
+            throw new ModelNotFoundException("Could not find related model [$model]");
+        }
         $relationship = $this->wrapper->getDescription()->getRelationships()[$model];
         return $relationship->getQuery();
     }

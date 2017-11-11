@@ -26,17 +26,29 @@
 
 namespace ntentan\nibii\relationships;
 
+use ntentan\nibii\exceptions\FieldNotFoundException;
+use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
 use ntentan\nibii\ORMContext;
 
-class BelongsToRelationship extends \ntentan\nibii\Relationship
+/**
+ * Represents a one to many belongs to relationship.
+ *
+ * @package ntentan\nibii\relationships
+ */
+class BelongsToRelationship extends Relationship
 {
 
     protected $type = self::BELONGS_TO;
 
     public function prepareQuery($data)
     {
-        // @todo throw an exception when the data doesn't have the local key
+        if(!array_key_exists($this->options['local_key'], $data)) {
+            throw new FieldNotFoundException("Field {$this->options['local_key']} not found for belongs to relationship query.");
+        }
+        if(!isset($data[$this->options['local_key']])) {
+            return null;
+        }
         $query = $this->getQuery();
         if ($this->queryPrepared) {
             $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);

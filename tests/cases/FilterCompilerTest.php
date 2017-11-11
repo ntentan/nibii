@@ -15,7 +15,7 @@ class FilterCompilerTest extends TestCase
     }
     
     /**
-     * @expectedException \ntentan\nibii\FilterCompilerException
+     * @expectedException \ntentan\nibii\exceptions\FilterCompilerException
      */
     public function testCharacterException()
     {
@@ -23,7 +23,7 @@ class FilterCompilerTest extends TestCase
     }
 
     /**
-     * @expectedException \ntentan\nibii\FilterCompilerException
+     * @expectedException \ntentan\nibii\exceptions\FilterCompilerException
      */
     public function testTokenException()
     {
@@ -31,7 +31,7 @@ class FilterCompilerTest extends TestCase
     }
 
     /**
-     * @expectedException \ntentan\nibii\FilterCompilerException
+     * @expectedException \ntentan\nibii\exceptions\FilterCompilerException
      */
     public function testExpectedException()
     {

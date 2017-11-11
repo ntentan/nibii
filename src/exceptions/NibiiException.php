@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\nibii;
+namespace ntentan\nibii\exceptions;
 
 class NibiiException extends \Exception
 {

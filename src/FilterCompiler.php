@@ -2,6 +2,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\nibii\exceptions\FilterCompilerException;
+
 /**
  * Safely compiles SQL conditions to ensure that a portable interface is provided
  * through which conditions can be specified accross database platforms. Also
