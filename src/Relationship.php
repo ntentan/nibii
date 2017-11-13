@@ -26,9 +26,20 @@
 
 namespace ntentan\nibii;
 
-abstract class Relationship {
+/**
+ * Relationships provide queries for fetching data from related models when using lazy loading.
+ *
+ * @package ntentan\nibii
+ */
+abstract class Relationship
+{
 
+    /**
+     * Constant for the belongs-to or one-to many relation ship.
+     */
     const BELONGS_TO = 'BelongsTo';
+
+
     const HAS_MANY = 'HasMany';
     const MANY_HAVE_MANY = 'ManyHaveMany';
 
@@ -38,23 +49,26 @@ abstract class Relationship {
     protected $setupTable;
     protected $setupSchema;
     protected $setupPrimaryKey;
-    
+
     private $setup = false;
     private $query;
     protected $queryPrepared = false;
 
-    public function setOptions($options) {
+    public function setOptions($options)
+    {
         $this->options = $options;
     }
-    
-    public function getQuery() {
-        if(!$this->query) {
+
+    public function getQuery()
+    {
+        if (!$this->query) {
             $this->query = new QueryParameters();
         }
         return $this->query;
     }
 
-    public function getOptions() {
+    public function getOptions()
+    {
         return $this->options;
     }
 
@@ -62,7 +76,8 @@ abstract class Relationship {
      * Gets an instance of the related model accessed through this class.
      * @return RecordWrapper
      */
-    public function getModelInstance() {
+    public function getModelInstance()
+    {
         if (!$this->setup) {
             $this->runSetup();
             $this->setup = true;
@@ -70,21 +85,25 @@ abstract class Relationship {
         return ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], $this->type);
     }
 
-    public function setup($name, $schema, $table, $primaryKey) {
+    public function setup($name, $schema, $table, $primaryKey)
+    {
         $this->setupName = $name;
         $this->setupTable = $table;
         $this->setupPrimaryKey = $primaryKey;
         $this->setupSchema = $schema;
     }
-    
-    public function preSave(&$wrapper, $value) {
-        
+
+    public function preSave(&$wrapper, $value)
+    {
+
     }
-    
-    public function postSave(&$wrapper) {
-        
+
+    public function postSave(&$wrapper)
+    {
+
     }
-    
+
     abstract public function prepareQuery($data);
+
     abstract public function runSetup();
 }

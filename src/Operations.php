@@ -2,6 +2,8 @@
 
 namespace ntentan\nibii;
 
+use ntentan\nibii\exceptions\NibiiException;
+
 class Operations
 {
 

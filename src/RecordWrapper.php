@@ -207,30 +207,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->retrieveItem($name);
     }
 
-    private function expandArrayValue($array, $relationships, $depth, $index = null)
-    {
-        foreach ($relationships as $name => $relationship) {
-            $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
-        }
-        return $array;
-    }
-
-    public function toArray($depth = 0)
-    {
-        $relationships = $this->getDescription()->getRelationships();
-        $array = $this->modelData;
-        if ($depth > 0) {
-            if ($this->hasMultipleItems()) {
-                foreach ($array as $i => $value) {
-                    $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $i);
-                }
-            } else {
-                $array = $this->expandArrayValue($array, $relationships, $depth - 1);
-            }
-        }
-        return $array;
-    }
-
     public function save()
     {
         $return = $this->__call('save', [$this->hasMultipleItems()]);
@@ -429,6 +405,36 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $this->initialize();
         return $this->adapter;
+    }
+
+    private function expandArrayValue($array, $relationships, $depth, $expandOnly = [], $index = null)
+    {
+        if(empty($expandOnly)){
+            foreach ($relationships as $name => $relationship) {
+                $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
+            }
+        } else {
+            foreach ($expandOnly as $name) {
+                $array[$name] = $this->fetchRelatedFields($relationships[$name], $index)->toArray($depth, $expandOnly);
+            }
+        }
+        return $array;
+    }
+
+    public function toArray($depth = 0, $expandOnly = [])
+    {
+        $relationships = $this->getDescription()->getRelationships();
+        $array = $this->modelData;
+        if ($depth > 0) {
+            if ($this->hasMultipleItems()) {
+                foreach ($array as $i => $value) {
+                    $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $expandOnly, $i);
+                }
+            } else {
+                $array = $this->expandArrayValue($array, $relationships, $depth - 1, $expandOnly);
+            }
+        }
+        return $array;
     }
 
 }
