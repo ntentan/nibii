@@ -82,8 +82,24 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @var string
      */
     private $quotedTable;
+
+    /**
+     * The raw table name without any quotes.
+     *
+     * @var string
+     */
     private $unquotedTable;
+
+    /**
+     * An array of fields that contain validation errors after an attempted save.
+     *
+     * @var array
+     */
     private $invalidFields;
+
+    /**
+     * @var
+     */
     private $dynamicOperations;
     private $index = 0;
     private $dataSet = false;
@@ -139,9 +155,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $this->initialize();
         return $this->context->getCache()->read(
-                "{$this->className}::desc", function () {
-                return $this->context->getModelDescription($this);
-            }
+            "{$this->className}::desc", function () {
+            return $this->context->getModelDescription($this);
+        }
         );
     }
 
@@ -165,9 +181,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * Retrieve an item stored in the record.
-     * This method returns items that are directly stored in the model or lazy
-     * loads related items. The key could be a field in the model's table or
-     * the name of a related model.
+     * This method returns items that are directly stored in the model or lazy loads related items. The key could be a
+     * field in the model's table or the name of a related model.
+     *
      * @param string $key A key identifying the item to be retrieved.
      * @return mixed
      */
@@ -182,6 +198,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
+     * Calls dynamic methods.
+     *
      * @method
      * @param string $name
      * @param array $arguments
@@ -196,6 +214,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->dynamicOperations->perform($name, $arguments);
     }
 
+    /**
+     * Set a value for a field in the model.
+     *
+     * @param string $name
+     * @param mixed $value
+     */
     public function __set($name, $value)
     {
         $this->dataSet = true;
@@ -368,22 +392,22 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function preSaveCallback()
     {
-        
+
     }
 
     public function postSaveCallback($id)
     {
-        
+
     }
 
     public function preUpdateCallback()
     {
-        
+
     }
 
     public function postUpdateCallback()
     {
-        
+
     }
 
     public function getDBStoreInformation()
@@ -407,31 +431,31 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->adapter;
     }
 
-    private function expandArrayValue($array, $relationships, $depth, $expandOnly = [], $index = null)
+    private function expandArrayValue($array, $relationships, $depth, $expandableModels = [], $index = null)
     {
-        if(empty($expandOnly)){
+        if (empty($expandableModels)) {
             foreach ($relationships as $name => $relationship) {
                 $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
             }
         } else {
-            foreach ($expandOnly as $name) {
-                $array[$name] = $this->fetchRelatedFields($relationships[$name], $index)->toArray($depth, $expandOnly);
+            foreach ($expandableModels as $name) {
+                $array[$name] = $this->fetchRelatedFields($relationships[$name], $index)->toArray($depth, $expandableModels);
             }
         }
         return $array;
     }
 
-    public function toArray($depth = 0, $expandOnly = [])
+    public function toArray($depth = 0, $expandableModels = [])
     {
         $relationships = $this->getDescription()->getRelationships();
         $array = $this->modelData;
         if ($depth > 0) {
             if ($this->hasMultipleItems()) {
                 foreach ($array as $i => $value) {
-                    $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $expandOnly, $i);
+                    $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $expandableModels, $i);
                 }
             } else {
-                $array = $this->expandArrayValue($array, $relationships, $depth - 1, $expandOnly);
+                $array = $this->expandArrayValue($array, $relationships, $depth - 1, $expandableModels);
             }
         }
         return $array;
