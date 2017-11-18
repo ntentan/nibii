@@ -264,7 +264,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function setData($data)
     {
-        $this->dataSet = $data ? true : false;
+        $this->dataSet = is_array($data) ? true : false;
         $this->modelData = $data;
     }
 

@@ -33,7 +33,7 @@ class UniqueValidation extends Validation
 
     /**
      *
-     * @var \ntentan\nibii\RecordWrapper
+     * @var RecordWrapper
      */
     private $model;
     private $mode;
@@ -55,7 +55,7 @@ class UniqueValidation extends Validation
             return true;
         }
 
-        if ($this->mode == \ntentan\nibii\DataOperations::MODE_UPDATE) {
+        if ($this->mode == DataOperations::MODE_UPDATE) {
             $primaryKeyFields = $this->model->getDescription()->getPrimaryKey();
             $keys = [];
             foreach ($primaryKeyFields as $name) {

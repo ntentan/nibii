@@ -80,6 +80,7 @@ class DataOperations
     const MODE_UPDATE = 1;
 
     /**
+     * Create a new instance
      * 
      * @param \ntentan\nibii\RecordWrapper $wrapper
      * @param Driver $driver
@@ -92,6 +93,7 @@ class DataOperations
     }
 
     /**
+     * Perform the model save command
      * 
      * @param bool $hasMultipleData
      * @return bool
@@ -131,7 +133,6 @@ class DataOperations
         }
 
         $this->wrapper->setData($hasMultipleData ? $data : $data[0]);
-
         return $succesful;
     }
 
