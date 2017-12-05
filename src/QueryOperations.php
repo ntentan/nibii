@@ -297,7 +297,7 @@ class QueryOperations
 
     public function runDynamicMethod($arguments)
     {
-        $arguments = count($arguments) > 1 ? $arguments : $arguments[0];
+        $arguments = count($arguments) > 1 ? $arguments : ($arguments[0] ?? null);
         switch ($this->pendingMethod['method']) {
             case 'filterBy':
                 $this->getQueryParameters()->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);
