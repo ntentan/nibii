@@ -3,9 +3,9 @@
     "description": "ORM for ntentan",
     "type": "library",
     "require": {
-        "ntentan/atiaa": "0.*",
-        "ntentan/utils": "0.*",
-        "ntentan/kaikai": "0.*"
+        "ntentan/atiaa": "dev-dev",
+        "ntentan/utils": "dev-dev",
+        "ntentan/kaikai": "dev-dev"
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",
@@ -23,5 +23,6 @@
             "ntentan\\nibii\\": "src/",
             "ntentan\\nibii\\tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
