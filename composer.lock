@@ -50,16 +50,16 @@
         },
         {
             "name": "ntentan/kaikai",
-            "version": "v0.5.0",
+            "version": "v0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/kaikai.git",
-                "reference": "a66ce0680bcfa03189d23029f3f48a671699bbf3"
+                "reference": "15d5344365152aa94268c049dc5f9f64b0fd42e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/a66ce0680bcfa03189d23029f3f48a671699bbf3",
-                "reference": "a66ce0680bcfa03189d23029f3f48a671699bbf3",
+                "url": "https://api.github.com/repos/ntentan/kaikai/zipball/15d5344365152aa94268c049dc5f9f64b0fd42e6",
+                "reference": "15d5344365152aa94268c049dc5f9f64b0fd42e6",
                 "shasum": ""
             },
             "require-dev": {
@@ -82,7 +82,7 @@
                 }
             ],
             "description": "Caching for Ntentan Framework",
-            "time": "2017-12-19T17:38:50+00:00"
+            "time": "2018-09-17T01:49:44+00:00"
         },
         {
             "name": "ntentan/utils",

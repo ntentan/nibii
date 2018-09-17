@@ -192,7 +192,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Return a description of the model wrapped by this wrapper.
      * @return ModelDescription
      */
-    public function getDescription()
+    public function getDescription() : ModelDescription
     {
         $this->initialize();
         return $this->context->getCache()->read(
