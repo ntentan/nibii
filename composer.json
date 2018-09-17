@@ -3,9 +3,9 @@
     "description": "ORM for ntentan",
     "type": "library",
     "require": {
-        "ntentan/atiaa": "0.*",
-        "ntentan/utils": "0.*",
-        "ntentan/kaikai": "0.*"
+        "ntentan/atiaa": "@stable",
+        "ntentan/utils": "@stable",
+        "ntentan/kaikai": "@stable"
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",

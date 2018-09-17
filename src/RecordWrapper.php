@@ -98,24 +98,65 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $invalidFields;
 
     /**
-     * @var
+     * An instance of the operations dispatcher.
+     *
+     * @var Operations
      */
     private $dynamicOperations;
+
+    /**
+     * Location of the RecordWrapper's internal iterator.
+     *
+     * @var int
+     */
     private $index = 0;
+
+    /**
+     * This flag is set whenever data is manually put in the model with the setData method.
+     *
+     * @var bool
+     */
     private $dataSet = false;
+
+    /**
+     * The name of the class for this model obtained through reflection.
+     *
+     * @var string
+     */
     private $className;
 
     /**
      * An instance of the driver adapter for interacting with the database.
+     *
      * @var DriverAdapter
      */
     private $adapter;
+
+    /**
+     * An instance of the ORMContext through which this model is operating.
+     *
+     * @var ORMContext
+     */
     private $context;
+
+    /**
+     * Keys for the various fields when model is accessed as an associative array.
+     *
+     * @var array
+     */
     private $keys = [];
+
+    /**
+     * This flag is set after the model has been properly initialized.
+     * Useful after model is unserialized or accessed through the static interface.
+     *
+     * @var bool
+     */
     private $initialized = false;
 
     /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
+     * After initialization, this method sets the initialized flag.
      * @return void
      */
     protected function initialize(): void
@@ -151,7 +192,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Return a description of the model wrapped by this wrapper.
      * @return ModelDescription
      */
-    public function getDescription()
+    public function getDescription() : ModelDescription
     {
         $this->initialize();
         return $this->context->getCache()->read(
@@ -200,10 +241,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     /**
      * Calls dynamic methods.
      *
-     * @method
      * @param string $name
      * @param array $arguments
      * @return type
+     * @throws exceptions\NibiiException
      */
     public function __call($name, $arguments)
     {

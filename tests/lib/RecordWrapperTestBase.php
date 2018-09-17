@@ -9,7 +9,8 @@ class RecordWrapperTestBase extends TestCase {
     
     protected $context;
 
-    public function setUp() {
+    public function setUp() : void
+    {
         parent::setUp();
 
         $config = [
@@ -21,15 +22,6 @@ class RecordWrapperTestBase extends TestCase {
             'dbname' => getenv("NIBII_DBNAME")
         ];
 
-        /*$container = new Container();
-        $container->bind(ORMContext::class)->to(ORMContext::class)->asSingleton();
-        $container->bind(\ntentan\nibii\DriverAdapter::class)
-            ->to(\ntentan\nibii\Resolver::getDriverAdapterClassName($config['driver']));
-        $container->bind(\ntentan\atiaa\Driver::class)
-            ->to(\ntentan\atiaa\DbContext::getDriverClassName($config['driver']));        
-        $container->bind(\ntentan\kaikai\CacheBackendInterface::class)
-            ->to(\ntentan\kaikai\backends\VolatileCache::class);
-        $this->context = $container->resolve(ORMContext::class,['container' => $container, 'config' => $config]);*/
         $modelFactory = new \ntentan\nibii\factories\DefaultModelFactory();
         $driverAdapterFactory = new \ntentan\nibii\factories\DriverAdapterFactory($config['driver']);
         $modelValidatorFactory = new \ntentan\nibii\factories\DefaultValidatorFactory();

@@ -9,7 +9,7 @@ use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 
 /**
- * A collection of utility methods used as helpers for loading models.
+ * A global class with information and utilities required by the rest of the ORM system.
  */
 class ORMContext
 {
