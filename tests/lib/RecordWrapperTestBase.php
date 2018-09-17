@@ -9,7 +9,8 @@ class RecordWrapperTestBase extends TestCase {
     
     protected $context;
 
-    public function setUp() {
+    public function setUp() : void
+    {
         parent::setUp();
 
         $config = [
