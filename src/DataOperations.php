@@ -169,19 +169,17 @@ class DataOperations
         // Reset the data in the model to contain only the data to be saved
         $this->wrapper->setData($record);
 
-        // Run preUpdate or preSave callbacks on models and behaviours
+
+        // Execute all callbacks on the model
+        $this->wrapper->preSaveCallback();
         if ($pkSet) {
             $this->wrapper->preUpdateCallback();
-            $record = $this->wrapper->getData();
-            $record = reset($record) === false ? [] : reset($record);
         } else {
-            $this->wrapper->preSaveCallback();
-            $record = $this->wrapper->getData();
-            $record = reset($record) === false ? [] : reset($record);
+            $this->wrapper->preCreateCallback();
         }
 
         // Validate the data
-        $validity = $this->validate($record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
+        $validity = $this->validate($pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
 
         // Exit if data is invalid
         if ($validity !== true) {
@@ -190,14 +188,17 @@ class DataOperations
             return $status;
         }
 
+        $record = $this->wrapper->getData();
+        $record = reset($record) === false ? [] : reset($record);
+
         // Save any relationships that are attached to the data
         $relationships = $this->wrapper->getDescription()->getRelationships();
-        $presentRelationships = [];
+        $relationshipsWithData = [];
 
         foreach ($relationships ?? [] as $model => $relationship) {
             if (isset($record[$model])) {
                 $relationship->preSave($record, $record[$model]);
-                $presentRelationships[$model] = $relationship;
+                $relationshipsWithData[$model] = $relationship;
             }
         }
 
@@ -212,12 +213,13 @@ class DataOperations
             $this->adapter->insert($record);
             $keyValue = $this->driver->getLastInsertId();
             $this->wrapper->{$primaryKey[0]} = $keyValue;
-            $this->wrapper->postSaveCallback($keyValue);
+            $this->wrapper->postCreateCallback($keyValue);
         }
+        $this->wrapper->postSaveCallback();
 
         // Reset the data so it contains any modifications made by callbacks
         $record = $this->wrapper->getData()[0];
-        foreach ($presentRelationships as $model => $relationship) {
+        foreach ($relationshipsWithData as $model => $relationship) {
             $relationship->postSave($record);
         }
 
@@ -230,15 +232,16 @@ class DataOperations
      * @param int $mode
      * @return bool|array
      */
-    private function validate(array $data, int $mode)
+    private function validate(int $mode)
     {
         $validator = ORMContext::getInstance()->getModelValidatorFactory()->createModelValidator($this->wrapper, $mode);
-        $errors = [];
+        $mainValidatorErrors = [];
 
-        if (!$validator->validate($data)) {
-            $errors = $validator->getInvalidFields();
+        if (!$validator->validate($this->wrapper->toArray())) {
+            $mainValidatorErrors = $validator->getInvalidFields();
         }
-        $errors = $this->wrapper->onValidate($errors);
+        $customValidatorErrors = $this->wrapper->validate($mainValidatorErrors);
+        $errors = array_merge_recursive($mainValidatorErrors, $customValidatorErrors);
         return empty($errors) ? true : $errors;
     }
 

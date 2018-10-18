@@ -397,9 +397,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
-    public function onValidate($errors)
+    /**
+     * A custom validator for the record wrapper.
+     *
+     * @return mixed
+     */
+    public function validate()
     {
-        return $errors;
+        return [];
     }
 
     private function fetchRelatedFields($relationship, $index = null)
@@ -431,21 +436,53 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         unset($this->modelData[$field]);
     }
 
+    /**
+     * Callback for when a record is either added or modified.
+     */
     public function preSaveCallback()
     {
 
     }
 
-    public function postSaveCallback($id)
+    /**
+     * Callback for when a record has been added or modified.
+     * @param $id
+     */
+    public function postSaveCallback()
     {
 
     }
 
+    /**
+     * Callback for when a new record is about to be created.
+     */
+    public function preCreateCallback()
+    {
+
+    }
+
+    /**
+     * Callback for when a new record has been created.
+     * This callback can be most useful for obtaining the primary key of a newly created record.
+     *
+     * @param $id
+     */
+    public function postCreateCallback($id)
+    {
+
+    }
+
+    /**
+     * Callback for when a record is about to be updated.
+     */
     public function preUpdateCallback()
     {
 
     }
 
+    /**
+     * Callback for when a record has been updated.
+     */
     public function postUpdateCallback()
     {
 
