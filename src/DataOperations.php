@@ -36,6 +36,9 @@ use ntentan\atiaa\Driver;
 class DataOperations
 {
 
+    /**
+     * @var RecordWrapper
+     */
     private $wrapper;
 
     /**
@@ -145,7 +148,7 @@ class DataOperations
         $record = $this->wrapper->getData()[0];
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
-        return $this->validate($record, $pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
+        return $this->validate($pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
     }
 
     /**
@@ -240,7 +243,7 @@ class DataOperations
         if (!$validator->validate($this->wrapper->toArray())) {
             $mainValidatorErrors = $validator->getInvalidFields();
         }
-        $customValidatorErrors = $this->wrapper->validate($mainValidatorErrors);
+        $customValidatorErrors = $this->wrapper->validate();
         $errors = array_merge_recursive($mainValidatorErrors, $customValidatorErrors);
         return empty($errors) ? true : $errors;
     }
