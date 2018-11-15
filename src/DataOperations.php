@@ -230,8 +230,6 @@ class DataOperations
     }
 
     /**
-     * 
-     * @param array $data
      * @param int $mode
      * @return bool|array
      */
