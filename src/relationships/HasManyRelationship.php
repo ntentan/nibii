@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,13 @@
 namespace ntentan\nibii\relationships;
 
 use ntentan\utils\Text;
-use ntentan\nibii\ORMContext;
 
-class HasManyRelationship extends \ntentan\nibii\Relationship {
-
+class HasManyRelationship extends \ntentan\nibii\Relationship
+{
     protected $type = self::HAS_MANY;
 
-    public function prepareQuery($data) {
+    public function prepareQuery($data)
+    {
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();
         if ($this->queryPrepared) {
@@ -43,16 +43,17 @@ class HasManyRelationship extends \ntentan\nibii\Relationship {
                     ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']]);
             $this->queryPrepared = true;
         }
+
         return $query;
     }
 
-    public function runSetup() {
+    public function runSetup()
+    {
         if ($this->options['foreign_key'] == null) {
-            $this->options['foreign_key'] = Text::singularize($this->setupTable) . '_id';
+            $this->options['foreign_key'] = Text::singularize($this->setupTable).'_id';
         }
         if ($this->options['local_key'] == null) {
             $this->options['local_key'] = $this->setupPrimaryKey[0];
         }
     }
-
 }

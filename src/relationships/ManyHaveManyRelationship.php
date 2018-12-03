@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,13 @@
 
 namespace ntentan\nibii\relationships;
 
-use ntentan\utils\Text;
 use ntentan\nibii\NibiiException;
-use ntentan\nibii\Relationship;
 use ntentan\nibii\ORMContext;
+use ntentan\nibii\Relationship;
+use ntentan\utils\Text;
 
 class ManyHaveManyRelationship extends Relationship
 {
-
     protected $type = self::MANY_HAVE_MANY;
     private $tempdata;
     private $junctionModelInstance;
@@ -46,7 +45,7 @@ class ManyHaveManyRelationship extends Relationship
                 ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
                 ->fetch();
         if ($filter->count() == 0) {
-            return null;
+            return;
         }
         $foreignKeys = [];
         foreach ($filter->toArray() as $foreignItem) {
@@ -63,6 +62,7 @@ class ManyHaveManyRelationship extends Relationship
                     ->addFilter($this->options['foreign_key'], $foreignKeys);
             $this->queryPrepared = true;
         }
+
         return $query;
     }
 
@@ -86,11 +86,11 @@ class ManyHaveManyRelationship extends Relationship
         }
 
         if (!isset($this->options['junction_local_key'])) {
-            $this->options['junction_local_key'] = Text::singularize($this->setupTable) . '_id';
+            $this->options['junction_local_key'] = Text::singularize($this->setupTable).'_id';
         }
 
         if (!isset($this->options['junction_foreign_key'])) {
-            $this->options['junction_foreign_key'] = Text::singularize($foreignModel->getDBStoreInformation()['table']) . '_id';
+            $this->options['junction_foreign_key'] = Text::singularize($foreignModel->getDBStoreInformation()['table']).'_id';
         }
     }
 
@@ -100,7 +100,7 @@ class ManyHaveManyRelationship extends Relationship
         $junctionModelClass = $this->options['junction_model'];
         $this->junctionModelInstance = new $junctionModelClass();
         $this->junctionModelInstance->delete([
-            $this->options['junction_local_key'] => $wrapper[$this->options['local_key']]
+            $this->options['junction_local_key'] => $wrapper[$this->options['local_key']],
         ]);
         unset($wrapper[$this->options['model']]);
     }
@@ -116,12 +116,11 @@ class ManyHaveManyRelationship extends Relationship
                 }
             }
             $jointModelRecords[] = [
-                $this->options['junction_local_key'] => $wrapper[$this->options['local_key']],
-                $this->options['junction_foreign_key'] => $relatedRecord[$this->options['foreign_key']]
+                $this->options['junction_local_key']   => $wrapper[$this->options['local_key']],
+                $this->options['junction_foreign_key'] => $relatedRecord[$this->options['foreign_key']],
             ];
         }
         $this->junctionModelInstance->setData($jointModelRecords);
         $this->junctionModelInstance->save();
     }
-
 }

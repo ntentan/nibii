@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,20 +29,19 @@ namespace ntentan\nibii;
 use ntentan\atiaa\Driver;
 
 /**
- * Description of DataOperations
+ * Description of DataOperations.
  *
  * @author ekow
  */
 class DataOperations
 {
-
     /**
      * @var RecordWrapper
      */
     private $wrapper;
 
     /**
-     * Private instance of driver adapter
+     * Private instance of driver adapter.
      *
      * @var DriverAdapter
      */
@@ -50,24 +49,28 @@ class DataOperations
 
     /**
      * Copy of data to be manipulated in the operations.
+     *
      * @var array
      */
     private $data;
 
     /**
      * Fields that contained errors after save or update operations were performed.
+     *
      * @var array
      */
     private $invalidFields = [];
 
     /**
      * Set to true when the model holds multiple records.
+     *
      * @var bool
      */
     private $hasMultipleData;
 
     /**
      * An instance of the atiaa driver.
+     *
      * @var Driver
      */
     private $driver;
@@ -76,17 +79,17 @@ class DataOperations
      * Used to indicate save operation is in save mode to create new items.
      */
     const MODE_SAVE = 0;
-    
+
     /**
      * Used to indicate save operation is in update mode to update existing items.
      */
     const MODE_UPDATE = 1;
 
     /**
-     * Create a new instance
-     * 
+     * Create a new instance.
+     *
      * @param \ntentan\nibii\RecordWrapper $wrapper
-     * @param Driver $driver
+     * @param Driver                       $driver
      */
     public function __construct(RecordWrapper $wrapper, Driver $driver)
     {
@@ -96,9 +99,10 @@ class DataOperations
     }
 
     /**
-     * Perform the model save command
-     * 
+     * Perform the model save command.
+     *
      * @param bool $hasMultipleData
+     *
      * @return bool
      */
     public function doSave(bool $hasMultipleData): bool
@@ -136,11 +140,11 @@ class DataOperations
         }
 
         $this->wrapper->setData($hasMultipleData ? $data : $data[0]);
+
         return $succesful;
     }
 
     /**
-     * 
      * @return bool|array
      */
     public function doValidate()
@@ -148,22 +152,24 @@ class DataOperations
         $record = $this->wrapper->getData()[0];
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
         $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
-        return $this->validate($pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
+
+        return $this->validate($pkSet ? self::MODE_UPDATE : self::MODE_SAVE);
     }
 
     /**
      * Save an individual record.
-     * 
-     * @param array $record The record to be saved
+     *
+     * @param array $record     The record to be saved
      * @param array $primaryKey The primary keys of the record
+     *
      * @return array
      */
     private function saveRecord(array &$record, array $primaryKey): array
     {
         $status = [
-            'success' => true,
-            'pk_assigned' => null,
-            'invalid_fields' => []
+            'success'        => true,
+            'pk_assigned'    => null,
+            'invalid_fields' => [],
         ];
 
         // Determine if the primary key of the record is set.
@@ -171,7 +177,6 @@ class DataOperations
 
         // Reset the data in the model to contain only the data to be saved
         $this->wrapper->setData($record);
-
 
         // Execute all callbacks on the model
         $this->wrapper->preSaveCallback();
@@ -182,12 +187,13 @@ class DataOperations
         }
 
         // Validate the data
-        $validity = $this->validate($pkSet ? DataOperations::MODE_UPDATE : DataOperations::MODE_SAVE);
+        $validity = $this->validate($pkSet ? self::MODE_UPDATE : self::MODE_SAVE);
 
         // Exit if data is invalid
         if ($validity !== true) {
             $status['invalid_fields'] = $validity;
             $status['success'] = false;
+
             return $status;
         }
 
@@ -231,6 +237,7 @@ class DataOperations
 
     /**
      * @param int $mode
+     *
      * @return bool|array
      */
     private function validate(int $mode)
@@ -243,13 +250,14 @@ class DataOperations
         }
         $customValidatorErrors = $this->wrapper->validate();
         $errors = array_merge_recursive($mainValidatorErrors, $customValidatorErrors);
+
         return empty($errors) ? true : $errors;
     }
 
     /**
-     * 
      * @param string|array $primaryKey
-     * @param array $data
+     * @param array        $data
+     *
      * @return bool
      */
     private function isPrimaryKeySet($primaryKey, array $data) : bool
@@ -262,11 +270,11 @@ class DataOperations
                 return false;
             }
         }
+
         return true;
     }
-    
+
     /**
-     * 
      * @param mixed $property
      * @param mixed $value
      */
@@ -280,7 +288,6 @@ class DataOperations
     }
 
     /**
-     * 
      * @return array
      */
     public function getData() : array
@@ -289,7 +296,6 @@ class DataOperations
     }
 
     /**
-     * 
      * @return array
      */
     public function getInvalidFields() : array
@@ -298,9 +304,9 @@ class DataOperations
     }
 
     /**
-     * 
      * @param string $primaryKey
-     * @param array $data
+     * @param array  $data
+     *
      * @return bool
      */
     public function isItemDeletable(string $primaryKey, array $data) : bool
@@ -311,5 +317,4 @@ class DataOperations
             return false;
         }
     }
-
 }

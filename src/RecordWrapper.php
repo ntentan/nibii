@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,6 @@ use ntentan\utils\Text;
  */
 class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 {
-
     /**
      * An associative array of models to which this model has a one to may relationship.
      *
@@ -157,6 +156,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
      * After initialization, this method sets the initialized flag.
+     *
      * @return void
      */
     protected function initialize(): void
@@ -176,8 +176,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $this->table = $table['table'];
             $this->schema = $table['schema'];
         }
-        $this->quotedTable = ($this->schema ? "{$driver->quoteIdentifier($this->schema)}." : "") . $driver->quoteIdentifier($this->table);
-        $this->unquotedTable = ($this->schema ? "{$this->schema}." : "") . $this->table;
+        $this->quotedTable = ($this->schema ? "{$driver->quoteIdentifier($this->schema)}." : '').$driver->quoteIdentifier($this->table);
+        $this->unquotedTable = ($this->schema ? "{$this->schema}." : '').$this->table;
         $this->adapter->setModel($this, $this->quotedTable);
         $this->initialized = true;
     }
@@ -185,20 +185,23 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __debugInfo()
     {
         $data = $this->getData();
+
         return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
     }
 
     /**
      * Return a description of the model wrapped by this wrapper.
+     *
      * @return ModelDescription
      */
     public function getDescription() : ModelDescription
     {
         $this->initialize();
+
         return $this->context->getCache()->read(
             "{$this->className}::desc", function () {
-            return $this->context->getModelDescription($this);
-        }
+                return $this->context->getModelDescription($this);
+            }
         );
     }
 
@@ -210,6 +213,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * are either in the model, or for models that have been filtered, the number of records that match the filter.
      *
      * @param int|array|QueryParameters $query
+     *
      * @return int
      */
     public function count($query = null)
@@ -217,6 +221,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if ($this->dataSet) {
             return count($this->getData());
         }
+
         return $this->__call('count', [$query]);
     }
 
@@ -226,6 +231,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * field in the model's table or the name of a related model.
      *
      * @param string $key A key identifying the item to be retrieved.
+     *
      * @return mixed
      */
     private function retrieveItem($key)
@@ -235,6 +241,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if (isset($relationships[$key])) {
             return $this->fetchRelatedFields($relationships[$key]);
         }
+
         return isset($this->modelData[$decamelizedKey]) ? $this->modelData[$decamelizedKey] : null;
     }
 
@@ -242,9 +249,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Calls dynamic methods.
      *
      * @param string $name
-     * @param array $arguments
-     * @return type
+     * @param array  $arguments
+     *
      * @throws exceptions\NibiiException
+     *
+     * @return type
      */
     public function __call($name, $arguments)
     {
@@ -252,6 +261,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if ($this->dynamicOperations === null) {
             $this->dynamicOperations = new Operations($this, $this->quotedTable);
         }
+
         return $this->dynamicOperations->perform($name, $arguments);
     }
 
@@ -259,7 +269,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Set a value for a field in the model.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($name, $value)
     {
@@ -276,6 +286,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $return = $this->__call('save', [$this->hasMultipleItems()]);
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
+
         return $return;
     }
 
@@ -294,9 +305,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
         if (count($this->modelData) == 0) {
             $data = $this->modelData;
-        } else if ($this->hasMultipleItems()) {
+        } elseif ($this->hasMultipleItems()) {
             $data = $this->modelData;
-        } else if (count($this->modelData) > 0) {
+        } elseif (count($this->modelData) > 0) {
             $data[] = $this->modelData;
         }
 
@@ -350,9 +361,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $newInstance = new $className();
             $newInstance->initialize();
             $newInstance->setData($this->modelData[$offset]);
+
             return $newInstance;
         } else {
-            return null;
+            return;
         }
     }
 
@@ -419,15 +431,16 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             return $model;
         }
         $query = $relationship->prepareQuery($data);
+
         return $query ? $model->fetch($query) : $model;
     }
 
     public function getRelationships()
     {
         return [
-            'HasMany' => $this->hasMany,
-            'BelongsTo' => $this->belongsTo,
-            'ManyHaveMany' => $this->manyHaveMany
+            'HasMany'      => $this->hasMany,
+            'BelongsTo'    => $this->belongsTo,
+            'ManyHaveMany' => $this->manyHaveMany,
         ];
     }
 
@@ -441,16 +454,15 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function preSaveCallback()
     {
-
     }
 
     /**
      * Callback for when a record has been added or modified.
+     *
      * @param $id
      */
     public function postSaveCallback()
     {
-
     }
 
     /**
@@ -458,7 +470,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function preCreateCallback()
     {
-
     }
 
     /**
@@ -469,7 +480,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function postCreateCallback($id)
     {
-
     }
 
     /**
@@ -477,7 +487,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function preUpdateCallback()
     {
-
     }
 
     /**
@@ -485,27 +494,27 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function postUpdateCallback()
     {
-
     }
 
     public function getDBStoreInformation()
     {
         $this->initialize();
+
         return [
-            'schema' => $this->schema,
-            'table' => $this->table,
-            'quoted_table' => $this->quotedTable,
-            'unquoted_table' => $this->unquotedTable
+            'schema'         => $this->schema,
+            'table'          => $this->table,
+            'quoted_table'   => $this->quotedTable,
+            'unquoted_table' => $this->unquotedTable,
         ];
     }
 
     /**
-     *
      * @return DriverAdapter
      */
     public function getAdapter()
     {
         $this->initialize();
+
         return $this->adapter;
     }
 
@@ -520,6 +529,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
                 $array[$name] = $this->fetchRelatedFields($relationships[$name], $index)->toArray($depth, $expandableModels);
             }
         }
+
         return $array;
     }
 
@@ -536,7 +546,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
                 $array = $this->expandArrayValue($array, $relationships, $depth - 1, $expandableModels);
             }
         }
+
         return $array;
     }
-
 }
