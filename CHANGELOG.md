@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-## Unreleased
+## v0.8.0 - 2018-12-02
 ### Changed
 - Changes to custom validation system:
     - The name of the custom validation method from `onValidate` to `validate`.
