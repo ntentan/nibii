@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,13 @@ namespace ntentan\nibii;
 
 use ntentan\atiaa\Driver;
 use ntentan\nibii\exceptions\ModelNotFoundException;
-use ntentan\nibii\exceptions\NibiiException;
 use ntentan\utils\Text;
 
 /**
  * Performs operations that query the database.
- *
- * @package ntentan\nibii
  */
 class QueryOperations
 {
-
     /**
      * An instance of the record wrapper being used.
      *
@@ -73,9 +69,9 @@ class QueryOperations
      * @var array
      */
     private $dynamicMethods = [
-        "/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/",
-        "/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/",
-        "/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/"
+        '/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/',
+        '/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/',
+        '/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/',
     ];
 
     /**
@@ -93,11 +89,12 @@ class QueryOperations
     private $driver;
 
     /**
-     * QueryOperations constructor
+     * QueryOperations constructor.
      *
-     * @param RecordWrapper $wrapper
+     * @param RecordWrapper  $wrapper
      * @param DataOperations $dataOperations
-     * @param Driver $driver
+     * @param Driver         $driver
+     *
      * @internal param DriverAdapter $adapter
      */
     public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver)
@@ -112,6 +109,7 @@ class QueryOperations
      * Fetches items from the database.
      *
      * @param int|array|QueryParameters $query
+     *
      * @return RecordWrapper
      */
     public function doFetch($query = null)
@@ -120,6 +118,7 @@ class QueryOperations
         $data = $this->adapter->select($parameters);
         $this->wrapper->setData($data);
         $this->resetQueryParameters();
+
         return $this->wrapper;
     }
 
@@ -130,7 +129,8 @@ class QueryOperations
      * array, it builds a series of conditions with array key-value pairs.
      *
      * @param int|array|QueryParameters $arg
-     * @param bool $instantiate
+     * @param bool                      $instantiate
+     *
      * @return QueryParameters
      */
     private function buildFetchQueryParameters($arg, $instantiate = true)
@@ -145,7 +145,7 @@ class QueryOperations
             $description = $this->wrapper->getDescription();
             $parameters->addFilter($description->getPrimaryKey()[0], $arg);
             $parameters->setFirstOnly(true);
-        } else if (is_array($arg)) {
+        } elseif (is_array($arg)) {
             foreach ($arg as $field => $value) {
                 $parameters->addFilter($field, $value);
             }
@@ -158,6 +158,7 @@ class QueryOperations
      * Creates a new instance of the QueryParameters if required or just returns an already instance.
      *
      * @param bool $forceInstantiation
+     *
      * @return QueryParameters
      */
     private function getQueryParameters($forceInstantiation = true)
@@ -165,6 +166,7 @@ class QueryOperations
         if ($this->queryParameters === null && $forceInstantiation) {
             $this->queryParameters = new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
         }
+
         return $this->queryParameters;
     }
 
@@ -180,11 +182,13 @@ class QueryOperations
      * Performs the fetch operation and returns just the first item.
      *
      * @param mixed $id
+     *
      * @return RecordWrapper
      */
     public function doFetchFirst($id = null)
     {
         $this->getQueryParameters()->setFirstOnly(true);
+
         return $this->doFetch($id);
     }
 
@@ -205,6 +209,7 @@ class QueryOperations
             }
         }
         $this->getQueryParameters()->setFields($fields);
+
         return $this->wrapper;
     }
 
@@ -220,9 +225,8 @@ class QueryOperations
     }
 
     /**
-     *
-     *
      * @param mixed $arguments
+     *
      * @return array
      */
     private function getFilter($arguments)
@@ -234,20 +238,22 @@ class QueryOperations
             $filter = array_shift($arguments);
             $data = $arguments;
         }
+
         return ['filter' => $filter, 'data' => $data];
     }
 
     public function doFilter()
     {
         $arguments = func_get_args();
-        if(count($arguments) == 1 && is_array($arguments[0])) {
-            foreach($arguments[0] as $field => $value) {
+        if (count($arguments) == 1 && is_array($arguments[0])) {
+            foreach ($arguments[0] as $field => $value) {
                 $this->getQueryParameters()->addFilter($field, $value);
             }
         } else {
             $details = $this->getFilter($arguments);
             $this->getQueryParameters()->setFilter($details['filter'], $details['data']);
         }
+
         return $this->wrapper;
     }
 
@@ -256,6 +262,7 @@ class QueryOperations
         $arguments = func_get_args();
         $details = $this->getFilter($arguments);
         $this->getQueryParameters()->addFilter($details['filter'], $details['data']);
+
         return $this->wrapper;
     }
 
@@ -301,9 +308,11 @@ class QueryOperations
         switch ($this->pendingMethod['method']) {
             case 'filterBy':
                 $this->getQueryParameters()->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);
+
                 return $this->wrapper;
             case 'sort':
                 $this->getQueryParameters()->addSort(Text::deCamelize($this->pendingMethod['variable']), $this->pendingMethod['direction']);
+
                 return $this->wrapper;
             case 'fetch':
                 $parameters = $this->getQueryParameters();
@@ -311,6 +320,7 @@ class QueryOperations
                 if ($this->pendingMethod['first'] === 'First') {
                     $parameters->setFirstOnly(true);
                 }
+
                 return $this->doFetch();
         }
     }
@@ -338,22 +348,24 @@ class QueryOperations
     public function doLimit($numItems)
     {
         $this->getQueryParameters()->setLimit($numItems);
+
         return $this->wrapper;
     }
 
     public function doOffset($offset)
     {
         $this->getQueryParameters()->setOffset($offset);
+
         return $this->wrapper;
     }
 
     public function doWith($model)
     {
-        if(!isset($this->wrapper->getDescription()->getRelationships()[$model])) {
+        if (!isset($this->wrapper->getDescription()->getRelationships()[$model])) {
             throw new ModelNotFoundException("Could not find related model [$model]");
         }
         $relationship = $this->wrapper->getDescription()->getRelationships()[$model];
+
         return $relationship->getQuery();
     }
-
 }

@@ -1,14 +1,37 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace ntentan\nibii;
 
 /**
  * DriverAdapter provides a generic interface through which specific database operations can be performed.
- * It
+ * It.
  */
 abstract class DriverAdapter
 {
-
     protected $data;
     private $insertQuery;
     private $updateQuery;
@@ -31,14 +54,14 @@ abstract class DriverAdapter
      * supported by nibii.
      *
      * @param string $nativeType The native datatype
+     *
      * @return string The generic datatype for use in nibii.
      */
     abstract public function mapDataTypes($nativeType);
 
     /**
-     *
-     *
      * @param QueryParameters $parameters
+     *
      * @return type
      */
     public function select($parameters)
@@ -61,6 +84,7 @@ abstract class DriverAdapter
     public function count($parameters)
     {
         $result = $this->driver->query($this->getQueryEngine()->getCountQuery($parameters), $parameters->getBoundData());
+
         return $result[0]['count'];
     }
 
@@ -79,6 +103,7 @@ abstract class DriverAdapter
         if ($this->insertQuery === null) {
             $this->initInsert();
         }
+
         return $this->driver->query($this->insertQuery, $record);
     }
 
@@ -87,6 +112,7 @@ abstract class DriverAdapter
         if ($this->updateQuery === null) {
             $this->initUpdate();
         }
+
         return $this->driver->query($this->updateQuery, $record);
     }
 
@@ -114,13 +140,12 @@ abstract class DriverAdapter
     {
         return new ModelDescription(
             $this->driver->describeTable($table)[$table], $relationships, function ($type) {
-            return $this->mapDataTypes($type);
-        }
+                return $this->mapDataTypes($type);
+            }
         );
     }
 
     /**
-     *
      * @return \ntentan\nibii\QueryEngine
      */
     private function getQueryEngine()
@@ -129,6 +154,7 @@ abstract class DriverAdapter
             $this->queryEngine = new QueryEngine();
             $this->queryEngine->setDriver($this->driver);
         }
+
         return $this->queryEngine;
     }
 
@@ -144,5 +170,4 @@ abstract class DriverAdapter
     {
         return $this->driver;
     }
-
 }

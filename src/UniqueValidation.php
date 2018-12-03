@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,7 @@ use ntentan\utils\validator\Validation;
 
 class UniqueValidation extends Validation
 {
-
     /**
-     *
      * @var RecordWrapper
      */
     private $model;
@@ -71,8 +69,7 @@ class UniqueValidation extends Validation
         }
 
         return $this->evaluateResult(
-            $field, $testItem->count() === 0, "The value of " . implode(', ', $field['name']) . " must be unique"
+            $field, $testItem->count() === 0, 'The value of '.implode(', ', $field['name']).' must be unique'
         );
     }
-
 }

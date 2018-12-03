@@ -1,17 +1,39 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace ntentan\nibii;
 
 class ModelDescription
 {
-
     private $fields = [];
     private $primaryKey = [];
     private $uniqueKeys = [];
     private $autoPrimaryKey = false;
 
     /**
-     *
      * @var array<Relationship>
      */
     private $relationships = [];
@@ -20,7 +42,6 @@ class ModelDescription
     private $name;
 
     /**
-     *
      * @param RecordWrapper $model
      */
     public function __construct($model)
@@ -41,10 +62,10 @@ class ModelDescription
 
         foreach ($schema['columns'] as $field => $details) {
             $this->fields[$field] = [
-                'type' => $adapter->mapDataTypes($details['type']),
+                'type'     => $adapter->mapDataTypes($details['type']),
                 'required' => !$details['nulls'],
-                'default' => $details['default'],
-                'name' => $field
+                'default'  => $details['default'],
+                'name'     => $field,
             ];
             if (isset($details['default'])) {
                 $this->fields[$field]['default'] = $details['default'];
@@ -69,9 +90,9 @@ class ModelDescription
                 $key = $constraint['columns'];
                 break;
             } else {
-                $key[] = array(
-                    'fields' => $constraint['columns']
-                );
+                $key[] = [
+                    'fields' => $constraint['columns'],
+                ];
             }
         }
     }
@@ -81,25 +102,26 @@ class ModelDescription
         $relationshipDetails = [];
         if (is_string($relationship)) {
             $relationshipDetails = [
-                'model' => $relationship,
-                'name' => $relationship,
+                'model'       => $relationship,
+                'name'        => $relationship,
                 'foreign_key' => '',
-                'local_key' => ''
+                'local_key'   => '',
             ];
-        } else if (is_array($relationship)) {
+        } elseif (is_array($relationship)) {
             $relationshipDetails = [
-                'model' => $relationship[0],
-                'name' => isset($relationship['as']) ? $relationship['as'] : $relationship[0],
+                'model'       => $relationship[0],
+                'name'        => isset($relationship['as']) ? $relationship['as'] : $relationship[0],
                 'foreign_key' => isset($relationship['foreign_key']) ? $relationship['foreign_key'] : '',
-                'local_key' => isset($relationship['local_key']) ? $relationship['local_key'] : '',
+                'local_key'   => isset($relationship['local_key']) ? $relationship['local_key'] : '',
             ];
         } else {
-            return null;
+            return;
         }
         $relationshipDetails['local_table'] = $this->table;
         if (isset($relationship['through'])) {
             $relationshipDetails['through'] = $relationship['through'];
         }
+
         return $relationshipDetails;
     }
 
@@ -116,7 +138,6 @@ class ModelDescription
     }
 
     /**
-     *
      * @return array<Relationship>
      */
     public function getRelationships()
@@ -143,5 +164,4 @@ class ModelDescription
     {
         return $this->uniqueKeys;
     }
-
 }

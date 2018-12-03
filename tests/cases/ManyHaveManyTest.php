@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
  */
 
 /**
- * Description of ManyHaveManyTest
+ * Description of ManyHaveManyTest.
  *
  * @author ekow
  */
@@ -38,130 +38,122 @@ class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
     {
         $projects = (new \ntentan\nibii\tests\models\raw\Projects())->fetchFirstWithId(1);
         $this->assertEquals(
-            array (
-              'id' => 1,
-              'name' => 'Kakalika',
-              'description' => 'Lorem ipsum dolor',
-              '\\ntentan\\nibii\\tests\\models\\raw\\Users' => 
-              array (
-                0 => 
-                array (
-                  'id' => 1,
-                  'username' => 'james',
-                  'password' => 'somehashedstring',
-                  'role_id' => 10,
-                  'firstname' => 'James',
-                  'lastname' => 'Ainooson',
-                  'othernames' => NULL,
-                  'status' => 1,
-                  'email' => 'james@nibii.test',
-                  'phone' => NULL,
-                  'office' => NULL,
-                  'last_login_time' => NULL,
-                  'is_admin' => NULL,
-                ),
-                1 => 
-                array (
-                  'id' => 2,
-                  'username' => 'fiifi',
-                  'password' => '5f4dcc3b5aa765d61d8327deb882cf99',
-                  'role_id' => 11,
-                  'firstname' => 'Fiifi',
-                  'lastname' => 'Antobra',
-                  'othernames' => NULL,
-                  'status' => 2,
-                  'email' => 'fiifi@nibii.test',
-                  'phone' => NULL,
-                  'office' => NULL,
-                  'last_login_time' => NULL,
-                  'is_admin' => NULL,
-                ),
-                2 => 
-                array (
-                  'id' => 3,
-                  'username' => 'kwame',
-                  'password' => 'coolthings',
-                  'role_id' => 12,
-                  'firstname' => 'Kwame',
-                  'lastname' => 'Nyarko',
-                  'othernames' => NULL,
-                  'status' => 2,
-                  'email' => 'knyarko@nibii.test',
-                  'phone' => NULL,
-                  'office' => NULL,
-                  'last_login_time' => NULL,
-                  'is_admin' => NULL,
-                ),
-              ),
-            ),                
+            [
+              'id'                                          => 1,
+              'name'                                        => 'Kakalika',
+              'description'                                 => 'Lorem ipsum dolor',
+              '\\ntentan\\nibii\\tests\\models\\raw\\Users' => [
+                0 => [
+                  'id'              => 1,
+                  'username'        => 'james',
+                  'password'        => 'somehashedstring',
+                  'role_id'         => 10,
+                  'firstname'       => 'James',
+                  'lastname'        => 'Ainooson',
+                  'othernames'      => null,
+                  'status'          => 1,
+                  'email'           => 'james@nibii.test',
+                  'phone'           => null,
+                  'office'          => null,
+                  'last_login_time' => null,
+                  'is_admin'        => null,
+                ],
+                1 => [
+                  'id'              => 2,
+                  'username'        => 'fiifi',
+                  'password'        => '5f4dcc3b5aa765d61d8327deb882cf99',
+                  'role_id'         => 11,
+                  'firstname'       => 'Fiifi',
+                  'lastname'        => 'Antobra',
+                  'othernames'      => null,
+                  'status'          => 2,
+                  'email'           => 'fiifi@nibii.test',
+                  'phone'           => null,
+                  'office'          => null,
+                  'last_login_time' => null,
+                  'is_admin'        => null,
+                ],
+                2 => [
+                  'id'              => 3,
+                  'username'        => 'kwame',
+                  'password'        => 'coolthings',
+                  'role_id'         => 12,
+                  'firstname'       => 'Kwame',
+                  'lastname'        => 'Nyarko',
+                  'othernames'      => null,
+                  'status'          => 2,
+                  'email'           => 'knyarko@nibii.test',
+                  'phone'           => null,
+                  'office'          => null,
+                  'last_login_time' => null,
+                  'is_admin'        => null,
+                ],
+              ],
+            ],
             $projects->toArray(1)
         );
     }
-    
+
     public function testAliasedManyHaveMany()
     {
         $projects = (new \ntentan\nibii\tests\models\aliased\Projects())->fetchFirstWithId(1);
         $this->assertEquals(
-            array (
-              'id' => 1,
-              'name' => 'Kakalika',
+            [
+              'id'          => 1,
+              'name'        => 'Kakalika',
               'description' => 'Lorem ipsum dolor',
-              'users' => 
-              array (
-                0 => 
-                array (
-                  'id' => 1,
-                  'username' => 'james',
-                  'password' => 'somehashedstring',
-                  'role_id' => 10,
-                  'firstname' => 'James',
-                  'lastname' => 'Ainooson',
-                  'othernames' => NULL,
-                  'status' => 1,
-                  'email' => 'james@nibii.test',
-                  'phone' => NULL,
-                  'office' => NULL,
-                  'last_login_time' => NULL,
-                  'is_admin' => NULL,
-                ),
-                1 => 
-                array (
-                  'id' => 2,
-                  'username' => 'fiifi',
-                  'password' => '5f4dcc3b5aa765d61d8327deb882cf99',
-                  'role_id' => 11,
-                  'firstname' => 'Fiifi',
-                  'lastname' => 'Antobra',
-                  'othernames' => NULL,
-                  'status' => 2,
-                  'email' => 'fiifi@nibii.test',
-                  'phone' => NULL,
-                  'office' => NULL,
-                  'last_login_time' => NULL,
-                  'is_admin' => NULL,
-                ),
-                2 => 
-                array (
-                  'id' => 3,
-                  'username' => 'kwame',
-                  'password' => 'coolthings',
-                  'role_id' => 12,
-                  'firstname' => 'Kwame',
-                  'lastname' => 'Nyarko',
-                  'othernames' => NULL,
-                  'status' => 2,
-                  'email' => 'knyarko@nibii.test',
-                  'phone' => NULL,
-                  'office' => NULL,
-                  'last_login_time' => NULL,
-                  'is_admin' => NULL,
-                ),
-              ),
-            ),                
+              'users'       => [
+                0 => [
+                  'id'              => 1,
+                  'username'        => 'james',
+                  'password'        => 'somehashedstring',
+                  'role_id'         => 10,
+                  'firstname'       => 'James',
+                  'lastname'        => 'Ainooson',
+                  'othernames'      => null,
+                  'status'          => 1,
+                  'email'           => 'james@nibii.test',
+                  'phone'           => null,
+                  'office'          => null,
+                  'last_login_time' => null,
+                  'is_admin'        => null,
+                ],
+                1 => [
+                  'id'              => 2,
+                  'username'        => 'fiifi',
+                  'password'        => '5f4dcc3b5aa765d61d8327deb882cf99',
+                  'role_id'         => 11,
+                  'firstname'       => 'Fiifi',
+                  'lastname'        => 'Antobra',
+                  'othernames'      => null,
+                  'status'          => 2,
+                  'email'           => 'fiifi@nibii.test',
+                  'phone'           => null,
+                  'office'          => null,
+                  'last_login_time' => null,
+                  'is_admin'        => null,
+                ],
+                2 => [
+                  'id'              => 3,
+                  'username'        => 'kwame',
+                  'password'        => 'coolthings',
+                  'role_id'         => 12,
+                  'firstname'       => 'Kwame',
+                  'lastname'        => 'Nyarko',
+                  'othernames'      => null,
+                  'status'          => 2,
+                  'email'           => 'knyarko@nibii.test',
+                  'phone'           => null,
+                  'office'          => null,
+                  'last_login_time' => null,
+                  'is_admin'        => null,
+                ],
+              ],
+            ],
             $projects->toArray(1)
         );
-    }    
-    
+    }
+
     protected function getExtraArrayData()
     {
         return [
@@ -171,7 +163,7 @@ class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                 ['id' => '3', 'name' => 'Ntentan', 'description' => 'Lorem ipsum dolor'],
                 ['id' => '4', 'name' => 'Nyansapow', 'description' => 'Lorem ipsum dolor'],
             ],
-            
+
             'projects_users' => [
                 ['id' => 1, 'user_id' => 1, 'project_id' => 1],
                 ['id' => 2, 'user_id' => 1, 'project_id' => 2],
@@ -182,8 +174,8 @@ class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                 ['id' => 7, 'user_id' => 3, 'project_id' => 3],
                 ['id' => 8, 'user_id' => 3, 'project_id' => 1],
                 ['id' => 9, 'user_id' => 4, 'project_id' => 3],
-                ['id' => 10, 'user_id' => 4, 'project_id' => 4]
-            ]
+                ['id' => 10, 'user_id' => 4, 'project_id' => 4],
+            ],
         ];
     }
 }
