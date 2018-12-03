@@ -1,13 +1,36 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace ntentan\nibii\tests\cases;
 
-use ntentan\nibii\tests\models\raw\Users;
 use ntentan\nibii\tests\models\raw\Roles;
+use ntentan\nibii\tests\models\raw\Users;
 
 class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 {
-
     public function testTableResolution()
     {
         $users = \ntentan\nibii\ORMContext::getInstance()->load(Users::class);
@@ -40,7 +63,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                         ['name' => 'Some test user'],
                         ['name' => 'Super User'],
                         ['name' => 'Test role'],
-                    ]
+                    ],
                 ])->getTable('roles'), $queryTable
         );
     }
@@ -67,7 +90,7 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                         ['name' => 'Some test user'],
                         ['name' => 'Super User'],
                         ['name' => 'Test role'],
-                    ]
+                    ],
                 ])->getTable('roles'), $queryTable
         );
     }
@@ -76,59 +99,59 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
     {
         $role = (new Roles())->fetch(10);
         $this->assertEquals(
-                array(
-            'id' => 10,
+                [
+            'id'   => 10,
             'name' => 'Some test user',
-                ), $role->toArray()
+                ], $role->toArray()
         );
         $this->assertInstanceOf('\\ntentan\\nibii\\RecordWrapper', $role);
         $this->assertTrue(is_numeric($role->toArray()['id']));
 
         $role = (new Roles())->filterByName('Matches')->fetchFirst();
         $this->assertEquals(
-                array(
-            'id' => 11,
+                [
+            'id'   => 11,
             'name' => 'Matches',
-                ), $role->toArray()
+                ], $role->toArray()
         );
 
         $role = (new Roles())->filterByName('Matches')->fetch();
-        $this->assertEquals(array(
-            array(
-                'id' => 11,
+        $this->assertEquals([
+            [
+                'id'   => 11,
                 'name' => 'Matches',
-            ),
-                ), $role->toArray()
+            ],
+                ], $role->toArray()
         );
 
         $role = (new Roles())->filterByName('Matches', 'Rematch')->fetch();
-        $this->assertEquals(array(
-            array(
-                'id' => 11,
+        $this->assertEquals([
+            [
+                'id'   => 11,
                 'name' => 'Matches',
-            ),
-            array(
-                'id' => 12,
+            ],
+            [
+                'id'   => 12,
                 'name' => 'Rematch',
-            )
-                ), $role->toArray()
+            ],
+                ], $role->toArray()
         );
 
         $role = (new Roles())->fetchWithName('Matches');
-        $this->assertEquals(array(
-            array(
-                'id' => 11,
+        $this->assertEquals([
+            [
+                'id'   => 11,
                 'name' => 'Matches',
-            ),
-                ), $role->toArray()
+            ],
+                ], $role->toArray()
         );
 
         $role = (new Roles())->fetchFirstWithName('Matches');
         $this->assertEquals(
-                array(
-            'id' => 11,
+                [
+            'id'   => 11,
             'name' => 'Matches',
-                ), $role->toArray()
+                ], $role->toArray()
         );
 
         $this->assertEquals(1, count($role));
@@ -174,32 +197,26 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $response = $user->save();
         $this->assertEquals(false, $response);
         $this->assertEquals(
-                array(
-                    'email' =>
-                    array(
+                [
+                    'email' => [
                         0 => 'The email field is required',
-                    ),
-                    'firstname' =>
-                    array(
+                    ],
+                    'firstname' => [
                         0 => 'The firstname field is required',
-                    ),
-                    'lastname' =>
-                    array(
+                    ],
+                    'lastname' => [
                         0 => 'The lastname field is required',
-                    ),
-                    'password' =>
-                    array(
+                    ],
+                    'password' => [
                         0 => 'The password field is required',
-                    ),
-                    'role_id' =>
-                    array(
+                    ],
+                    'role_id' => [
                         0 => 'The role_id field is required',
-                    ),
-                    'username' =>
-                    array(
+                    ],
+                    'username' => [
                         0 => 'The username field is required',
-                    ),
-                ), $user->getInvalidFields()
+                    ],
+                ], $user->getInvalidFields()
         );
     }
 
@@ -211,12 +228,11 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 
         $this->assertEquals(false, $response);
         $this->assertEquals(
-                array(
-            'name' =>
-            array(
+                [
+            'name' => [
                 0 => 'The value of name must be unique',
-            ),
-                ), $role->getInvalidFields()
+            ],
+                ], $role->getInvalidFields()
         );
     }
 
@@ -231,8 +247,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $this->assertTablesEqual(
                 $this->createArrayDataSet([
                     'users' => [
-                        ['username' => 'jamie']
-                    ]
+                        ['username' => 'jamie'],
+                    ],
                 ])->getTable('users'), $queryTable
         );
     }
@@ -250,8 +266,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                         ['role_id' => 15],
                         ['role_id' => 15],
                         ['role_id' => 15],
-                        ['role_id' => 15]
-                    ]
+                        ['role_id' => 15],
+                    ],
                 ])->getTable('users'), $queryTable
         );
     }
@@ -268,8 +284,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                         ['role_id' => 10],
                         ['role_id' => 15],
                         ['role_id' => 15],
-                        ['role_id' => 15]
-                    ]
+                        ['role_id' => 15],
+                    ],
                 ])->getTable('users'), $queryTable
         );
     }
@@ -286,8 +302,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                         ['role_id' => 12],
                         ['role_id' => 12],
                         ['role_id' => 15],
-                        ['role_id' => 15]
-                    ]
+                        ['role_id' => 15],
+                    ],
                 ])->getTable('users'), $queryTable
         );
     }
@@ -303,9 +319,8 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
                     'users' => [
                         ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame'],
                         ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa'],
-                    ]
+                    ],
                 ])->getTable('users'), $queryTable
         );
     }
-
 }

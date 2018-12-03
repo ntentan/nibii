@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 ekow.
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,27 +27,24 @@
 namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\exceptions\FieldNotFoundException;
+use ntentan\nibii\ORMContext;
 use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
-use ntentan\nibii\ORMContext;
 
 /**
  * Represents a one to many belongs to relationship.
- *
- * @package ntentan\nibii\relationships
  */
 class BelongsToRelationship extends Relationship
 {
-
     protected $type = self::BELONGS_TO;
 
     public function prepareQuery($data)
     {
-        if(!array_key_exists($this->options['local_key'], $data)) {
+        if (!array_key_exists($this->options['local_key'], $data)) {
             throw new FieldNotFoundException("Field {$this->options['local_key']} not found for belongs to relationship query.");
         }
-        if(!isset($data[$this->options['local_key']])) {
-            return null;
+        if (!isset($data[$this->options['local_key']])) {
+            return;
         }
         $query = $this->getQuery();
         if ($this->queryPrepared) {
@@ -58,6 +55,7 @@ class BelongsToRelationship extends Relationship
                 ->setFirstOnly(true);
             $this->queryPrepared = true;
         }
+
         return $query;
     }
 
@@ -69,7 +67,7 @@ class BelongsToRelationship extends Relationship
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];
         }
         if ($this->options['local_key'] == null) {
-            $this->options['local_key'] = Text::singularize($table) . '_id';
+            $this->options['local_key'] = Text::singularize($table).'_id';
         }
     }
 
@@ -79,5 +77,4 @@ class BelongsToRelationship extends Relationship
         $wrapper[$this->options['local_key']] = $value[$this->options['foreign_key']];
         unset($wrapper[$this->options['model']]);
     }
-
 }

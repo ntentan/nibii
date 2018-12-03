@@ -1,10 +1,33 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace ntentan\nibii;
 
 class QueryEngine
 {
-
     private $db;
 
     public function setDriver($driver)
@@ -17,6 +40,7 @@ class QueryEngine
      * currently stored in the model.
      *
      * @param RecordWrapper $model
+     *
      * @return string
      */
     public function getInsertQuery($model)
@@ -32,8 +56,8 @@ class QueryEngine
             $valueFields[] = ":{$field}";
         }
 
-        return "INSERT INTO " . $table .
-            " (" . implode(", ", $quotedFields) . ") VALUES (" . implode(', ', $valueFields) . ")";
+        return 'INSERT INTO '.$table.
+            ' ('.implode(', ', $quotedFields).') VALUES ('.implode(', ', $valueFields).')';
     }
 
     public function getBulkUpdateQuery($data, $parameters)
@@ -44,7 +68,7 @@ class QueryEngine
         }
 
         return sprintf(
-            "UPDATE %s SET %s %s",
+            'UPDATE %s SET %s %s',
             $parameters->getTable(),
             implode(', ', $updateData),
             $parameters->getWhereClause()
@@ -56,6 +80,7 @@ class QueryEngine
      * currently stored in the model.
      *
      * @param RecordWrapper $model
+     *
      * @return string
      */
     public function getUpdateQuery($model)
@@ -76,16 +101,16 @@ class QueryEngine
             }
         }
 
-        return "UPDATE " .
-            $model->getDBStoreInformation()['quoted_table'] .
-            " SET " . implode(', ', $valueFields) .
-            " WHERE " . implode(' AND ', $conditions);
+        return 'UPDATE '.
+            $model->getDBStoreInformation()['quoted_table'].
+            ' SET '.implode(', ', $valueFields).
+            ' WHERE '.implode(' AND ', $conditions);
     }
 
     public function getSelectQuery($parameters)
     {
         return sprintf(
-            "SELECT %s FROM %s%s%s%s%s",
+            'SELECT %s FROM %s%s%s%s%s',
             $parameters->getFields(),
             $parameters->getTable(),
             $parameters->getWhereClause(),
@@ -98,7 +123,7 @@ class QueryEngine
     public function getCountQuery($parameters)
     {
         return sprintf(
-            "SELECT count(*) as count FROM %s%s",
+            'SELECT count(*) as count FROM %s%s',
             $parameters->getTable(),
             $parameters->getWhereClause()
         );
@@ -107,10 +132,9 @@ class QueryEngine
     public function getDeleteQuery($parameters)
     {
         return sprintf(
-            "DELETE FROM %s%s",
+            'DELETE FROM %s%s',
             $parameters->getTable(),
             $parameters->getWhereClause()
         );
     }
-
 }

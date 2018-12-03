@@ -1,12 +1,36 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace ntentan\nibii;
 
 use ntentan\nibii\exceptions\FieldNotFoundException;
 use ntentan\nibii\exceptions\NibiiException;
 
 /**
- * Holds parameters used for the fields, where clauses, limits and offsets in queries
+ * Holds parameters used for the fields, where clauses, limits and offsets in queries.
  *
  * @author ekow
  */
@@ -92,7 +116,7 @@ class QueryParameters
     private $sorts = [];
 
     /**
-     * QueryParameters constructor
+     * QueryParameters constructor.
      *
      * @param string $table The name of the table
      */
@@ -122,11 +146,13 @@ class QueryParameters
      * Set an array of fields that this query should return.
      *
      * @param array $fields
+     *
      * @return $this
      */
     public function setFields(array $fields)
     {
         $this->fields = $fields;
+
         return $this;
     }
 
@@ -144,11 +170,13 @@ class QueryParameters
      * Set the table for this query.
      *
      * @param $table
+     *
      * @return $this For chaining
      */
     public function setTable($table)
     {
         $this->table = $table;
+
         return $this;
     }
 
@@ -171,8 +199,8 @@ class QueryParameters
     {
         if ($this->whereClause) {
             foreach ($this->boundArrays as $boundArray) {
-                $where = "";
-                $comma = "";
+                $where = '';
+                $comma = '';
                 for ($i = 0; $i < count($this->boundData[$boundArray]); $i++) {
                     $where .= "{$comma}:{$boundArray}_{$i}";
                     $comma = ', ';
@@ -180,6 +208,7 @@ class QueryParameters
                 $this->whereClause = str_replace("%{$boundArray}%", $where, $this->whereClause);
             }
         }
+
         return $this->whereClause ? " WHERE {$this->whereClause}" : '';
     }
 
@@ -197,6 +226,7 @@ class QueryParameters
                 }
             }
         }
+
         return $this->preparedBoundData;
     }
 
@@ -207,19 +237,21 @@ class QueryParameters
             $boundArray = in_array($field, $this->boundArrays);
             if ($isArray && !$boundArray) {
                 throw new NibiiException("The field '{$field}' cannot be bound to an array");
-            } else if (!$isArray && $boundArray) {
+            } elseif (!$isArray && $boundArray) {
                 throw new NibiiException("The field '{$field}' must be bound to an array");
             }
             $this->boundData[$field] = $value;
             $this->preparedBoundData = false;
+
             return $this;
         }
+
         throw new FieldNotFoundException("The field '{$field}' has not been bound to the current query");
     }
 
     public function getSorts()
     {
-        return count($this->sorts) ? " ORDER BY " . implode(", ", $this->sorts) : null;
+        return count($this->sorts) ? ' ORDER BY '.implode(', ', $this->sorts) : null;
     }
 
     public function addFilter($field, $values = null)
@@ -239,6 +271,7 @@ class QueryParameters
             }
         }
         $this->conjunction = ' AND ';
+
         return $this;
     }
 
@@ -252,12 +285,14 @@ class QueryParameters
     }
 
     /**
-     * @param boolean $firstOnly
+     * @param bool $firstOnly
+     *
      * @return $this
      */
     public function setFirstOnly($firstOnly)
     {
         $this->firstOnly = $firstOnly;
+
         return $this;
     }
 
@@ -284,5 +319,4 @@ class QueryParameters
     {
         $this->sorts[] = "$field $direction";
     }
-
 }

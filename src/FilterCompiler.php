@@ -1,5 +1,29 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2014-2018 James Ekow Abaka Ainooson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace ntentan\nibii;
 
 use ntentan\nibii\exceptions\FilterCompilerException;
@@ -12,47 +36,46 @@ use ntentan\nibii\exceptions\FilterCompilerException;
  */
 class FilterCompiler
 {
-
     private $lookahead;
     private $token;
     private $filter;
-    private $tokens = array(
-        'equals' => '\=',
-        'number' => '[0-9]+',
-        'cast' => 'cast\b',
-        'as' => 'as\b',
-        'between' => 'between\b',
-        'in' => 'in\b',
-        'like' => 'like\b',
-        'is' => 'is\b',
-        'and' => 'and\b',
-        'not' => 'not\b',
-        'or' => 'or\b',
-        'greater_or_equal' => '\>\=',
-        'less_or_equal' => '\<\=',
-        'not_equal' => '\<\>',
-        'greater' => '\>',
-        'less' => '\<',
-        'add' => '\+',
-        'subtract' => '\-',
-        'multiply' => '\*',
-        'function' => '[a-zA-Z][a-zA-Z0-9\_]*\s*\(',
-        'identifier' => '[a-zA-Z][a-zA-Z0-9\.\_\:]*\b',
-        'named_bind_param' => '\:[a-z_][a-z0-9\_]+',
+    private $tokens = [
+        'equals'              => '\=',
+        'number'              => '[0-9]+',
+        'cast'                => 'cast\b',
+        'as'                  => 'as\b',
+        'between'             => 'between\b',
+        'in'                  => 'in\b',
+        'like'                => 'like\b',
+        'is'                  => 'is\b',
+        'and'                 => 'and\b',
+        'not'                 => 'not\b',
+        'or'                  => 'or\b',
+        'greater_or_equal'    => '\>\=',
+        'less_or_equal'       => '\<\=',
+        'not_equal'           => '\<\>',
+        'greater'             => '\>',
+        'less'                => '\<',
+        'add'                 => '\+',
+        'subtract'            => '\-',
+        'multiply'            => '\*',
+        'function'            => '[a-zA-Z][a-zA-Z0-9\_]*\s*\(',
+        'identifier'          => '[a-zA-Z][a-zA-Z0-9\.\_\:]*\b',
+        'named_bind_param'    => '\:[a-z_][a-z0-9\_]+',
         'position_bind_param' => '\\?',
-        'obracket' => '\(',
-        'cbracket' => '\)',
-        'comma' => ','
-    );
-    private $operators = array(
-        array('between', 'or', 'like'),
-        array('and'),
-        array('not'),
-        array('equals', 'greater', 'less', 'greater_or_equal', 'less_or_equal', 'not_equal', 'is'),
-        array('add', 'subtract'),
-        array('in'),
-        array('multiply')
-    );
+        'obracket'            => '\(',
+        'cbracket'            => '\)',
+        'comma'               => ',',
+    ];
+    private $operators = [
+        ['between', 'or', 'like'],
+        ['and'],
+        ['not'],
+        ['equals', 'greater', 'less', 'greater_or_equal', 'less_or_equal', 'not_equal', 'is'],
+        ['add', 'subtract'],
+        ['in'],
+        ['multiply'],
+    ];
     private $numPositions = 0;
 
     public function compile($filter)
@@ -61,17 +84,19 @@ class FilterCompiler
         $this->getToken();
         $expression = $this->parseExpression();
         if ($this->token !== false) {
-            throw new FilterCompilerException("Unexpected '" . $this->token . "' in filter [$filter]");
+            throw new FilterCompilerException("Unexpected '".$this->token."' in filter [$filter]");
         }
         $parsed = $this->renderExpression($expression);
+
         return $parsed;
     }
 
     private function renderExpression($expression)
     {
         if (is_array($expression)) {
-            $expression = $this->renderExpression($expression['left']) . " {$expression['opr']} " . $this->renderExpression($expression['right']);
+            $expression = $this->renderExpression($expression['left'])." {$expression['opr']} ".$this->renderExpression($expression['right']);
         }
+
         return $expression;
     }
 
@@ -81,7 +106,7 @@ class FilterCompiler
             $tokens = [$tokens];
         }
         if (array_search($this->lookahead, $tokens) === false) {
-            throw new FilterCompilerException("Expected " . implode(' or ', $tokens) . " but found " . $this->lookahead);
+            throw new FilterCompilerException('Expected '.implode(' or ', $tokens).' but found '.$this->lookahead);
         }
     }
 
@@ -95,12 +120,13 @@ class FilterCompiler
         $this->match(['named_bind_param', 'number', 'position_bind_param']);
         $right = $this->token;
         $this->getToken();
+
         return "$left AND $right";
     }
 
     private function parseIn()
     {
-        $expression = "(";
+        $expression = '(';
         $this->match('obracket');
         $this->getToken();
 
@@ -120,6 +146,7 @@ class FilterCompiler
         $this->getToken();
 
         $expression .= ')';
+
         return $expression;
     }
 
@@ -132,11 +159,12 @@ class FilterCompiler
             $parameters .= $this->renderExpression($this->parseExpression());
             if ($this->lookahead == 'comma') {
                 $this->getToken();
-                $parameters .= ", ";
-            } else if ($this->lookahead == 'cbracket') {
+                $parameters .= ', ';
+            } elseif ($this->lookahead == 'cbracket') {
                 break;
             }
         } while ($size < 100);
+
         return $parameters;
     }
 
@@ -155,6 +183,7 @@ class FilterCompiler
         $this->getToken();
         $this->match('cbracket');
         $return .= ')';
+
         return $return;
     }
 
@@ -163,6 +192,7 @@ class FilterCompiler
         $name = $this->token;
         $this->getToken();
         $parameters = $this->parseFunctionParams();
+
         return "$name$parameters)";
     }
 
@@ -173,13 +203,14 @@ class FilterCompiler
 
     private function returnPositionTag()
     {
-        return ":filter_bind_" . (++$this->numPositions);
+        return ':filter_bind_'.(++$this->numPositions);
     }
 
     private function parseObracket()
     {
         $this->getToken();
         $expression = $this->parseExpression();
+
         return $this->renderExpression($expression);
     }
 
@@ -187,13 +218,13 @@ class FilterCompiler
     {
         $return = null;
         $methods = [
-            'cast' => 'parseCast',
-            'function' => 'parseFunction',
-            'identifier' => 'returnToken',
-            'named_bind_param' => 'returnToken',
-            'number' => 'returnToken',
+            'cast'                => 'parseCast',
+            'function'            => 'parseFunction',
+            'identifier'          => 'returnToken',
+            'named_bind_param'    => 'returnToken',
+            'number'              => 'returnToken',
             'position_bind_param' => 'returnPositionTag',
-            'obracket' => 'parseObracket'
+            'obracket'            => 'parseObracket',
         ];
 
         if (isset($methods[$this->lookahead])) {
@@ -202,6 +233,7 @@ class FilterCompiler
         }
 
         $this->getToken();
+
         return $return;
     }
 
@@ -231,11 +263,11 @@ class FilterCompiler
                 $opr = $this->token;
                 $this->getToken();
                 $right = $this->parseRightExpression($level + 1, strtolower($opr));
-                $expression = array(
-                    'left' => $left,
-                    'opr' => $opr,
-                    'right' => $right
-                );
+                $expression = [
+                    'left'  => $left,
+                    'opr'   => $opr,
+                    'right' => $right,
+                ];
             } else {
                 break;
             }
@@ -258,7 +290,7 @@ class FilterCompiler
         }
 
         if ($this->token === false && strlen($this->filter) > 0) {
-            throw new FilterCompilerException("Unexpected character [" . $this->filter[0] . "] begining " . $this->filter . ".");
+            throw new FilterCompilerException('Unexpected character ['.$this->filter[0].'] begining '.$this->filter.'.');
         }
     }
 
@@ -274,12 +306,12 @@ class FilterCompiler
         $rewritten = [];
         foreach ($data as $key => $value) {
             if (is_numeric($key)) {
-                $rewritten["filter_bind_" . ($key + 1)] = $value;
+                $rewritten['filter_bind_'.($key + 1)] = $value;
             } else {
                 $rewritten[$key] = $value;
             }
         }
+
         return $rewritten;
     }
-
 }
