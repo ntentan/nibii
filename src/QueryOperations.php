@@ -116,11 +116,12 @@ class QueryOperations
     {
         $parameters = $this->buildFetchQueryParameters($query);
         $data = $this->adapter->select($parameters);
-        if(empty($data)) {
-            return null;
+        if (empty($data)) {
+            return;
         } else {
             $this->wrapper->setData($data);
             $this->resetQueryParameters();
+
             return $this->wrapper;
         }
     }
@@ -191,6 +192,7 @@ class QueryOperations
     public function doFetchFirst($id = null)
     {
         $this->getQueryParameters()->setFirstOnly(true);
+
         return $this->doFetch($id);
     }
 
@@ -211,6 +213,7 @@ class QueryOperations
             }
         }
         $this->getQueryParameters()->setFields($fields);
+
         return $this->wrapper;
     }
 
