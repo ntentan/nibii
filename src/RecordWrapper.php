@@ -26,6 +26,8 @@
 
 namespace ntentan\nibii;
 
+use mysql_xdevapi\Exception;
+use ntentan\nibii\exceptions\NibiiException;
 use ntentan\utils\Text;
 
 /**
@@ -185,7 +187,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __debugInfo()
     {
         $data = $this->getData();
-
         return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
     }
 
@@ -227,8 +228,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * Retrieve an item stored in the record.
-     * This method returns items that are directly stored in the model or lazy loads related items. The key could be a
-     * field in the model's table or the name of a related model.
+     * This method returns items that are directly stored in the model, or lazy loads related items if needed.
+     * The key could be a field in the model's table or the name of a related model.
      *
      * @param string $key A key identifying the item to be retrieved.
      *
@@ -236,6 +237,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     private function retrieveItem($key)
     {
+        if($this->hasMultipleItems()) {
+            throw new NibiiException("Current model object state contains multiple items. Please index with a numeric key to select a specific item first.");
+        }
         $relationships = $this->getDescription()->getRelationships();
         $decamelizedKey = Text::deCamelize($key);
         if (isset($relationships[$key])) {
