@@ -254,9 +254,10 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @param string $name
      * @param array  $arguments
-     * @throws exceptions\NibiiException
-     * @return type
      *
+     * @throws exceptions\NibiiException
+     *
+     * @return type
      */
     public function __call($name, $arguments)
     {
