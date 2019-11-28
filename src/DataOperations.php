@@ -248,7 +248,7 @@ class DataOperations
         if (!$validator->validate($this->wrapper->toArray())) {
             $mainValidatorErrors = $validator->getInvalidFields();
         }
-        $customValidatorErrors = $this->wrapper->validate();
+        $customValidatorErrors = $this->wrapper->onValidate($mainValidatorErrors);
         $errors = array_merge_recursive($mainValidatorErrors, $customValidatorErrors);
 
         return empty($errors) ? true : $errors;

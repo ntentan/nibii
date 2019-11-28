@@ -36,8 +36,20 @@ class Operations
      * @var \ntentan\nibii\DriverAdapter
      */
     private $adapter;
+
+    /**
+     * @var QueryOperations
+     */
     private $queryOperations;
+
+    /**
+     * @var DataOperations
+     */
     private $dataOperations;
+
+    /**
+     * @var array
+     */
     private $queryOperationMethods = [
         'fetch', 'fetchFirst', 'filter', 'query', 'fields',
         'cover', 'limit', 'offset', 'filterBy', 'sortBy',

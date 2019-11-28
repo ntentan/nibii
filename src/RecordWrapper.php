@@ -254,10 +254,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @param string $name
      * @param array  $arguments
-     *
      * @throws exceptions\NibiiException
-     *
      * @return type
+     *
      */
     public function __call($name, $arguments)
     {
@@ -418,7 +417,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @return mixed
      */
-    public function validate()
+    public function onValidate($invalidFields)
     {
         return [];
     }
