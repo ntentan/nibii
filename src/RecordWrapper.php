@@ -77,6 +77,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     protected $modelData = [];
 
     /**
+     * Extra validation rules to use over the model's inherent validation requirements.
+     * @var array
+     */
+    protected $validationRules = [];
+
+    /**
      * A quoted string of the table name used for building queries.
      *
      * @var string
@@ -518,7 +524,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function getAdapter()
     {
         $this->initialize();
-
         return $this->adapter;
     }
 
@@ -535,6 +540,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
 
         return $array;
+    }
+
+    public function getValidationRules() : array
+    {
+        return $this->validationRules;
     }
 
     public function toArray($depth = 0, $expandableModels = [])
