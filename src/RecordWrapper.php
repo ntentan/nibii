@@ -418,7 +418,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @return mixed
      */
-    public function onValidate($invalidFields)
+    public function onValidate($invalidFields) : array 
     {
         return [];
     }
