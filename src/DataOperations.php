@@ -27,6 +27,7 @@
 namespace ntentan\nibii;
 
 use ntentan\atiaa\Driver;
+use ntentan\utils\Validator;
 
 /**
  * Description of DataOperations.
@@ -244,12 +245,24 @@ class DataOperations
     {
         $validator = ORMContext::getInstance()->getModelValidatorFactory()->createModelValidator($this->wrapper, $mode);
         $mainValidatorErrors = [];
+        $modelValidatorErrors = [];
 
-        if (!$validator->validate($this->wrapper->toArray())) {
+        $data = $this->wrapper->toArray();
+
+        if (!$validator->validate($data)) {
             $mainValidatorErrors = $validator->getInvalidFields();
         }
+
+        if(!empty($this->wrapper->getValidationRules())) {
+            $modelValidator = new Validator();
+            $modelValidator->setRules($this->wrapper->getValidationRules());
+            if(!$modelValidator->validate($data)) {
+                $modelValidatorErrors = $modelValidator->getInvalidFields();
+            }
+        }
+
         $customValidatorErrors = $this->wrapper->onValidate($mainValidatorErrors);
-        $errors = array_merge_recursive($mainValidatorErrors, $customValidatorErrors);
+        $errors = array_merge_recursive($mainValidatorErrors, $customValidatorErrors, $modelValidatorErrors);
 
         return empty($errors) ? true : $errors;
     }
