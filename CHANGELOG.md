@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+## v0.9.0 - 2020-02-25
+### Added
+- Empty queries will now return a null item instead of a results object
+- Can now include validation rules directly into RecordWrappers.
+
+### Changed
+- Reverted custom validation method to `onValidate`.
+
+
 ## v0.8.0 - 2018-12-02
 ### Changed
 - Changes to custom validation system:

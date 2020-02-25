@@ -26,6 +26,7 @@
 
 namespace ntentan\nibii;
 
+use ntentan\nibii\exceptions\NibiiException;
 use ntentan\utils\Text;
 
 /**
@@ -74,6 +75,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @var array
      */
     protected $modelData = [];
+
+    /**
+     * Extra validation rules to use over the model's inherent validation requirements.
+     * @var array
+     */
+    protected $validationRules = [];
 
     /**
      * A quoted string of the table name used for building queries.
@@ -227,8 +234,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * Retrieve an item stored in the record.
-     * This method returns items that are directly stored in the model or lazy loads related items. The key could be a
-     * field in the model's table or the name of a related model.
+     * This method returns items that are directly stored in the model, or lazy loads related items if needed.
+     * The key could be a field in the model's table or the name of a related model.
      *
      * @param string $key A key identifying the item to be retrieved.
      *
@@ -236,6 +243,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     private function retrieveItem($key)
     {
+        if ($this->hasMultipleItems()) {
+            throw new NibiiException('Current model object state contains multiple items. Please index with a numeric key to select a specific item first.');
+        }
         $relationships = $this->getDescription()->getRelationships();
         $decamelizedKey = Text::deCamelize($key);
         if (isset($relationships[$key])) {
@@ -414,7 +424,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @return mixed
      */
-    public function validate()
+    public function onValidate($invalidFields) : array 
     {
         return [];
     }
@@ -514,7 +524,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function getAdapter()
     {
         $this->initialize();
-
         return $this->adapter;
     }
 
@@ -531,6 +540,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
 
         return $array;
+    }
+
+    public function getValidationRules() : array
+    {
+        return $this->validationRules;
     }
 
     public function toArray($depth = 0, $expandableModels = [])

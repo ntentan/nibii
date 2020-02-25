@@ -116,10 +116,14 @@ class QueryOperations
     {
         $parameters = $this->buildFetchQueryParameters($query);
         $data = $this->adapter->select($parameters);
-        $this->wrapper->setData($data);
-        $this->resetQueryParameters();
+        if (empty($data)) {
+            return;
+        } else {
+            $this->wrapper->setData($data);
+            $this->resetQueryParameters();
 
-        return $this->wrapper;
+            return $this->wrapper;
+        }
     }
 
     /**

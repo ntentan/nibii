@@ -5,11 +5,11 @@
     "require": {
         "ntentan/atiaa": "@stable",
         "ntentan/utils": "@stable",
-        "ntentan/kaikai": "@stable"
+        "ntentan/kaikai": "@stable",
+        "ext-pdo": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "@stable",
-        "phpunit/dbunit" : "@stable"
+        "phpunit/phpunit": "@stable"
     },
     "license": "MIT",
     "authors": [

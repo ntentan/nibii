@@ -26,12 +26,21 @@
 
 namespace ntentan\nibii\tests\lib;
 
+use ntentan\atiaa\DbContext;
+use ntentan\atiaa\DriverFactory;
+use ntentan\kaikai\backends\VolatileCache;
+use ntentan\kaikai\Cache;
+use ntentan\nibii\factories\DefaultModelFactory;
+use ntentan\nibii\factories\DefaultValidatorFactory;
+use ntentan\nibii\factories\DriverAdapterFactory;
 use ntentan\nibii\ORMContext;
-use PHPUnit\DbUnit\TestCase;
+use PDO;
+use PHPUnit\Framework\TestCase;
 
 class RecordWrapperTestBase extends TestCase
 {
     protected $context;
+    private $pdo;
 
     public function setUp() : void
     {
@@ -46,24 +55,54 @@ class RecordWrapperTestBase extends TestCase
             'dbname'   => getenv('NIBII_DBNAME'),
         ];
 
-        $modelFactory = new \ntentan\nibii\factories\DefaultModelFactory();
-        $driverAdapterFactory = new \ntentan\nibii\factories\DriverAdapterFactory($config['driver']);
-        $modelValidatorFactory = new \ntentan\nibii\factories\DefaultValidatorFactory();
-        $cache = new \ntentan\kaikai\Cache(new \ntentan\kaikai\backends\VolatileCache());
-        \ntentan\atiaa\DbContext::initialize(new \ntentan\atiaa\DriverFactory($config));
+        $modelFactory = new DefaultModelFactory();
+        $driverAdapterFactory = new DriverAdapterFactory($config['driver']);
+        $modelValidatorFactory = new DefaultValidatorFactory();
+        $cache = new Cache(new VolatileCache());
+        DbContext::initialize(new DriverFactory($config));
         ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
+        $this->setupDatabase();
     }
 
-    protected function getConnection()
+    private function setupDatabase()
     {
-        $pdo = new \PDO(getenv('NIBII_PDO_DSN'), getenv('NIBII_USER'), getenv('NIBII_PASSWORD'));
+        $pdo = new PDO(getenv('NIBII_PDO_DSN'), getenv('NIBII_USER'), getenv('NIBII_PASSWORD'));
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        return $this->createDefaultDBConnection($pdo, getenv('NIBII_DBNAME'));
+        $data = $this->getDataSet();
+        foreach(array_reverse(array_keys($data)) as $table) {
+            $success = $pdo->query("DELETE FROM $table");
+        }
+        foreach($data as $table => $rows) {
+            foreach($rows as $row) {
+                $rowData = implode("','", $row);
+                $rowFields = implode(", ", array_keys($row));
+                $success = $pdo->query("INSERT INTO $table($rowFields) VALUES ('$rowData')");
+            }
+        }
+        $pdo = null;
+    }
+
+    protected function countTableRows($table)
+    {
+        $pdo = new PDO(getenv('NIBII_PDO_DSN'), getenv('NIBII_USER'), getenv('NIBII_PASSWORD'));
+        $results = $pdo->query("SELECT COUNT(*) FROM $table")->fetchAll()[0][0];
+        $pdo = null;
+        return $results;
+    }
+
+    protected function getQueryAsArray($query)
+    {
+        $pdo = new PDO(getenv('NIBII_PDO_DSN'), getenv('NIBII_USER'), getenv('NIBII_PASSWORD'));
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $results = $pdo->query($query, PDO::FETCH_ASSOC)->fetchAll();
+        $pdo = null;
+        return $results;
     }
 
     protected function getDataSet()
     {
-        return $this->createArrayDataSet(array_merge($this->getExtraArrayData(), [
+        return array_merge($this->getExtraArrayData(), [
             'roles' => [
                 ['id' => 10, 'name' => 'Some test user'],
                 ['id' => 11, 'name' => 'Matches'],
@@ -78,12 +117,7 @@ class RecordWrapperTestBase extends TestCase
                 ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame', 'lastname' => 'Nyarko', 'status' => 2, 'password' => 'coolthings', 'email' => 'knyarko@nibii.test'],
                 ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa', 'lastname' => 'Boateng', 'status' => 2, 'password' => 'hahaha', 'email' => 'aboateng@nibii.test'],
             ],
-        ]));
-    }
-
-    protected function getSetUpOperation()
-    {
-        return $this->getOperations()->CLEAN_INSERT(true);
+        ]);
     }
 
     protected function getExtraArrayData()

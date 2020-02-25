@@ -26,7 +26,11 @@
 
 namespace ntentan\nibii\tests\cases;
 
-class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
+use ntentan\nibii\tests\lib\RecordWrapperTestBase;
+use ntentan\nibii\tests\models\raw\Roles;
+use ntentan\nibii\tests\models\raw\Users;
+
+class LazyLoadingTest extends RecordWrapperTestBase
 {
     public function testBelongsTo()
     {
@@ -36,7 +40,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
             ['id' => 12, 'name' => 'Rematch'],
             ['id' => 12, 'name' => 'Rematch'],
         ];
-        $users = (new \ntentan\nibii\tests\models\raw\Users())->fetch();
+        $users = (new Users())->fetch();
         $i = 0;
         foreach ($users as $user) {
             $this->assertEquals(
@@ -47,7 +51,7 @@ class LazyLoadingTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 
     public function testHasMany()
     {
-        $role = (new \ntentan\nibii\tests\models\raw\Roles())->fetch(12);
+        $role = (new Roles())->fetch(12);
         $results = [
             0 => [
                 'id'              => 3,
