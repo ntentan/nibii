@@ -26,6 +26,7 @@
 
 namespace ntentan\nibii\tests\cases;
 
+use ntentan\nibii\exceptions\FilterCompilerException;
 use ntentan\nibii\FilterCompiler;
 use PHPUnit\Framework\TestCase;
 
@@ -33,32 +34,26 @@ class FilterCompilerTest extends TestCase
 {
     private $compiler;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->compiler = new FilterCompiler();
     }
 
-    /**
-     * @expectedException \ntentan\nibii\exceptions\FilterCompilerException
-     */
     public function testCharacterException()
     {
+        $this->expectException(FilterCompilerException::class);
         $this->compiler->compile("name = 'james'");
     }
 
-    /**
-     * @expectedException \ntentan\nibii\exceptions\FilterCompilerException
-     */
     public function testTokenException()
     {
+        $this->expectException(FilterCompilerException::class);
         $this->compiler->compile('name = ? james');
     }
 
-    /**
-     * @expectedException \ntentan\nibii\exceptions\FilterCompilerException
-     */
     public function testExpectedException()
     {
+        $this->expectException(FilterCompilerException::class);
         $this->compiler->compile('in ?');
     }
 

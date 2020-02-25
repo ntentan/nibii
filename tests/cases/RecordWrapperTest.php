@@ -40,58 +40,49 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
 
     public function testCreate()
     {
-        $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(6, $this->countTableRows('roles'));
         $role = new \ntentan\nibii\tests\models\aliased\Roles();
         $role->name = 'Super User';
         $this->assertArrayNotHasKey('id', $role->toArray());
         $this->assertEquals(true, $role->save());
         $this->assertArrayHasKey('id', $role->toArray());
         $this->assertTrue(is_numeric($role->toArray()['id']));
-        $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(7, $this->countTableRows('roles'));
 
-        $queryTable = $this->getConnection()->createQueryTable(
-                'roles', 'SELECT name FROM roles ORDER BY name'
-        );
+        $queryTable = $this->getQueryAsArray('SELECT name FROM roles ORDER BY name');
 
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'roles' => [
-                        ['name' => 'Another test role'],
-                        ['name' => 'Matches'],
-                        ['name' => 'More test roles'],
-                        ['name' => 'Rematch'],
-                        ['name' => 'Some test user'],
-                        ['name' => 'Super User'],
-                        ['name' => 'Test role'],
-                    ],
-                ])->getTable('roles'), $queryTable
+        $this->assertEquals([
+                ['name' => 'Another test role'],
+                ['name' => 'Matches'],
+                ['name' => 'More test roles'],
+                ['name' => 'Rematch'],
+                ['name' => 'Some test user'],
+                ['name' => 'Super User'],
+                ['name' => 'Test role']
+            ], $queryTable
         );
     }
 
     public function testCreate2()
     {
-        $this->assertEquals(6, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(6, $this->countTableRows('roles'));
         $role = new Roles();
         $role['name'] = 'Super User';
         $this->assertEquals(true, $role->save());
-        $this->assertEquals(7, $this->getConnection()->getRowCount('roles'));
+        $this->assertEquals(7, $this->countTableRows('roles'));
 
-        $queryTable = $this->getConnection()->createQueryTable(
-                'roles', 'SELECT name FROM roles ORDER BY name'
-        );
+        $queryTable = $this->getQueryAsArray('SELECT name FROM roles ORDER BY name');
 
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'roles' => [
-                        ['name' => 'Another test role'],
-                        ['name' => 'Matches'],
-                        ['name' => 'More test roles'],
-                        ['name' => 'Rematch'],
-                        ['name' => 'Some test user'],
-                        ['name' => 'Super User'],
-                        ['name' => 'Test role'],
-                    ],
-                ])->getTable('roles'), $queryTable
+        $this->assertEquals([
+                ['name' => 'Another test role'],
+                ['name' => 'Matches'],
+                ['name' => 'More test roles'],
+                ['name' => 'Rematch'],
+                ['name' => 'Some test user'],
+                ['name' => 'Super User'],
+                ['name' => 'Test role'],
+            ],
+            $queryTable
         );
     }
 
@@ -241,86 +232,59 @@ class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
         $user = (new Users())->fetchFirstWithId(1);
         $user->username = 'jamie';
         $user->save();
-        $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT username FROM users WHERE id = 1'
-        );
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['username' => 'jamie'],
-                    ],
-                ])->getTable('users'), $queryTable
-        );
+        $queryTable = $this->getQueryAsArray('SELECT username FROM users WHERE id = 1');
+        $this->assertEquals([['username' => 'jamie']], $queryTable);
     }
 
     public function testBulkUpdate()
     {
         (new Users())->update(['role_id' => 15]);
 
-        $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT role_id FROM users'
-        );
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                    ],
-                ])->getTable('users'), $queryTable
+        $queryTable = $this->getQueryAsArray('SELECT role_id FROM users');
+        $this->assertEquals([
+                ['role_id' => 15],
+                ['role_id' => 15],
+                ['role_id' => 15],
+                ['role_id' => 15],
+            ], $queryTable
         );
     }
 
     public function testBulkUpdate2()
     {
         (new Users())->filterByRoleId(11, 12)->update(['role_id' => 15]);
-        $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT role_id FROM users ORDER BY role_id'
-        );
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['role_id' => 10],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                    ],
-                ])->getTable('users'), $queryTable
+        $queryTable = $this->getQueryAsArray('SELECT role_id FROM users ORDER BY role_id');
+        $this->assertEquals([
+                ['role_id' => 10],
+                ['role_id' => 15],
+                ['role_id' => 15],
+                ['role_id' => 15],
+            ], $queryTable
         );
     }
 
     public function testBulkUpdate3()
     {
         (new Users())->filter('id < ?', 3)->update(['role_id' => 15]);
-        $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT role_id FROM users ORDER BY role_id'
-        );
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['role_id' => 12],
-                        ['role_id' => 12],
-                        ['role_id' => 15],
-                        ['role_id' => 15],
-                    ],
-                ])->getTable('users'), $queryTable
+        $queryTable = $this->getQueryAsArray('SELECT role_id FROM users ORDER BY role_id');
+        $this->assertEquals([
+                ['role_id' => 12],
+                ['role_id' => 12],
+                ['role_id' => 15],
+                ['role_id' => 15],
+            ], $queryTable
         );
     }
 
     public function testDelete()
     {
         (new Users())->filter('id < ?', 3)->delete();
-        $queryTable = $this->getConnection()->createQueryTable(
-                'users', 'SELECT id, username, role_id, firstname FROM users'
-        );
-        $this->assertTablesEqual(
-                $this->createArrayDataSet([
-                    'users' => [
-                        ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame'],
-                        ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa'],
-                    ],
-                ])->getTable('users'), $queryTable
+        $queryTable = $this->getQueryAsArray('SELECT id, username, role_id, firstname FROM users');
+        $this->assertEquals([
+                ['id' => 3, 'username' => 'kwame', 'role_id' => 12, 'firstname' => 'Kwame'],
+                ['id' => 4, 'username' => 'adjoa', 'role_id' => 12, 'firstname' => 'Adjoa'],
+            ],
+            $queryTable
         );
     }
 }
