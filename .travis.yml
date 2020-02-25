@@ -2,8 +2,8 @@ language: php
 sudo: false
 dist: trusty
 php:
- - "7.1"
- - "7.2"
+ - "7.3"
+ - "7.4"
 
 env:
  - NIBII_DATASTORE=mysql NIBII_HOST=localhost NIBII_USER=root NIBII_DBNAME=nibii_test NIBII_PDO_DSN='mysql:host=localhost;dbname=nibii_test;user=root' NIBII_NO_SCHEMAS=yes COVERAGE=yes
