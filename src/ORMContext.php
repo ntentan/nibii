@@ -31,6 +31,7 @@ use ntentan\kaikai\Cache;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
+use ntentan\nibii\exceptions\NibiiException;
 
 /**
  * A global class with information and utilities required by the rest of the ORM system.
