@@ -43,6 +43,8 @@ class ModelDescription
 
     /**
      * @param RecordWrapper $model
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     public function __construct($model)
     {

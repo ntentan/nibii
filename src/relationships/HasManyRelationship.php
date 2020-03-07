@@ -26,11 +26,14 @@
 
 namespace ntentan\nibii\relationships;
 
+use ntentan\nibii\exceptions\NibiiException;
+use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
 
-class HasManyRelationship extends \ntentan\nibii\Relationship
+class HasManyRelationship extends Relationship
 {
     protected $type = self::HAS_MANY;
+    private $tempData;
 
     public function prepareQuery($data)
     {
@@ -54,6 +57,22 @@ class HasManyRelationship extends \ntentan\nibii\Relationship
         }
         if ($this->options['local_key'] == null) {
             $this->options['local_key'] = $this->setupPrimaryKey[0];
+        }
+    }
+
+    public function preSave(&$wrapper, $value)
+    {
+        $this->tempData = $wrapper[$this->options['model']];
+        unset($wrapper[$this->options['model']]);
+    }
+
+    public function postSave(&$wrapper)
+    {
+        foreach($this->tempData as $relatedRecord) {
+            $relatedRecord[$this->options['foreign_key']] = $wrapper[$this->options['local_key']];
+            if (!$relatedRecord->save()) {
+                throw new NibiiException("Failed to save related model [{$this->options['model']}]");
+            }
         }
     }
 }

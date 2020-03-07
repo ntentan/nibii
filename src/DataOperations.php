@@ -207,6 +207,7 @@ class DataOperations
 
         foreach ($relationships ?? [] as $model => $relationship) {
             if (isset($record[$model])) {
+                $relationship->runSetup();
                 $relationship->preSave($record, $record[$model]);
                 $relationshipsWithData[$model] = $relationship;
             }
