@@ -165,6 +165,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * After initialization, this method sets the initialized flag.
      *
      * @return void
+     * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     protected function initialize(): void
     {
@@ -200,6 +203,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Return a description of the model wrapped by this wrapper.
      *
      * @return ModelDescription
+     * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     public function getDescription() : ModelDescription
     {
@@ -222,6 +228,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @param int|array|QueryParameters $query
      *
      * @return int
+     * @throws NibiiException
      */
     public function count($query = null)
     {
@@ -240,6 +247,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @param string $key A key identifying the item to be retrieved.
      *
      * @return mixed
+     * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     private function retrieveItem($key)
     {
@@ -248,8 +258,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         $relationships = $this->getDescription()->getRelationships();
         $decamelizedKey = Text::deCamelize($key);
-        if (isset($relationships[$key])) {
-            return $this->fetchRelatedFields($relationships[$key]);
+        if (isset($relationships[$decamelizedKey]) && !isset($this->modelData[$decamelizedKey])) {
+            return $this->fetchRelatedFields($relationships[$decamelizedKey]);
         }
 
         return isset($this->modelData[$decamelizedKey]) ? $this->modelData[$decamelizedKey] : null;
@@ -259,11 +269,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * Calls dynamic methods.
      *
      * @param string $name
-     * @param array  $arguments
-     *
-     * @throws exceptions\NibiiException
+     * @param array $arguments
      *
      * @return type
+     * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     public function __call($name, $arguments)
     {
