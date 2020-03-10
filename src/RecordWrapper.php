@@ -195,7 +195,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __debugInfo()
     {
         $data = $this->getData();
-
         return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
     }
 

@@ -26,7 +26,9 @@
 
 namespace ntentan\nibii\adapters;
 
-class MysqlAdapter extends \ntentan\nibii\DriverAdapter
+use ntentan\nibii\DriverAdapter;
+
+class MysqlAdapter extends DriverAdapter
 {
     public function mapDataTypes($nativeType)
     {

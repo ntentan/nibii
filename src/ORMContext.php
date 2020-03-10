@@ -93,6 +93,7 @@ class ORMContext
 
     /**
      * @param string $class
+     * @return string
      */
     public function getModelName($class)
     {
