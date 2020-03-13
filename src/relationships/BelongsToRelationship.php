@@ -37,6 +37,7 @@ use ntentan\utils\Text;
 class BelongsToRelationship extends Relationship
 {
     protected $type = self::BELONGS_TO;
+    private $relatedData;
 
     public function prepareQuery($data)
     {
@@ -76,5 +77,10 @@ class BelongsToRelationship extends Relationship
         $value->save();
         $wrapper[$this->options['local_key']] = $value[$this->options['foreign_key']];
         unset($wrapper[$this->options['model']]);
+    }
+
+    public function postSave(&$wrapper)
+    {
+        $wrapper[$this->options['model']] = $this->relatedData;
     }
 }

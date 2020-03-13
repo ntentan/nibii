@@ -74,5 +74,6 @@ class HasManyRelationship extends Relationship
                 throw new NibiiException("Failed to save related model [{$this->options['model']}]");
             }
         }
+        $wrapper[$this->options['model']] = $this->tempData;
     }
 }

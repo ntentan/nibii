@@ -105,6 +105,9 @@ class DataOperations
      * @param bool $hasMultipleData
      *
      * @return bool
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws exceptions\NibiiException
      */
     public function doSave(bool $hasMultipleData): bool
     {
@@ -160,10 +163,13 @@ class DataOperations
     /**
      * Save an individual record.
      *
-     * @param array $record     The record to be saved
+     * @param array $record The record to be saved
      * @param array $primaryKey The primary keys of the record
      *
      * @return array
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws exceptions\NibiiException
      */
     private function saveRecord(array &$record, array $primaryKey): array
     {

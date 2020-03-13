@@ -73,6 +73,7 @@ abstract class Relationship
      * Gets an instance of the related model accessed through this class.
      *
      * @return RecordWrapper
+     * @throws exceptions\NibiiException
      */
     public function getModelInstance()
     {
@@ -92,13 +93,9 @@ abstract class Relationship
         $this->setupSchema = $schema;
     }
 
-    public function preSave(&$wrapper, $value)
-    {
-    }
+    abstract public function preSave(&$wrapper, $value);
 
-    public function postSave(&$wrapper)
-    {
-    }
+    abstract public function postSave(&$wrapper);
 
     abstract public function prepareQuery($data);
 

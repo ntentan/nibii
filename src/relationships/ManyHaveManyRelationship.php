@@ -26,7 +26,7 @@
 
 namespace ntentan\nibii\relationships;
 
-use ntentan\nibii\NibiiException;
+use ntentan\nibii\exceptions\NibiiException;
 use ntentan\nibii\ORMContext;
 use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
@@ -109,7 +109,6 @@ class ManyHaveManyRelationship extends Relationship
     {
         $jointModelRecords = [];
         foreach ($this->tempdata as $relatedRecord) {
-            $data = $relatedRecord->toArray();
             if (!$relatedRecord->save()) {
                 throw new NibiiException("Failed to save related model {$this->options['model']}");
             }
@@ -118,6 +117,7 @@ class ManyHaveManyRelationship extends Relationship
                 $this->options['junction_foreign_key'] => $relatedRecord[$this->options['foreign_key']],
             ];
         }
+        $this[$this->options['model']] = $this->tempdata;
         $this->junctionModelInstance->setData($jointModelRecords);
         $this->junctionModelInstance->save();
     }
