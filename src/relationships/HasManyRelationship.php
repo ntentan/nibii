@@ -71,6 +71,7 @@ class HasManyRelationship extends Relationship
         foreach($this->tempData as $relatedRecord) {
             $relatedRecord[$this->options['foreign_key']] = $wrapper[$this->options['local_key']];
             if (!$relatedRecord->save()) {
+                var_dump($relatedRecord->getInvalidFields());
                 throw new NibiiException("Failed to save related model [{$this->options['model']}]");
             }
         }

@@ -26,6 +26,6 @@
 
 namespace ntentan\nibii\exceptions;
 
-class ModelNotFoundException extends \Exception
+class ModelNotFoundException extends NibiiException
 {
 }

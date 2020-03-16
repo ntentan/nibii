@@ -26,6 +26,6 @@
 
 namespace ntentan\nibii\exceptions;
 
-class FilterCompilerException extends \Exception
+class FilterCompilerException extends NibiiException
 {
 }

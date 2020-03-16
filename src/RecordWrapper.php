@@ -439,12 +439,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return [];
     }
 
-    private function fetchRelatedFields($relationship, $index = null)
+    private function fetchRelatedFields(Relationship $relationship, $index = null)
     {
-        if ($index === null) {
-            $data = $this->modelData;
-        } else {
-            $data = $this->modelData[$index];
+        $data = $index ? $this->modelData[$index] : $this->modelData;
+        $name = $relationship->getOptions()['name'];
+        if(isset($data[$name]))
+        {
+            return $data[$name];
         }
         $model = $relationship->getModelInstance();
         if (empty($data)) {
@@ -539,15 +540,16 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private function expandArrayValue($array, $relationships, $depth, $expandableModels = [], $index = null)
     {
-        if (empty($expandableModels)) {
-            foreach ($relationships as $name => $relationship) {
-                $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
-            }
-        } else {
+        $expandableModels = empty($expandableModels) ? array_keys($relationships) : $expandableModels;
+//        if (empty($expandableModels)) {
+//            foreach ($relationships as $name => $relationship) {
+//                $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
+//            }
+//        } else {
             foreach ($expandableModels as $name) {
                 $array[$name] = $this->fetchRelatedFields($relationships[$name], $index)->toArray($depth, $expandableModels);
             }
-        }
+//        }
 
         return $array;
     }
@@ -561,7 +563,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $relationships = $this->getDescription()->getRelationships();
         $array = $this->modelData;
-        if ($depth > 0) {
+        if (!empty($array) && $depth > 0) {
             if ($this->hasMultipleItems()) {
                 foreach ($array as $i => $value) {
                     $array[$i] = $this->expandArrayValue($value, $relationships, $depth - 1, $expandableModels, $i);
