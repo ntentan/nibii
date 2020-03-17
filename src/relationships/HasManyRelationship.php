@@ -39,14 +39,15 @@ class HasManyRelationship extends Relationship
     {
         // @todo throw an exception when the data doesn't have the local key
         $query = $this->getQuery();
-        if ($this->queryPrepared) {
-            $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);
-        } else {
+        if(!$this->queryPrepared) {
             $query->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
-                    ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']]);
+                ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']] ?? null);
             $this->queryPrepared = true;
+            return $query;
         }
-
+        if(isset($data[$this->options['local_key']])) {
+            $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);
+        }
         return $query;
     }
 
@@ -68,13 +69,12 @@ class HasManyRelationship extends Relationship
 
     public function postSave(&$wrapper)
     {
-        foreach($this->tempData as $relatedRecord) {
-            $relatedRecord[$this->options['foreign_key']] = $wrapper[$this->options['local_key']];
-            if (!$relatedRecord->save()) {
-                var_dump($relatedRecord->getInvalidFields());
-                throw new NibiiException("Failed to save related model [{$this->options['model']}]");
-            }
+        $records = $this->tempData->getData();
+        foreach($records as $i => $relatedRecord) {
+            $records[$i][$this->options['foreign_key']] = $wrapper[$this->options['local_key']];
         }
+        $this->tempData->setData($records);
+        $this->tempData->save();
         $wrapper[$this->options['model']] = $this->tempData;
     }
 }
