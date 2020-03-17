@@ -258,7 +258,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $relationships = $this->getDescription()->getRelationships();
         $decamelizedKey = Text::deCamelize($key);
         if (isset($relationships[$decamelizedKey]) && !isset($this->modelData[$decamelizedKey])) {
-            return $this->fetchRelatedFields($relationships[$decamelizedKey]);
+            $this->modelData[$decamelizedKey] = $this->fetchRelatedFields($relationships[$decamelizedKey]);
+            return $this->modelData[$decamelizedKey];
         }
 
         return isset($this->modelData[$decamelizedKey]) ? $this->modelData[$decamelizedKey] : null;
