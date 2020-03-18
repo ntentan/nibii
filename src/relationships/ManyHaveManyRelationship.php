@@ -110,7 +110,7 @@ class ManyHaveManyRelationship extends Relationship
         $jointModelRecords = [];
         foreach ($this->tempdata as $relatedRecord) {
             if (!$relatedRecord->save()) {
-                throw new NibiiException("Failed to save related model {$this->options['model']}");
+                $this->invalidFields =$this->tempdata->getInvalidFields();
             }
             $jointModelRecords[] = [
                 $this->options['junction_local_key']   => $wrapper[$this->options['local_key']],

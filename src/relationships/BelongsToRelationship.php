@@ -74,7 +74,9 @@ class BelongsToRelationship extends Relationship
 
     public function preSave(&$wrapper, $value)
     {
-        $value->save();
+        if(!$value->save()) {
+            $this->invalidFields = $value->getInvalidFields();
+        }
         $wrapper[$this->options['local_key']] = $value[$this->options['foreign_key']];
         unset($wrapper[$this->options['model']]);
     }

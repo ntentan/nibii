@@ -238,6 +238,11 @@ class DataOperations
         $record = $this->wrapper->getData()[0];
         foreach ($relationshipsWithData as $model => $relationship) {
             $relationship->postSave($record);
+            $invalidRelatedFields = $relationship->getInvalidFields();
+            if(!empty($invalidRelatedFields)) {
+                $status['success'] = false;
+                $status['invalid_fields'][$model] = $invalidRelatedFields;
+            }
         }
 
         return $status;

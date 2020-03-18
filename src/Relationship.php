@@ -49,6 +49,7 @@ abstract class Relationship
     private $setup = false;
     private $query;
     protected $queryPrepared = false;
+    protected $invalidFields = [];
 
     public function setOptions($options)
     {
@@ -91,6 +92,11 @@ abstract class Relationship
         $this->setupTable = $table;
         $this->setupPrimaryKey = $primaryKey;
         $this->setupSchema = $schema;
+    }
+
+    public function getInvalidFields()
+    {
+        return $this->invalidFields;
     }
 
     abstract public function preSave(&$wrapper, $value);

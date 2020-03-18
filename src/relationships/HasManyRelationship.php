@@ -74,7 +74,9 @@ class HasManyRelationship extends Relationship
             $records[$i][$this->options['foreign_key']] = $wrapper[$this->options['local_key']];
         }
         $this->tempData->setData($records);
-        $this->tempData->save();
+        if(!$this->tempData->save()) {
+            $this->invalidFields = $this->tempData->getInvalidFields();
+        }
         $wrapper[$this->options['model']] = $this->tempData;
     }
 }
