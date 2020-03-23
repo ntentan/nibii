@@ -35,10 +35,10 @@ class HasManyRelationship extends Relationship
     protected $type = self::HAS_MANY;
     private $tempData;
 
-    public function prepareQuery($data)
+    public function doprepareQuery($data)
     {
         // @todo throw an exception when the data doesn't have the local key
-        $query = $this->getQuery();
+        $query = $this->createQuery();
         if(!$this->queryPrepared) {
             $query->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
                 ->addFilter($this->options['foreign_key'], $data[$this->options['local_key']] ?? null);

@@ -445,22 +445,21 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private function fetchRelatedFields(Relationship $relationship, $index = null)
     {
         $data = $index ? $this->modelData[$index] : $this->modelData;
+        if (empty($data)) {
+            return null;
+        }        
         $name = $relationship->getOptions()['name'];
         if(isset($data[$name]))
         {
             return $data[$name];
         }
-        $model = $relationship->getModelInstance();
-        if (empty($data)) {
-            return $model;
-        }
         $query = $relationship->prepareQuery($data);
 
         if($query) {
-            $model->fix($query);
+            $model = $relationship->getModelInstance();
             return $model->fetch($query);
         } else {
-            return $model;
+            return null;
         }
 
         //return $query ? $model->fetch($query) : $model;
@@ -551,16 +550,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private function expandArrayValue($array, $relationships, $depth, $expandableModels = [], $index = null)
     {
         $expandableModels = empty($expandableModels) ? array_keys($relationships) : $expandableModels;
-//        if (empty($expandableModels)) {
-//            foreach ($relationships as $name => $relationship) {
-//                $array[$name] = $this->fetchRelatedFields($relationship, $index)->toArray($depth);
-//            }
-//        } else {
-            foreach ($expandableModels as $name) {
-                $array[$name] = $this->fetchRelatedFields($relationships[$name], $index)->toArray($depth, $expandableModels);
+        foreach ($expandableModels as $name) {
+            $value = $this->fetchRelatedFields($relationships[$name], $index);
+            if($value) {
+                $array[$name] = $value->toArray($depth, $expandableModels);
             }
-//        }
-
+        }
         return $array;
     }
 

@@ -88,7 +88,7 @@ class QueryOperations
      */
     private $driver;
 
-    private $defaultQueryParameters = null;
+    //private $defaultQueryParameters = null;
 
     /**
      * QueryOperations constructor.
@@ -131,10 +131,10 @@ class QueryOperations
         }
     }
 
-    public function setDefaultQueryParameters(QueryParameters $queryParameters)
-    {
-        $this->defaultQueryParameters = $queryParameters;
-    }
+//    public function setDefaultQueryParameters(QueryParameters $queryParameters)
+//    {
+//        $this->defaultQueryParameters = $queryParameters;
+//    }
 
     /**
      * The method takes multiple types of arguments and converts it to a QueryParametersObject.
@@ -193,7 +193,7 @@ class QueryOperations
      */
     private function resetQueryParameters()
     {
-        $this->queryParameters = $this->defaultQueryParameters ? clone $this->defaultQueryParameters : null;
+        $this->queryParameters = null; //$this->defaultQueryParameters ? clone $this->defaultQueryParameters : null;
     }
 
     /**
@@ -234,10 +234,10 @@ class QueryOperations
         return $this->wrapper;
     }
 
-    public function doFix($query)
-    {
-        $this->defaultQueryParameters = $query;
-    }
+//    public function doFix($query)
+//    {
+//        $this->defaultQueryParameters = $query;
+//    }
 
     /**
      * Sort the query by a given field in a given directory.
@@ -392,6 +392,6 @@ class QueryOperations
         }
         $relationship = $this->wrapper->getDescription()->getRelationships()[$model];
 
-        return $relationship->getQuery();
+        return $relationship->createQuery();
     }
 }

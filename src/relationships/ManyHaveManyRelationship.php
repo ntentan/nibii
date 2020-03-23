@@ -37,7 +37,7 @@ class ManyHaveManyRelationship extends Relationship
     private $tempdata;
     private $junctionModelInstance;
 
-    public function prepareQuery($data)
+    public function doprepareQuery($data)
     {
         $junctionModelClass = $this->options['junction_model'];
         $junctionModel = new $junctionModelClass();
@@ -53,11 +53,11 @@ class ManyHaveManyRelationship extends Relationship
         }
 
         // @todo throw an exception when the data doesn't have the local key
-        $query = $this->getQuery();
+        $query = $this->createQuery();
         if ($this->queryPrepared) {
             $query->setBoundData($this->options['foreign_key'], $foreignKeys);
         } else {
-            $query = $this->getQuery()
+            $query = $this->createQuery()
                     ->setTable($this->getModelInstance()->getDBStoreInformation()['quoted_table'])
                     ->addFilter($this->options['foreign_key'], $foreignKeys);
             $this->queryPrepared = true;

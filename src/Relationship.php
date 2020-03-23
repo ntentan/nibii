@@ -56,18 +56,25 @@ abstract class Relationship
         $this->options = $options;
     }
 
-    public function getQuery()
+    public function createQuery()
     {
         if (!$this->query) {
             $this->query = new QueryParameters();
         }
-
         return $this->query;
     }
 
     public function getOptions()
     {
         return $this->options;
+    }
+
+    private function initialize()
+    {
+        if (!$this->setup) {
+            $this->runSetup();
+            $this->setup = true;
+        }
     }
 
     /**
@@ -78,11 +85,7 @@ abstract class Relationship
      */
     public function getModelInstance()
     {
-        if (!$this->setup) {
-            $this->runSetup();
-            $this->setup = true;
-        }
-
+        $this->initialize();
         return ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], $this->type);
     }
 
@@ -98,12 +101,25 @@ abstract class Relationship
     {
         return $this->invalidFields;
     }
+    
+    public function prepareQuery($data)
+    {
+        $this->initialize();
+        return $this->doPrepareQuery($data);
+    }
 
     abstract public function preSave(&$wrapper, $value);
 
     abstract public function postSave(&$wrapper);
 
-    abstract public function prepareQuery($data);
+    abstract protected function doPrepareQuery($data);
 
+    /**
+     * @todo Cleanup this method. 
+     * There should be a get Parameters method instead which returns the values
+     * that are passed to setup. Initialize should be the main wrapper arround
+     * this.
+     * 
+     */
     abstract public function runSetup();
 }

@@ -53,7 +53,7 @@ class Operations
     private $queryOperationMethods = [
         'fetch', 'fetchFirst', 'filter', 'query', 'fields',
         'cover', 'limit', 'offset', 'filterBy', 'sortBy',
-        'delete', 'count', 'update', 'with', 'fix'
+        'delete', 'count', 'update', 'with'
     ];
     private $dataOperationMethods = [
         'save', 'validate',

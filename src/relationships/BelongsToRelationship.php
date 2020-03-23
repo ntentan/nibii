@@ -39,7 +39,7 @@ class BelongsToRelationship extends Relationship
     protected $type = self::BELONGS_TO;
     private $relatedData;
 
-    public function prepareQuery($data)
+    public function doprepareQuery($data)
     {
         if (!array_key_exists($this->options['local_key'], $data)) {
             throw new FieldNotFoundException("Field {$this->options['local_key']} not found for belongs to relationship query.");
@@ -47,7 +47,7 @@ class BelongsToRelationship extends Relationship
         if (!isset($data[$this->options['local_key']])) {
             return;
         }
-        $query = $this->getQuery();
+        $query = $this->createQuery();
         if ($this->queryPrepared) {
             $query->setBoundData($this->options['foreign_key'], $data[$this->options['local_key']]);
         } else {
