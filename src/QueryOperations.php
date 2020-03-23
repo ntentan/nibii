@@ -88,6 +88,8 @@ class QueryOperations
      */
     private $driver;
 
+    private $defaultQueryParameters = null;
+
     /**
      * QueryOperations constructor.
      *
@@ -111,6 +113,9 @@ class QueryOperations
      * @param int|array|QueryParameters $query
      *
      * @return RecordWrapper
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws exceptions\NibiiException
      */
     public function doFetch($query = null)
     {
@@ -120,10 +125,15 @@ class QueryOperations
             return;
         } else {
             $this->wrapper->setData($data);
-            $this->resetQueryParameters();
+            //$this->resetQueryParameters();
 
             return $this->wrapper;
         }
+    }
+
+    public function setDefaultQueryParameters(QueryParameters $queryParameters)
+    {
+        $this->defaultQueryParameters = $queryParameters;
     }
 
     /**
@@ -133,13 +143,17 @@ class QueryOperations
      * array, it builds a series of conditions with array key-value pairs.
      *
      * @param int|array|QueryParameters $arg
-     * @param bool                      $instantiate
+     * @param bool $instantiate
      *
      * @return QueryParameters
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws exceptions\NibiiException
      */
     private function buildFetchQueryParameters($arg, $instantiate = true)
     {
         if ($arg instanceof QueryParameters) {
+            $this->queryParameters = $arg;
             return $arg;
         }
 
@@ -179,7 +193,7 @@ class QueryOperations
      */
     private function resetQueryParameters()
     {
-        $this->queryParameters = null;
+        $this->queryParameters = $this->defaultQueryParameters ? clone $this->defaultQueryParameters : null;
     }
 
     /**
@@ -188,6 +202,9 @@ class QueryOperations
      * @param mixed $id
      *
      * @return RecordWrapper
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws exceptions\NibiiException
      */
     public function doFetchFirst($id = null)
     {
@@ -215,6 +232,11 @@ class QueryOperations
         $this->getQueryParameters()->setFields($fields);
 
         return $this->wrapper;
+    }
+
+    public function doFix($query)
+    {
+        $this->defaultQueryParameters = $query;
     }
 
     /**

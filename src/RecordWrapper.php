@@ -228,6 +228,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @return int
      * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     public function count($query = null)
     {
@@ -454,7 +456,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         $query = $relationship->prepareQuery($data);
 
-        return $query ? $model->fetch($query) : $model;
+        if($query) {
+            $model->fix($query);
+            return $model->fetch($query);
+        } else {
+            return $model;
+        }
+
+        //return $query ? $model->fetch($query) : $model;
     }
 
     public function getRelationships()
@@ -564,6 +573,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $relationships = $this->getDescription()->getRelationships();
         $array = $this->modelData;
+        foreach ($relationships as $model => $relationship) {
+            unset($array[$model]);
+        }
         if (!empty($array) && $depth > 0) {
             if ($this->hasMultipleItems()) {
                 foreach ($array as $i => $value) {

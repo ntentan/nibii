@@ -32,6 +32,7 @@ use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\nibii\exceptions\NibiiException;
+use ntentan\panie\exceptions\ResolutionException;
 
 /**
  * A global class with information and utilities required by the rest of the ORM system.
@@ -72,7 +73,7 @@ class ORMContext
     {
         try {
             return $this->modelFactory->createModel($path, null);
-        } catch (\ntentan\panie\exceptions\ResolutionException $e) {
+        } catch (ResolutionException $e) {
             throw new
             NibiiException("Failed to load model [$path]. The class [$className] could not be found.");
         }
@@ -136,6 +137,7 @@ class ORMContext
 
     /**
      * @return \ntentan\atiaa\DbContext
+     * @throws \Exception
      */
     public function getDbContext()
     {

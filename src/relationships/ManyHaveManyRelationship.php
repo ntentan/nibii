@@ -44,8 +44,8 @@ class ManyHaveManyRelationship extends Relationship
         $filter = $junctionModel->fields($this->options['junction_foreign_key'])
                 ->filterBy($this->options['junction_local_key'], $data[$this->options['local_key']])
                 ->fetch();
-        if ($filter->count() == 0) {
-            return;
+        if ($filter === null) {
+            return null;
         }
         $foreignKeys = [];
         foreach ($filter->toArray() as $foreignItem) {

@@ -252,6 +252,8 @@ class DataOperations
      * @param int $mode
      *
      * @return bool|array
+     * @throws \ntentan\utils\exceptions\ValidatorNotFoundException
+     * @throws exceptions\NibiiException
      */
     private function validate(int $mode)
     {
