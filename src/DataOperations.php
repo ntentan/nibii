@@ -27,6 +27,8 @@
 namespace ntentan\nibii;
 
 use ntentan\atiaa\Driver;
+use ntentan\atiaa\exceptions\ConnectionException;
+use ntentan\utils\exceptions\ValidatorNotFoundException;
 use ntentan\utils\Validator;
 
 /**
@@ -90,7 +92,10 @@ class DataOperations
      * Create a new instance.
      *
      * @param \ntentan\nibii\RecordWrapper $wrapper
-     * @param Driver                       $driver
+     * @param Driver $driver
+     * @throws ConnectionException
+     * @throws \ReflectionException
+     * @throws exceptions\NibiiException
      */
     public function __construct(RecordWrapper $wrapper, Driver $driver)
     {
@@ -106,8 +111,9 @@ class DataOperations
      *
      * @return bool
      * @throws \ReflectionException
-     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws ConnectionException
      * @throws exceptions\NibiiException
+     * @throws ValidatorNotFoundException
      */
     public function doSave(bool $hasMultipleData): bool
     {
@@ -150,6 +156,10 @@ class DataOperations
 
     /**
      * @return bool|array
+     * @throws \ReflectionException
+     * @throws ConnectionException
+     * @throws ValidatorNotFoundException
+     * @throws exceptions\NibiiException
      */
     public function doValidate()
     {
@@ -168,7 +178,8 @@ class DataOperations
      *
      * @return array
      * @throws \ReflectionException
-     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws ConnectionException
+     * @throws ValidatorNotFoundException
      * @throws exceptions\NibiiException
      */
     private function saveRecord(array &$record, array $primaryKey): array
@@ -252,7 +263,7 @@ class DataOperations
      * @param int $mode
      *
      * @return bool|array
-     * @throws \ntentan\utils\exceptions\ValidatorNotFoundException
+     * @throws ValidatorNotFoundException
      * @throws exceptions\NibiiException
      */
     private function validate(int $mode)

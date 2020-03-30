@@ -270,6 +270,7 @@ class QueryParameters
                 $this->boundData[$field] = $values;
             }
         }
+        $this->preparedBoundData = false;
         $this->conjunction = ' AND ';
 
         return $this;

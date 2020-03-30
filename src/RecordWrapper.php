@@ -122,7 +122,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @var bool
      */
-    private $dataSet = false;
+    private $hasDataBeenSet = false;
 
     /**
      * The name of the class for this model obtained through reflection.
@@ -233,7 +233,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function count($query = null)
     {
-        if ($this->dataSet) {
+        if ($this->hasDataBeenSet) {
             return count($this->getData());
         }
 
@@ -296,7 +296,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function __set($name, $value)
     {
-        $this->dataSet = true;
+        $this->hasDataBeenSet = true;
         $this->modelData[Text::deCamelize($name)] = $value;
     }
 
@@ -339,7 +339,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function setData($data)
     {
-        $this->dataSet = is_array($data) ? true : false;
+        $this->hasDataBeenSet = is_array($data) ? true : false;
         $this->modelData = $data;
     }
 
@@ -348,7 +348,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         foreach ($data as $key => $value) {
             $this->modelData[$key] = $value;
         }
-        $this->dataSet = true;
+        $this->hasDataBeenSet = true;
     }
 
     public function offsetExists($offset)
@@ -367,7 +367,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function offsetSet($offset, $value)
     {
-        $this->dataSet = true;
+        $this->hasDataBeenSet = true;
         $this->modelData[$offset] = $value;
     }
 
@@ -540,6 +540,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * @return DriverAdapter
+     * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
     public function getAdapter()
     {
@@ -582,5 +585,21 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
 
         return $array;
+    }
+
+    /**
+     * Return an instance of the model populated with array data.
+     */
+    public function fromArray($data)
+    {
+        // Create a new instance if this model already has data.
+        if($this->hasDataBeenSet) {
+            $instance = new $this->className();
+        } else {
+            $instance = $this;
+        }
+        $instance->initialize();
+        $instance->setData($data);
+        return $instance;
     }
 }

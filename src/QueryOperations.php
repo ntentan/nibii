@@ -88,7 +88,7 @@ class QueryOperations
      */
     private $driver;
 
-    //private $defaultQueryParameters = null;
+    private $defaultQueryParameters = null;
 
     /**
      * QueryOperations constructor.
@@ -124,17 +124,17 @@ class QueryOperations
         if (empty($data)) {
             return;
         } else {
-            $this->wrapper->setData($data);
-            //$this->resetQueryParameters();
-
-            return $this->wrapper;
+            $results = $this->wrapper->fromArray($data);
+            $results->fix($parameters);
+            $this->resetQueryParameters();
+            return $results;
         }
     }
 
-//    public function setDefaultQueryParameters(QueryParameters $queryParameters)
-//    {
-//        $this->defaultQueryParameters = $queryParameters;
-//    }
+    public function doFix(QueryParameters $queryParameters)
+    {
+        $this->defaultQueryParameters = clone $queryParameters;
+    }
 
     /**
      * The method takes multiple types of arguments and converts it to a QueryParametersObject.
@@ -184,7 +184,6 @@ class QueryOperations
         if ($this->queryParameters === null && $forceInstantiation) {
             $this->queryParameters = new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
         }
-
         return $this->queryParameters;
     }
 
@@ -193,7 +192,7 @@ class QueryOperations
      */
     private function resetQueryParameters()
     {
-        $this->queryParameters = null; //$this->defaultQueryParameters ? clone $this->defaultQueryParameters : null;
+        $this->queryParameters = $this->defaultQueryParameters ? clone $this->defaultQueryParameters : null;
     }
 
     /**
