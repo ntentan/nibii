@@ -444,7 +444,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private function fetchRelatedFields(Relationship $relationship, $index = null)
     {
-        $data = $index ? $this->modelData[$index] : $this->modelData;
+        $data = $index !== null ? $this->modelData[$index] : $this->modelData;
         if (empty($data)) {
             return null;
         }        
@@ -552,11 +552,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private function expandArrayValue($array, $relationships, $depth, $expandableModels = [], $index = null)
     {
-        $expandableModels = empty($expandableModels) ? array_keys($relationships) : $expandableModels;
-        foreach ($expandableModels as $name) {
+        $allExpandableModels = empty($expandableModels) ? array_keys($relationships) : $expandableModels;
+        foreach ($allExpandableModels as $name) {
             $value = $this->fetchRelatedFields($relationships[$name], $index);
             if($value) {
                 $array[$name] = $value->toArray($depth, $expandableModels);
+            } else {
+                $array[$name] = null;
             }
         }
         return $array;

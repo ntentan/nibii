@@ -93,10 +93,13 @@ class QueryOperations
     /**
      * QueryOperations constructor.
      *
-     * @param RecordWrapper  $wrapper
+     * @param RecordWrapper $wrapper
      * @param DataOperations $dataOperations
-     * @param Driver         $driver
+     * @param Driver $driver
      *
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * @throws exceptions\NibiiException
      * @internal param DriverAdapter $adapter
      */
     public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver)
