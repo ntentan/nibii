@@ -1,9 +1,15 @@
 CHANGELOG
 =========
 
-## Unreleased
+## v0.10.0 - 2021-11-29
+
+### Added
+- A new way to fix models to a particular query.
+
 ### Fixed
-- Faulty exception namespace in `ORMContext`
+- Faulty exception namespace in `ORMContext`.
+- Issues in model relationships.
+
 
 ## v0.9.0 - 2020-02-25
 ### Added
