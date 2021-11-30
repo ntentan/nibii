@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## Unreleased
+### Fixed
+- Faulty exception namespace in `ORMContext`
+
 ## v0.9.0 - 2020-02-25
 ### Added
 - Empty queries will now return a null item instead of a results object

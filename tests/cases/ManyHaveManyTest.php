@@ -32,7 +32,9 @@
 
 namespace ntentan\nibii\tests\cases;
 
-class ManyHaveManyTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
+use ntentan\nibii\tests\lib\RecordWrapperTestBase;
+
+class ManyHaveManyTest extends RecordWrapperTestBase
 {
     public function testManyHaveMany()
     {

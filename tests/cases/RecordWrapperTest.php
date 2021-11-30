@@ -26,14 +26,16 @@
 
 namespace ntentan\nibii\tests\cases;
 
+use ntentan\nibii\ORMContext;
+use ntentan\nibii\tests\lib\RecordWrapperTestBase;
 use ntentan\nibii\tests\models\raw\Roles;
 use ntentan\nibii\tests\models\raw\Users;
 
-class RecordWrapperTest extends \ntentan\nibii\tests\lib\RecordWrapperTestBase
+class RecordWrapperTest extends RecordWrapperTestBase
 {
     public function testTableResolution()
     {
-        $users = \ntentan\nibii\ORMContext::getInstance()->load(Users::class);
+        $users = ORMContext::getInstance()->load(Users::class);
         $description = $users->getDescription();
         $this->assertInstanceOf('\ntentan\nibii\ModelDescription', $description);
     }
