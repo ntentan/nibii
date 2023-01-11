@@ -1,29 +1,5 @@
 <?php
 
-/*
- * The MIT License
- *
- * Copyright 2014-2018 James Ekow Abaka Ainooson
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 namespace ntentan\nibii;
 
 use ntentan\nibii\exceptions\NibiiException;
@@ -195,7 +171,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function __debugInfo()
     {
         $data = $this->getData();
-        return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
+        return $this->hasMultipleItems() ? $data : (isset($data[0]) ? $data[0] : []);
     }
 
     /**
@@ -231,7 +207,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @throws \ReflectionException
      * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
-    public function count($query = null)
+    public function count($query = null): int
     {
         if ($this->hasDataBeenSet) {
             return count($this->getData());
@@ -351,12 +327,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->hasDataBeenSet = true;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->modelData[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if (is_numeric($offset)) {
             return $this->wrap($offset);
@@ -365,13 +341,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->hasDataBeenSet = true;
         $this->modelData[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->modelData[$offset]);
     }
@@ -406,28 +382,28 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->belongsTo;
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->wrap($this->keys[$this->index]);
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->keys[$this->index];
     }
 
-    public function next()
+    public function next(): void
     {
         $this->index++;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->keys = array_keys($this->modelData);
         $this->index = 0;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }

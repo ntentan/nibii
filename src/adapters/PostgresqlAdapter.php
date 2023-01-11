@@ -26,7 +26,9 @@
 
 namespace ntentan\nibii\adapters;
 
-class PostgresqlAdapter extends \ntentan\nibii\DriverAdapter
+use ntentan\nibii\DriverAdapter;
+
+class PostgresqlAdapter extends DriverAdapter
 {
     /**
      * Convert from postgresqls native type to a generic type accepted in the
