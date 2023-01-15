@@ -1,29 +1,5 @@
 <?php
 
-/*
- * The MIT License
- *
- * Copyright 2014-2018 James Ekow Abaka Ainooson
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 namespace ntentan\nibii;
 
 use ntentan\atiaa\Driver;
@@ -115,14 +91,14 @@ class DataOperations
      * @throws exceptions\NibiiException
      * @throws ValidatorNotFoundException
      */
-    public function doSave(bool $hasMultipleData): bool
+    private function performSaveOperation(string $operation, bool $hasMultipleData): bool
     {
         $this->hasMultipleData = $hasMultipleData;
         $invalidFields = [];
         $data = $this->wrapper->getData();
 
         $primaryKey = $this->wrapper->getDescription()->getPrimaryKey();
-        $succesful = true;
+        $successful = true;
 
         // Assign an empty array to force a validation error for empty models
         if (empty($data)) {
@@ -132,26 +108,35 @@ class DataOperations
         $this->driver->beginTransaction();
 
         foreach ($data as $i => $datum) {
-            $status = $this->saveRecord($datum, $primaryKey);
+            $status = $this->saveRecord($operation, $datum, $primaryKey);
             $data[$i] = $datum;
 
             if (!$status['success']) {
-                $succesful = false;
+                $successful = false;
                 $invalidFields[$i] = $status['invalid_fields'];
                 $this->driver->rollback();
                 break;
             }
         }
 
-        if ($succesful) {
+        if ($successful) {
             $this->driver->commit();
         } else {
             $this->assignValue($this->invalidFields, $invalidFields);
         }
 
         $this->wrapper->setData($hasMultipleData ? $data : $data[0]);
+        return $successful;
+    }
 
-        return $succesful;
+    public function doAdd(bool $hasMultipleData): bool
+    {
+        return $this->performSaveOperation("add", $hasMultipleData);
+    }
+
+    public function doUpdate(bool $hasMultipleData): bool
+    {
+        return $this->performSaveOperation("update", $hasMultipleData);
     }
 
     /**
@@ -182,7 +167,7 @@ class DataOperations
      * @throws ValidatorNotFoundException
      * @throws exceptions\NibiiException
      */
-    private function saveRecord(array &$record, array $primaryKey): array
+    private function saveRecord(string $operation, array &$record, array $primaryKey): array
     {
         $status = [
             'success'        => true,
@@ -198,14 +183,13 @@ class DataOperations
 
         // Execute all callbacks on the model
         $this->wrapper->preSaveCallback();
-        if ($pkSet) {
-            $this->wrapper->preUpdateCallback();
-        } else {
-            $this->wrapper->preCreateCallback();
-        }
+        match ($operation) {
+            "add" => $this->wrapper->preCreateCallback(),
+            "update" => $this->wrapper->preUpdateCallback()
+        };
 
         // Validate the data
-        $validity = $this->validate($pkSet ? self::MODE_UPDATE : self::MODE_SAVE);
+        $validity = $this->validate(match ($operation) {"add" => self::MODE_SAVE, "update" => self::MODE_UPDATE}); 
 
         // Exit if data is invalid
         if ($validity !== true) {
@@ -232,17 +216,18 @@ class DataOperations
 
         // Assign the data to the wrapper again
         $this->wrapper->setData($record);
-
-        // Update or save the data and run post callbacks
-        if ($pkSet) {
-            $this->adapter->update($record);
-            $this->wrapper->postUpdateCallback();
-        } else {
-            $this->adapter->insert($record);
-            $keyValue = $this->driver->getLastInsertId();
-            $this->wrapper->{$primaryKey[0]} = $keyValue;
-            $this->wrapper->postCreateCallback($keyValue);
-        }
+        match ($operation) {
+            "add" => [
+                    $this->adapter->insert($record),
+                    $keyValue = $pkSet ? $record[$primaryKey[0]] : $this->driver->getLastInsertId(),
+                    $this->wrapper->{$primaryKey[0]} = $keyValue,
+                    $this->wrapper->postCreateCallback($keyValue)
+                ],
+            "update" => [
+                    $this->adapter->update($record),
+                    $this->wrapper->postUpdateCallback()
+                ]
+        };
         $this->wrapper->postSaveCallback();
 
         // Reset the data so it contains any modifications made by callbacks

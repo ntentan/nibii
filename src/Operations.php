@@ -56,8 +56,10 @@ class Operations
         'delete', 'count', 'update', 'with', 'fix'
     ];
     private $dataOperationMethods = [
-        'save', 'validate',
+        //'save', 'validate',
+        'add', 'update', 'validate'
     ];
+    private static $methodNameMap = [];
 
     public function __construct(RecordWrapper $wrapper, $table)
     {
@@ -70,16 +72,16 @@ class Operations
 
     public function perform($name, $arguments)
     {
-        //@todo Think of using a hash here in future
-        if (array_search($name, $this->queryOperationMethods) !== false) {
-            return call_user_func_array([$this->queryOperations, "do$name"], $arguments);
-        } elseif (array_search($name, $this->dataOperationMethods) !== false) {
-            return call_user_func_array([$this->dataOperations, "do$name"], $arguments);
-        } elseif ($this->queryOperations->initDynamicMethod($name)) {
-            return $this->queryOperations->runDynamicMethod($arguments);
-        } else {
-            throw new NibiiException("Method {$name} not found");
-        }
+        return match (true) {
+            in_array($name, $this->queryOperationMethods) => 
+                call_user_func_array([$this->queryOperations, "do$name"], $arguments),
+            in_array($name, $this->dataOperationMethods) => 
+                call_user_func_array([$this->dataOperations, "do$name"], $arguments),
+            $this->queryOperations->initDynamicMethod($name) => 
+                $this->queryOperations->runDynamicMethod($arguments),
+            default => 
+                throw new NibiiException("Method $name not found")
+        };
     }
 
     public function getData()

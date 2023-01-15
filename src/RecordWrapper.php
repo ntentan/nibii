@@ -281,12 +281,22 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->retrieveItem($name);
     }
 
-    public function save()
+    private function save(string $operation): bool
     {
-        $return = $this->__call('save', [$this->hasMultipleItems()]);
+        // Explicitly calling "__call" to take advantage of its internal initialization code.
+        $return = $this->__call($operation, [$this->hasMultipleItems()]);
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
-
         return $return;
+    }
+
+    public function add(): bool
+    {
+        return $this->save("add");
+    }
+
+    public function update(): bool
+    {
+        return $this->save("update");
     }
 
     private function hasMultipleItems()
