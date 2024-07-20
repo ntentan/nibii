@@ -21,18 +21,17 @@ class ORMContext
     private $modelValidatorFactory;
     private $driverAdapterFactory;
 
-    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache)
+    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory) //, Cache $cache)
     {
         $this->modelFactory = $modelFactory;
-        $this->cache = $cache;
+//        $this->cache = $cache;
         $this->driverAdapterFactory = $driverAdapterFactory;
         $this->modelValidatorFactory = $modelValidatorFactory;
     }
 
-    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache): self
+    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory) //, Cache $cache): self
     {
-        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
-
+        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory); //, $cache);
         return self::$instance;
     }
 
@@ -40,9 +39,7 @@ class ORMContext
      * A helper for loading a method described as a string.
      *
      * @param string $path Model name as string
-     *
      * @throws NibiiException
-     *
      * @return \nibii\RecordWrapper
      */
     public function load($path)
