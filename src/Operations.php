@@ -1,67 +1,28 @@
 <?php
-
-/*
- * The MIT License
- *
- * Copyright 2014-2018 James Ekow Abaka Ainooson
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 namespace ntentan\nibii;
 
 use ntentan\nibii\exceptions\NibiiException;
 
 class Operations
 {
-    private $wrapper;
+    private RecordWrapper $wrapper;
 
-    /**
-     * @var \ntentan\nibii\DriverAdapter
-     */
-    private $adapter;
+    private DriverAdapter $adapter;
 
-    /**
-     * @var QueryOperations
-     */
-    private $queryOperations;
+    private QueryOperations $queryOperations;
 
-    /**
-     * @var DataOperations
-     */
-    private $dataOperations;
+    private DataOperations $dataOperations;
 
-    /**
-     * @var array
-     */
-    private $queryOperationMethods = [
+    private array $queryOperationMethods = [
         'fetch', 'fetchFirst', 'filter', 'query', 'fields',
         'cover', 'limit', 'offset', 'filterBy', 'sortBy',
         'delete', 'count', 'update', 'with', 'fix'
     ];
-    private $dataOperationMethods = [
-        //'save', 'validate',
+    private array $dataOperationMethods = [
         'add', 'update', 'validate'
     ];
-    private static $methodNameMap = [];
 
-    public function __construct(RecordWrapper $wrapper, $table)
+    public function __construct(RecordWrapper $wrapper) //, $table)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();
@@ -70,7 +31,7 @@ class Operations
         $this->queryOperations = new QueryOperations($wrapper, $this->dataOperations, $driver);
     }
 
-    public function perform($name, $arguments)
+    public function perform(string $name, array $arguments): mixed
     {
         return match (true) {
             in_array($name, $this->queryOperationMethods) => 
@@ -84,12 +45,12 @@ class Operations
         };
     }
 
-    public function getData()
+    public function getData(): mixed
     {
         return $this->dataOperations->getData();
     }
 
-    public function getInvalidFields()
+    public function getInvalidFields(): array
     {
         return $this->dataOperations->getInvalidFields();
     }
