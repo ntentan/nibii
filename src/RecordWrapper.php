@@ -232,15 +232,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         if ($this->hasMultipleItems()) {
             throw new NibiiException('Current model object state contains multiple items. Please index with a numeric key to select a specific item first.');
+        }       
+        $decamelizedKey = Text::deCamelize($key);
+        if (isset($this->modelData[$decamelizedKey])) {
+            return $this->modelData[$decamelizedKey];
         }
         $relationships = $this->getDescription()->getRelationships();
-        $decamelizedKey = Text::deCamelize($key);
         if (isset($relationships[$decamelizedKey]) && !isset($this->modelData[$decamelizedKey])) {
             $this->modelData[$decamelizedKey] = $this->fetchRelatedFields($relationships[$decamelizedKey]);
             return $this->modelData[$decamelizedKey];
         }
-
-        return isset($this->modelData[$decamelizedKey]) ? $this->modelData[$decamelizedKey] : null;
+        return null;
     }
 
     /**
@@ -249,7 +251,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @param string $name
      * @param array $arguments
      *
-     * @return type
      * @throws NibiiException
      * @throws \ReflectionException
      * @throws \ntentan\atiaa\exceptions\ConnectionException

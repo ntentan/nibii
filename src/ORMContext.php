@@ -3,12 +3,12 @@
 namespace ntentan\nibii;
 
 use ntentan\atiaa\DbContext;
-use ntentan\kaikai\Cache;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\nibii\exceptions\NibiiException;
 use ntentan\panie\exceptions\ResolutionException;
+use ntentan\kaikai\Cache;
 
 /**
  * A global class with information and utilities required by the rest of the ORM system.
@@ -21,26 +21,22 @@ class ORMContext
     private $modelValidatorFactory;
     private $driverAdapterFactory;
 
-    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory) //, Cache $cache)
+    private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache)
     {
         $this->modelFactory = $modelFactory;
-//        $this->cache = $cache;
         $this->driverAdapterFactory = $driverAdapterFactory;
         $this->modelValidatorFactory = $modelValidatorFactory;
+        $this->cache = $cache;
     }
 
-    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory) //, Cache $cache): self
+    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache)
     {
-        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory); //, $cache);
+        self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
         return self::$instance;
     }
 
     /**
      * A helper for loading a method described as a string.
-     *
-     * @param string $path Model name as string
-     * @throws NibiiException
-     * @return \nibii\RecordWrapper
      */
     public function load($path)
     {
