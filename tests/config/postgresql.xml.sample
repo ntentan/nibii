@@ -6,7 +6,7 @@
         <env name='NIBII_USER' value='postgres' />
         <env name='NIBII_PASSWORD' value='' />
         <env name='NIBII_DBNAME' value='ntentan_tests' />
-        <env name='NIBII_PDO_DSN' value='pgsql:host=localhost;dbname=ntentan_tests;user=ekow;password=ainooson' />
+        <env name='NIBII_PDO_DSN' value='pgsql:host=localhost;dbname=ntentan_tests;user=ekow;password=xxxxxxxx' />
     </php>
     <testsuites>
         <testsuite name="Main Test Suite">

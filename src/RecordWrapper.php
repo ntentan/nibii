@@ -135,6 +135,8 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      * @var bool
      */
     private $initialized = false;
+    
+    private $isFromQuery = false;
 
     /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
@@ -210,7 +212,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function count($query = null): int
     {
         if ($this->hasDataBeenSet) {
-            return count($this->getData());
+            return $this->hasMultipleItems() ? count($this->getData()) : 1;
         }
 
         return $this->__call('count', [$query]);
@@ -238,9 +240,9 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             return $this->modelData[$decamelizedKey];
         }
         $relationships = $this->getDescription()->getRelationships();
-        if (isset($relationships[$decamelizedKey]) && !isset($this->modelData[$decamelizedKey])) {
-            $this->modelData[$decamelizedKey] = $this->fetchRelatedFields($relationships[$decamelizedKey]);
-            return $this->modelData[$decamelizedKey];
+        if (isset($relationships[$key]) && !isset($this->modelData[$decamelizedKey])) {
+            $this->modelData[$key] = $this->fetchRelatedFields($relationships[$key]);
+            return $this->modelData[$key];
         }
         return null;
     }
@@ -282,22 +284,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->retrieveItem($name);
     }
 
-    private function save(string $operation): bool
+    public function save(): bool
     {
         // Explicitly calling "__call" to take advantage of its internal initialization code.
-        $return = $this->__call($operation, [$this->hasMultipleItems()]);
+        $return = $this->__call('save', [$this->hasMultipleItems()]);
         $this->invalidFields = $this->dynamicOperations->getInvalidFields();
         return $return;
-    }
-
-    public function add(): bool
-    {
-        return $this->save("add");
-    }
-
-    public function update(): bool
-    {
-        return $this->save("update");
     }
 
     private function hasMultipleItems()
@@ -311,17 +303,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function getData()
     {
-        $data = [];
-
-        if (count($this->modelData) == 0) {
-            $data = $this->modelData;
-        } elseif ($this->hasMultipleItems()) {
-            $data = $this->modelData;
-        } elseif (count($this->modelData) > 0) {
-            $data[] = $this->modelData;
-        }
-
-        return $data;
+        return $this->modelData;
     }
 
     public function setData($data)
@@ -577,7 +559,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     /**
      * Return an instance of the model populated with array data.
      */
-    public function fromArray($data)
+    public function fromArray(array $data, bool $isFromQuery=false): RecordWrapper
     {
         // Create a new instance if this model already has data.
         if($this->hasDataBeenSet) {
@@ -587,6 +569,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         $instance->initialize();
         $instance->setData($data);
+        $instance->isFromQuery = $isFromQuery;
         return $instance;
     }
 }

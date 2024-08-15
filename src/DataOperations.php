@@ -103,6 +103,8 @@ class DataOperations
         // Assign an empty array to force a validation error for empty models
         if (empty($data)) {
             $data = [[]];
+        } else if (!$hasMultipleData) {
+            $data = [$data];
         }
 
         $this->driver->beginTransaction();
@@ -127,6 +129,11 @@ class DataOperations
 
         $this->wrapper->setData($hasMultipleData ? $data : $data[0]);
         return $successful;
+    }
+    
+    public function doSave(bool $hasMultipleData): bool
+    {
+        return $this->performSaveOperation("save", $hasMultipleData);
     }
 
     public function doAdd(bool $hasMultipleData): bool
@@ -175,21 +182,28 @@ class DataOperations
             'invalid_fields' => [],
         ];
 
-        // Determine if the primary key of the record is set.
-        $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
-
         // Reset the data in the model to contain only the data to be saved
         $this->wrapper->setData($record);
+        
+        // Determine if the primary key of the record is set.
+        $pkSet = $this->isPrimaryKeySet($primaryKey, $record);
 
         // Execute all callbacks on the model
         $this->wrapper->preSaveCallback();
         match ($operation) {
             "add" => $this->wrapper->preCreateCallback(),
-            "update" => $this->wrapper->preUpdateCallback()
+            "update" => $this->wrapper->preUpdateCallback(),
+            "save" => $pkSet ? $this->wrapper->preUpdateCallback() : $this->wrapper->preSaveCallback()
         };
 
         // Validate the data
-        $validity = $this->validate(match ($operation) {"add" => self::MODE_SAVE, "update" => self::MODE_UPDATE}); 
+        $validity = $this->validate(
+            match ($operation) {
+                "add" => self::MODE_SAVE, 
+                "update" => self::MODE_UPDATE, 
+                "save" => $pkSet ?  self::MODE_UPDATE : self::MODE_SAVE    
+            }
+        ); 
 
         // Exit if data is invalid
         if ($validity !== true) {
@@ -198,9 +212,7 @@ class DataOperations
 
             return $status;
         }
-
         $record = $this->wrapper->getData();
-        $record = reset($record) === false ? [] : reset($record);
 
         // Save any relationships that are attached to the data
         $relationships = $this->wrapper->getDescription()->getRelationships();
@@ -226,12 +238,21 @@ class DataOperations
             "update" => [
                     $this->adapter->update($record),
                     $this->wrapper->postUpdateCallback()
+                ],
+            "save" => $pkSet ? [
+                    $this->adapter->update($record),
+                    $this->wrapper->postUpdateCallback()
+                ] : [
+                    $this->adapter->insert($record),
+                    $keyValue = $pkSet ? $record[$primaryKey[0]] : $this->driver->getLastInsertId(),
+                    $this->wrapper->{$primaryKey[0]} = $keyValue,
+                    $this->wrapper->postCreateCallback($keyValue)
                 ]
         };
         $this->wrapper->postSaveCallback();
 
         // Reset the data so it contains any modifications made by callbacks
-        $record = $this->wrapper->getData()[0];
+        $record = $this->wrapper->getData();
         foreach ($relationshipsWithData as $model => $relationship) {
             $relationship->postSave($record);
             $invalidRelatedFields = $relationship->getInvalidFields();
@@ -283,7 +304,7 @@ class DataOperations
      *
      * @return bool
      */
-    private function isPrimaryKeySet($primaryKey, array $data) : bool
+    private function isPrimaryKeySet(string|array $primaryKey, array $data) : bool
     {
         if (is_string($primaryKey) && ($data[$primaryKey] !== null || $data[$primaryKey] !== '')) {
             return true;

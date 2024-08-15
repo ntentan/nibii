@@ -23,7 +23,7 @@ class QueryEngine
     {
         $data = $model->getData();
         $table = $model->getDBStoreInformation()['quoted_table'];
-        $fields = array_keys($data[0]);
+        $fields = array_keys($data);
         $quotedFields = [];
         $valueFields = [];
 
@@ -62,7 +62,7 @@ class QueryEngine
     public function getUpdateQuery($model)
     {
         $data = $model->getData();
-        $fields = array_keys($data[0]);
+        $fields = array_keys($data);
         $valueFields = [];
         $conditions = [];
         $primaryKey = $model->getDescription()->getPrimaryKey();

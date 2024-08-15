@@ -19,7 +19,7 @@ class Operations
         'delete', 'count', 'update', 'with', 'fix'
     ];
     private array $dataOperationMethods = [
-        'add', 'update', 'validate'
+        'add', 'update', 'validate', 'save'
     ];
 
     public function __construct(RecordWrapper $wrapper) //, $table)
