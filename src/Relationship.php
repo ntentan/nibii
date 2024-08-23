@@ -83,7 +83,7 @@ abstract class Relationship
      * @return RecordWrapper
      * @throws exceptions\NibiiException
      */
-    public function getModelInstance()
+    public function getModelInstance(): RecordWrapper
     {
         $this->initialize();
         return ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], $this->type);

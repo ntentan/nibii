@@ -13,21 +13,18 @@ class QueryOperations
 {
     /**
      * An instance of the record wrapper being used.
-     *
      * @var RecordWrapper
      */
     private $wrapper;
 
     /**
      * An instance of the driver adapter used in the database connection.
-     *
      * @var DriverAdapter
      */
     private $adapter;
 
     /**
      * An instance of query parameters used to perform the various queries.
-     *
      * @var QueryParameters
      */
     private $queryParameters;
@@ -153,9 +150,7 @@ class QueryOperations
 
     /**
      * Creates a new instance of the QueryParameters if required or just returns an already instance.
-     *
      * @param bool $forceInstantiation
-     *
      * @return QueryParameters
      */
     private function getQueryParameters($forceInstantiation = true)

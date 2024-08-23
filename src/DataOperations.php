@@ -193,7 +193,7 @@ class DataOperations
         match ($operation) {
             "add" => $this->wrapper->preCreateCallback(),
             "update" => $this->wrapper->preUpdateCallback(),
-            "save" => $pkSet ? $this->wrapper->preUpdateCallback() : $this->wrapper->preSaveCallback()
+            "save" => $pkSet ? $this->wrapper->preUpdateCallback() : $this->wrapper->preCreateCallback()
         };
 
         // Validate the data

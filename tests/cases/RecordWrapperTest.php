@@ -196,11 +196,12 @@ class RecordWrapperTest extends RecordWrapperTestBase
 
         $this->assertEquals(false, $response);
         $this->assertEquals(
-                [
-            'name' => [
-                0 => 'The value of name must be unique',
+            [
+                'name' => [
+                    0 => 'The value of name must be unique',
+                ],
             ],
-                ], $role->getInvalidFields()
+            $role->getInvalidFields()
         );
     }
 

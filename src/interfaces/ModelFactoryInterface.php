@@ -1,13 +1,21 @@
 <?php
 namespace ntentan\nibii\interfaces;
 
+use ntentan\nibii\RecordWrapper;
+
 interface ModelFactoryInterface
 {
-    public function createModel($name, $context);
+    /**
+     * Create an instance of the model when given a name.
+     * @param $name
+     * @param $context
+     * @return mixed
+     */
+    public function createModel(string $name, string $context): RecordWrapper;
 
-    public function getModelTable($instance);
+    public function getModelTable(RecordWrapper $instance): string;
 
-    public function getClassName($model);
+    public function getClassName(RecordWrapper $model): string;
 
-    public function getJunctionClassName($classA, $classB);
+    public function getJunctionClassName(string $classA, string $classB): string;
 }
