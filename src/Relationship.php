@@ -31,11 +31,7 @@ namespace ntentan\nibii;
  */
 abstract class Relationship
 {
-    /**
-     * Constant for the belongs-to or one-to many relation ship.
-     */
     const BELONGS_TO = 'BelongsTo';
-
     const HAS_MANY = 'HasMany';
     const MANY_HAVE_MANY = 'ManyHaveMany';
 

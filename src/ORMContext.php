@@ -41,7 +41,7 @@ class ORMContext
     public function load($path)
     {
         try {
-            return $this->modelFactory->createModel($path, null);
+            return $this->modelFactory->createModel($path, "");
         } catch (ResolutionException $e) {
             throw new
             NibiiException("Failed to load model [$path]. The class [$className] could not be found.");
