@@ -2,21 +2,22 @@
 namespace ntentan\nibii\factories;
 
 use ntentan\nibii\interfaces\ModelFactoryInterface;
+use ntentan\nibii\RecordWrapper;
 use ntentan\utils\Text;
 
 class DefaultModelFactory implements ModelFactoryInterface
 {
-    public function createModel($className, $context)
+    public function createModel(string $className, string $context): RecordWrapper
     {
         return new $className();
     }
 
-    public function getClassName($model)
+    public function getClassName(string $model): string
     {
         return $model;
     }
 
-    public function getModelTable($instance)
+    public function getModelTable(RecordWrapper $instance): string
     {
         $class = new \ReflectionClass($instance);
         $nameParts = explode('\\', $class->getName());
@@ -24,7 +25,7 @@ class DefaultModelFactory implements ModelFactoryInterface
         return Text::deCamelize(end($nameParts));
     }
 
-    public function getJunctionClassName($classA, $classB)
+    public function getJunctionClassName(string $classA, string $classB): string
     {
         $classA = $this->getClassFileDetails($classA);
         $classB = $this->getClassFileDetails($classB);

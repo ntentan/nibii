@@ -15,7 +15,7 @@ interface ModelFactoryInterface
 
     public function getModelTable(RecordWrapper $instance): string;
 
-    public function getClassName(RecordWrapper $model): string;
+    public function getClassName(string $model): string;
 
     public function getJunctionClassName(string $classA, string $classB): string;
 }

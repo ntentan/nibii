@@ -139,6 +139,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     private $isFromQuery = false;
 
     /**
+     * Prevent this constructor from being extended.
+     */
+    public final function __construct() { }
+
+    /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
      * After initialization, this method sets the initialized flag.
      *

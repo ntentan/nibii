@@ -43,7 +43,7 @@ class QueryOperations
      */
     private $dynamicMethods = [
         '/(?<method>filterBy)(?<variable>[A-Z][A-Za-z]+){1}/',
-        '/(?<method>sort)(?<direction>Asc|Desc)?(By)(?<variable>[A-Z][A-Za-z]+){1}/',
+        '/(?<method>sort)(?<direction>Asc|Desc)?(By)?(?<variable>[A-Z][A-Za-z]+)?/',
         '/(?<method>fetch)(?<first>First)?(With)(?<variable>[A-Za-z]+)/',
     ];
 
@@ -299,23 +299,26 @@ class QueryOperations
     public function runDynamicMethod($arguments)
     {
         $arguments = count($arguments) > 1 ? $arguments : ($arguments[0] ?? null);
+
         switch ($this->pendingMethod['method']) {
             case 'filterBy':
-                $this->getQueryParameters()->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);
-
+                $this->getQueryParameters()
+                    ->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);
                 return $this->wrapper;
+
             case 'sort':
-                $this->getQueryParameters()->addSort(Text::deCamelize($this->pendingMethod['variable']), $this->pendingMethod['direction']);
-
+                $this->getQueryParameters()
+                    ->addSort(Text::deCamelize($this->pendingMethod['variable']), $this->pendingMethod['direction']);
                 return $this->wrapper;
+
             case 'fetch':
                 $parameters = $this->getQueryParameters();
                 $parameters->addFilter(Text::deCamelize($this->pendingMethod['variable']), $arguments);
                 if ($this->pendingMethod['first'] === 'First') {
                     $parameters->setFirstOnly(true);
                 }
-
                 return $this->doFetch();
+
         }
     }
 
