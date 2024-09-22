@@ -216,11 +216,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function count($query = null): int
     {
-        if ($this->hasDataBeenSet) {
+        if ($query === null && $this->hasDataBeenSet) {
             return $this->hasMultipleItems() ? count($this->getData()) : 1;
         }
-
-        return $this->__call('count', [$query]);
+        if ($query !== null) {
+            return $this->__call('count', [$query]);
+        }
+        return 0;
     }
 
     /**
