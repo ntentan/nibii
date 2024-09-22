@@ -191,18 +191,17 @@ class QueryOperations
      *
      * @return RecordWrapper
      */
-    public function doFields()
+    public function doFields(string|array ...$arguments)
     {
-        $fields = [];
-        $arguments = func_get_args();
+        $finalFields = [];
         foreach ($arguments as $argument) {
             if (is_array($argument)) {
-                $fields = array_merge($fields, $argument);
+                $finalFields = array_merge($finalFields, $argument);
             } else {
-                $fields[] = $argument;
+                $finalFields[] = $argument;
             }
         }
-        $this->getQueryParameters()->setFields($fields);
+        $this->getQueryParameters()->setFields(array_map(fn ($x) => $this->driver->quoteIdentifier($x), $finalFields));
 
         return $this->wrapper;
     }
@@ -215,7 +214,8 @@ class QueryOperations
      */
     public function doSortBy($field, $direction = 'ASC')
     {
-        $this->getQueryParameters()->addSort($field, $direction);
+        $this->getQueryParameters()->addSort($this->driver->quoteIdentifier($field), $direction);
+        return $this->wrapper;
     }
 
     /**
@@ -308,7 +308,10 @@ class QueryOperations
 
             case 'sort':
                 $this->getQueryParameters()
-                    ->addSort(Text::deCamelize($this->pendingMethod['variable']), $this->pendingMethod['direction']);
+                    ->addSort(
+                        $this->driver->quoteIdentifier(Text::deCamelize($this->pendingMethod['variable'])),
+                        $this->pendingMethod['direction']
+                    );
                 return $this->wrapper;
 
             case 'fetch':

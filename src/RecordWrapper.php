@@ -15,14 +15,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @var array
      */
-    protected $hasMany = [];
+    protected array $hasMany = [];
 
     /**
      * An associative array of models which have a one-to-many relationship with this model.
      *
      * @var array
      */
-    protected $belongsTo = [];
+    protected array $belongsTo = [];
 
     /**
      * An associative array of models with which this model has a many to many relationship.

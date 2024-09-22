@@ -307,7 +307,7 @@ class QueryParameters
         $this->limit = $numItems;
     }
 
-    public function setOffset($offset)
+    public function setOffset(int $offset)
     {
         $this->offset = $offset;
     }
@@ -316,7 +316,7 @@ class QueryParameters
      * @param string $field
      * @param string $direction
      */
-    public function addSort($field, $direction = 'ASC')
+    public function addSort(string $field, string $direction = 'ASC'): void
     {
         $this->sorts[] = "$field $direction";
     }
