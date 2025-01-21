@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+## v0.10.1 - 2025-01-20
+Updated dependencies
+
 ## v0.10.0 - 2021-11-29
 
 ### Added
