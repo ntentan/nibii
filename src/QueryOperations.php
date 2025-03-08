@@ -97,16 +97,17 @@ class QueryOperations
     {
         $parameters = $this->buildFetchQueryParameters($query);
         $data = $this->adapter->select($parameters);
-        if (empty($data)) {
-            return;
-        } else {
-            $results = $this->wrapper->fromArray($data, true);
-            $results->fix($parameters);
-            $this->resetQueryParameters();
-            return $results;
-        }
+        $results = $this->wrapper->fromArray($data, true);
+        $results->fix($parameters);
+        $this->resetQueryParameters();
+        return $results;
     }
 
+    /**
+     * Fixes a model to have a given set of default query parameters.
+     * @param QueryParameters $queryParameters
+     * @return void
+     */
     public function doFix(QueryParameters $queryParameters)
     {
         $this->defaultQueryParameters = clone $queryParameters;

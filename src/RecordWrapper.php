@@ -29,104 +29,104 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @var array
      */
-    protected $manyHaveMany = [];
+    protected array $manyHaveMany = [];
 
     /**
      * The name of the database table.
      *
      * @var string
      */
-    protected $table;
+    protected string $table;
 
     /**
      * The name of the schema to which this table belongs.
      *
      * @var string
      */
-    protected $schema;
+    protected ?string $schema = null;
 
     /**
      * Temporary data held in the model object.
      *
      * @var array
      */
-    protected $modelData = [];
+    protected array $modelData = [];
 
     /**
      * Extra validation rules to use over the model's inherent validation requirements.
      * @var array
      */
-    protected $validationRules = [];
+    protected array $validationRules = [];
 
     /**
      * A quoted string of the table name used for building queries.
      *
      * @var string
      */
-    private $quotedTable;
+    private string $quotedTable;
 
     /**
      * The raw table name without any quotes.
      *
      * @var string
      */
-    private $unquotedTable;
+    private string $unquotedTable;
 
     /**
      * An array of fields that contain validation errors after an attempted save.
      *
      * @var array
      */
-    private $invalidFields;
+    private array $invalidFields;
 
     /**
      * An instance of the operations dispatcher.
      *
      * @var Operations
      */
-    private $dynamicOperations;
+    private ?Operations $dynamicOperations = null;
 
     /**
      * Location of the RecordWrapper's internal iterator.
      *
      * @var int
      */
-    private $index = 0;
+    private int $index = 0;
 
     /**
      * This flag is set whenever data is manually put in the model with the setData method.
      *
      * @var bool
      */
-    private $hasDataBeenSet = false;
+    private bool $hasDataBeenSet = false;
 
     /**
      * The name of the class for this model obtained through reflection.
      *
      * @var string
      */
-    private $className;
+    private string $className;
 
     /**
      * An instance of the driver adapter for interacting with the database.
      *
      * @var DriverAdapter
      */
-    private $adapter;
+    private DriverAdapter $adapter;
 
     /**
      * An instance of the ORMContext through which this model is operating.
      *
      * @var ORMContext
      */
-    private $context;
+    private ORMContext $context;
 
     /**
      * Keys for the various fields when model is accessed as an associative array.
      *
      * @var array
      */
-    private $keys = [];
+    private array $keys = [];
 
     /**
      * This flag is set after the model has been properly initialized.
@@ -134,9 +134,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      *
      * @var bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
     
-    private $isFromQuery = false;
+    private bool $isFromQuery = false;
+
+    private $wrapperFactory;
 
     /**
      * Prevent this constructor from being extended.
@@ -242,12 +244,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if ($this->hasMultipleItems()) {
             throw new NibiiException('Current model object state contains multiple items. Please index with a numeric key to select a specific item first.');
         }       
-        $decamelizedKey = Text::deCamelize($key);
-        if (isset($this->modelData[$decamelizedKey])) {
-            return $this->modelData[$decamelizedKey];
+        $key = Text::deCamelize($key);
+        if (isset($this->modelData[$key])) {
+            return $this->modelData[$key];
         }
         $relationships = $this->getDescription()->getRelationships();
-        if (isset($relationships[$key]) && !isset($this->modelData[$decamelizedKey])) {
+        if (isset($relationships[$key]) && !isset($this->modelData[$key])) {
             $this->modelData[$key] = $this->fetchRelatedFields($relationships[$key]);
             return $this->modelData[$key];
         }
@@ -313,7 +315,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->performSaveOperation('update');
     }
 
-    private function hasMultipleItems()
+    private function hasMultipleItems(): bool
     {
         if (count($this->modelData) > 0) {
             return is_numeric(array_keys($this->modelData)[0]);
@@ -322,18 +324,18 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
     }
 
-    public function getData()
+    public function getData(): array
     {
         return $this->modelData;
     }
 
-    public function setData($data)
+    public function setData($data): void
     {
         $this->hasDataBeenSet = is_array($data) ? true : false;
         $this->modelData = $data;
     }
 
-    public function mergeData($data)
+    public function mergeData($data): void
     {
         foreach ($data as $key => $value) {
             $this->modelData[$key] = $value;
@@ -374,7 +376,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
         } else {
-            return;
+            return $this->wrapperFactory !== null ? $this->wrapperFactory->create() : null;
         }
     }
 

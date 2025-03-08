@@ -43,8 +43,7 @@ class ORMContext
         try {
             return $this->modelFactory->createModel($path, "");
         } catch (ResolutionException $e) {
-            throw new
-            NibiiException("Failed to load model [$path]. The class [$className] could not be found.");
+            throw new NibiiException("Failed to load model [$path]. {$e->getMessage()}");
         }
     }
 
