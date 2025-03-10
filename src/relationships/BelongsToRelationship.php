@@ -11,8 +11,8 @@ use ntentan\utils\Text;
  */
 class BelongsToRelationship extends Relationship
 {
-    protected $type = self::BELONGS_TO;
-    private $relatedData;
+    protected RelationshipType $type = RelationshipType::BELONGS_TO;
+    private array $relatedData;
 
     public function doprepareQuery($data)
     {
@@ -37,7 +37,7 @@ class BelongsToRelationship extends Relationship
 
     public function runSetup()
     {
-        $model = ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], self::BELONGS_TO);
+        $model = ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], RelationshipType::BELONGS_TO);
         $table = $model->getDBStoreInformation()['table'];
         if ($this->options['foreign_key'] == null) {
             $this->options['foreign_key'] = $model->getDescription()->getPrimaryKey()[0];

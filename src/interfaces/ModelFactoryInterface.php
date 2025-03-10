@@ -2,6 +2,7 @@
 namespace ntentan\nibii\interfaces;
 
 use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\relationships\RelationshipType;
 
 interface ModelFactoryInterface
 {
@@ -11,7 +12,7 @@ interface ModelFactoryInterface
      * @param $context
      * @return mixed
      */
-    public function createModel(string $name, string $context): RecordWrapper;
+    public function createModel(string $name, RelationshipType $context): RecordWrapper;
 
     public function getModelTable(RecordWrapper $instance): string;
 

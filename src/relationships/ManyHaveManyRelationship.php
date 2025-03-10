@@ -28,14 +28,15 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\exceptions\NibiiException;
 use ntentan\nibii\ORMContext;
+use ntentan\nibii\RecordWrapper;
 use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
 
 class ManyHaveManyRelationship extends Relationship
 {
-    protected $type = self::MANY_HAVE_MANY;
-    private $tempdata;
-    private $junctionModelInstance;
+    protected RelationshipType $type = RelationshipType::MANY_HAVE_MANY;
+    private array $tempdata;
+    private RecordWrapper $junctionModelInstance;
 
     public function doprepareQuery($data)
     {
