@@ -136,8 +136,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     private bool $initialized = false;
 
-//    private bool $isFromQuery = false;
-
     private $wrapperFactory;
 
     /**
@@ -200,8 +198,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->context->getCache()->read(
             "{$this->className}::desc", function () {
             return $this->context->getModelDescription($this);
-        }
-        );
+        });
     }
 
     /**
@@ -599,8 +596,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     public function map(callable $callback): array
     {
         $mapped = [];
-        foreach($this as $item) {
-            $mapped[] = $callback($item);
+        if ($this->hasMultipleItems()) {
+            foreach($this as $item) {
+                $mapped[] = $callback($item);
+            }
+        } else if ($this->hasDataBeenSet) {
+            $mapped[] = $callback($this);
         }
         return $mapped;
     }

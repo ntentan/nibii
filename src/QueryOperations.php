@@ -157,7 +157,7 @@ class QueryOperations
     private function getQueryParameters($forceInstantiation = true)
     {
         if ($this->queryParameters === null && $forceInstantiation) {
-            $this->queryParameters = new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
+            $this->queryParameters = $this->defaultQueryParameters ?? new QueryParameters($this->wrapper->getDBStoreInformation()['quoted_table']);
         }
         return $this->queryParameters;
     }
