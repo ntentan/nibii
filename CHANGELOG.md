@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+## v0.11.0 - 2025-03-15
+### Added
+- A `RelationshiType` enumeration was added to keep track of the different supported relationship types.
+- Type hints were added in several places.
+### Changed
+- Queries that return empty results no longer return nulls. They return an empty instance of the Model instead.
+
 ## v0.10.1 - 2025-01-20
 Updated dependencies
 
