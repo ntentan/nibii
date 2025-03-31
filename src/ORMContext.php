@@ -15,11 +15,11 @@ use ntentan\kaikai\Cache;
  */
 class ORMContext
 {
-    private static $instance;
-    private $cache;
-    private $modelFactory;
-    private $modelValidatorFactory;
-    private $driverAdapterFactory;
+    private static ORMContext $instance;
+    private Cache $cache;
+    private ModelFactoryInterface $modelFactory;
+    private ValidatorFactoryInterface $modelValidatorFactory;
+    private DriverAdapterFactoryInterface $driverAdapterFactory;
 
     private function __construct(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache)
     {
@@ -29,7 +29,7 @@ class ORMContext
         $this->cache = $cache;
     }
 
-    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache)
+    public static function initialize(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory, Cache $cache): ORMContext
     {
         self::$instance = new self($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
         return self::$instance;
@@ -38,7 +38,7 @@ class ORMContext
     /**
      * A helper for loading a method described as a string.
      */
-    public function load($path)
+    public function load($path): RecordWrapper
     {
         try {
             return $this->modelFactory->createModel($path, "");
@@ -47,45 +47,33 @@ class ORMContext
         }
     }
 
-    /**
-     * @param RecordWrapper $instance
-     */
-    public function getModelTable($instance)
+    public function getModelTable(RecordWrapper $instance): string
     {
         return $this->modelFactory->getModelTable($instance);
     }
 
-    public function getDriverAdapter()
+    public function getDriverAdapter(): DriverAdapter
     {
         return $this->driverAdapterFactory->createDriverAdapter();
     }
 
-    /**
-     * @param string $class
-     * @return string
-     */
-    public function getModelName($class)
+    public function getModelName(string $class): string
     {
         return $class;
     }
 
     public static function getInstance() : self
     {
-        if (self::$instance === null) {
-            throw new NibiiException('A context has not yet been initialized. Maybe you need to supply a configuration?');
-        }
+//        if (self::$instance === null) {
+//            throw new NibiiException('A context has not yet been initialized. Maybe you need to supply a configuration?');
+//        }
 
         return self::$instance;
     }
 
-    public function getCache()
+    public function getCache(): Cache
     {
         return $this->cache;
-    }
-
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     public function getModelDescription($model) : ModelDescription
@@ -103,17 +91,8 @@ class ORMContext
         return $this->modelFactory;
     }
 
-    /**
-     * @return \ntentan\atiaa\DbContext
-     * @throws \Exception
-     */
-    public function getDbContext()
+    public function getDbContext(): DbContext
     {
         return DbContext::getInstance();
-    }
-
-    public function __destruct()
-    {
-        self::$instance = null;
     }
 }
