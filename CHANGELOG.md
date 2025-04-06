@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## v0.11.1 - 2025-04-06
+- Fixes a bug in the unique validator
+- 
+
 ## v0.11.0 - 2025-03-15
 ### Added
 - A `RelationshiType` enumeration was added to keep track of the different supported relationship types.
