@@ -65,10 +65,6 @@ class ORMContext
 
     public static function getInstance() : self
     {
-//        if (self::$instance === null) {
-//            throw new NibiiException('A context has not yet been initialized. Maybe you need to supply a configuration?');
-//        }
-
         return self::$instance;
     }
 
