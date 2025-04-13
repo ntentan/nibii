@@ -7,4 +7,5 @@ enum RelationshipType
     case BELONGS_TO;
     case HAS_MANY;
     case MANY_HAVE_MANY;
+    case SELF;
 }

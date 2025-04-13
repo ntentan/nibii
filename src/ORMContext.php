@@ -7,6 +7,7 @@ use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\nibii\exceptions\NibiiException;
+use ntentan\nibii\relationships\RelationshipType;
 use ntentan\panie\exceptions\ResolutionException;
 use ntentan\kaikai\Cache;
 
@@ -41,7 +42,7 @@ class ORMContext
     public function load($path): RecordWrapper
     {
         try {
-            return $this->modelFactory->createModel($path, "");
+            return $this->modelFactory->createModel($path, RelationshipType::SELF);
         } catch (ResolutionException $e) {
             throw new NibiiException("Failed to load model [$path]. {$e->getMessage()}");
         }

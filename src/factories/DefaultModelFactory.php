@@ -3,11 +3,12 @@ namespace ntentan\nibii\factories;
 
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\relationships\RelationshipType;
 use ntentan\utils\Text;
 
 class DefaultModelFactory implements ModelFactoryInterface
 {
-    public function createModel(string $className, string $context): RecordWrapper
+    public function createModel(string $className, RelationshipType $context): RecordWrapper
     {
         return new $className();
     }
