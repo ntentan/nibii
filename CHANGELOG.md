@@ -1,9 +1,11 @@
 CHANGELOG
 =========
 
+## v0.11.2 - 2025-04-13
+- Fixes a bug in the relationships engine by adding a relationship to self.
+
 ## v0.11.1 - 2025-04-06
 - Fixes a bug in the unique validator
-- 
 
 ## v0.11.0 - 2025-03-15
 ### Added
