@@ -1,7 +1,6 @@
 <?php
 namespace ntentan\nibii\relationships;
 
-use ntentan\nibii\exceptions\NibiiException;
 use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
 

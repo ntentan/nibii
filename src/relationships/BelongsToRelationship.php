@@ -58,6 +58,6 @@ class BelongsToRelationship extends Relationship
 
     public function postSave(&$wrapper)
     {
-        $wrapper[$this->options['model']] = $this->relatedData;
+        //$wrapper[$this->options['model']] = $this->relatedData;
     }
 }

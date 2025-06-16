@@ -111,7 +111,7 @@ class ManyHaveManyRelationship extends Relationship
         $jointModelRecords = [];
         foreach ($this->tempdata as $relatedRecord) {
             if (!$relatedRecord->save()) {
-                $this->invalidFields =$this->tempdata->getInvalidFields();
+                $this->invalidFields = $relatedRecord->getInvalidFields();
             }
             $jointModelRecords[] = [
                 $this->options['junction_local_key']   => $wrapper[$this->options['local_key']],
