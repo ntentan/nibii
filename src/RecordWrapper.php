@@ -367,12 +367,16 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         unset($this->modelData[$offset]);
     }
 
-    private function wrap($offset)
+    private function wrap(string $offset)
     {
         $this->initialize();
-        if (isset($this->modelData[$offset])) {
+        if ($this->hasMultipleItems() && isset($this->modelData[$offset])) {
             $newInstance = clone $this;
             $newInstance->setData($this->modelData[$offset]);
+            return $newInstance;
+        } else if(!$this->hasMultipleItems() && isset($this->modelData[$offset])) {
+            $newInstance = clone $this;
+            $newInstance->setData($this->modelData);
             return $newInstance;
         } else {
             return $this->wrapperFactory !== null ? $this->wrapperFactory->create() : null;
@@ -396,12 +400,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function current(): mixed
     {
-        return $this->wrap($this->keys[$this->index]);
+        return $this->hasMultipleItems() ? $this->wrap($this->index) : $this->wrap();
+        //return $this->wrap($this->keys[$this->index]);
     }
 
     public function key(): mixed
     {
-        return $this->keys[$this->index];
+        return $this->hasMultipleItems() ? $this->index : 0;
+        //return $this->keys[$this->index];
     }
 
     public function next(): void
@@ -411,13 +417,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function rewind(): void
     {
-        $this->keys = array_keys($this->modelData);
+//        $this->keys = array_keys($this->modelData);
         $this->index = 0;
     }
 
     public function valid(): bool
     {
-        return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
+        return $this->hasMultipleItems() ? isset($this->modelData[$this->index]) : count($this->modelData) > 0;
+//        return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
     /**
