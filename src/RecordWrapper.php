@@ -374,7 +374,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $newInstance = clone $this;
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
-        } else if(!$this->hasMultipleItems() && isset($this->modelData[$offset])) {
+        } else if(!$this->hasMultipleItems() && !empty($this->modelData)) {
             $newInstance = clone $this;
             $newInstance->setData($this->modelData);
             return $newInstance;
@@ -398,16 +398,17 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->belongsTo;
     }
 
+    /**
+     * @return mixed
+     */
     public function current(): mixed
     {
-        return $this->hasMultipleItems() ? $this->wrap($this->index) : $this->wrap();
-        //return $this->wrap($this->keys[$this->index]);
+        return $this->hasMultipleItems() ? $this->wrap($this->index) : $this->wrap($this->index);
     }
 
     public function key(): mixed
     {
         return $this->hasMultipleItems() ? $this->index : 0;
-        //return $this->keys[$this->index];
     }
 
     public function next(): void
@@ -423,7 +424,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function valid(): bool
     {
-        return $this->hasMultipleItems() ? isset($this->modelData[$this->index]) : count($this->modelData) > 0;
+        return $this->hasMultipleItems() ? isset($this->modelData[$this->index]) : count($this->modelData) > 0 && $this->index == 0;
 //        return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
