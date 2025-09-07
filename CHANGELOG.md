@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+## v0.11.3 - 2025-09-07
+- Fixes an issue that causes iterations over single objects to fail.
+
 ## v0.11.2 - 2025-04-13
 - Fixes a bug in the relationships engine by adding a relationship to self.
 
