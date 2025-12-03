@@ -143,6 +143,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public final function __construct()
     {
+        $this->initialize();
     }
 
     /**
