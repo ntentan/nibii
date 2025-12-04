@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+## v0.11.4 - 2025-12-04
+- Fixes an issue that causes serialisation of models to fail.
 
 ## v0.11.3 - 2025-09-07
 - Fixes an issue that causes iterations over single objects to fail.
