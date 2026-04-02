@@ -197,7 +197,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->initialize();
 
         return $this->context->getCache()->read(
-            "{$this->className}::desc", function () {
+            "desc:{$this->className}", function () {
             return $this->context->getModelDescription($this);
         });
     }
