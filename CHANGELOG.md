@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## v0.11.5 - 2026-04-02
+- Adds a proper prefix to the cache key to make it easy to selectively delete cached descriptions.
+
 ## v0.11.4 - 2025-12-04
 - Fixes an issue that causes serialisation of models to fail.
 
