@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## v0.11.6 - 2026-04-04
+- Adds a default sort direction to the sorting function to resolve any built in ambiguities.
+
 ## v0.11.5 - 2026-04-02
 - Adds a proper prefix to the cache key to make it easy to selectively delete cached descriptions.
 
