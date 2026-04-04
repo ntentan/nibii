@@ -3,8 +3,6 @@
 namespace ntentan\nibii;
 
 use ntentan\atiaa\Driver;
-use ntentan\atiaa\exceptions\ConnectionException;
-use ntentan\utils\exceptions\ValidatorNotFoundException;
 use ntentan\utils\Validator;
 
 /**
