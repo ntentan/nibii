@@ -311,7 +311,7 @@ class QueryOperations
                 $this->getQueryParameters()
                     ->addSort(
                         $this->driver->quoteIdentifier(Text::deCamelize($this->pendingMethod['variable'])),
-                        $this->pendingMethod['direction']
+                        $this->pendingMethod['direction'] ?? 'ASC'
                     );
                 return $this->wrapper;
 
