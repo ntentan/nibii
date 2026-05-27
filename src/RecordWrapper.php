@@ -141,7 +141,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     /**
      * Prevent this constructor from being extended.
      */
-    public final function __construct()
+    public function __construct()
     {
         $this->initialize();
     }
@@ -194,8 +194,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function getDescription(): ModelDescription
     {
-        $this->initialize();
-
         return $this->context->getCache()->read(
             "desc:{$this->className}", function () {
             return $this->context->getModelDescription($this);
@@ -268,7 +266,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function __call($name, $arguments)
     {
-        $this->initialize();
         if ($this->dynamicOperations === null) {
             $this->dynamicOperations = new Operations($this, $this->quotedTable);
         }
@@ -329,10 +326,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->modelData;
     }
 
-    public function setData($data): void
+    public function setData($data): self
     {
         $this->hasDataBeenSet = is_array($data) ? true : false;
         $this->modelData = $data;
+        return $this;
     }
 
     public function mergeData($data): void
@@ -370,7 +368,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private function wrap(string $offset)
     {
-        $this->initialize();
+        //$this->initialize();
         if ($this->hasMultipleItems() && isset($this->modelData[$offset])) {
             $newInstance = clone $this;
             $newInstance->setData($this->modelData[$offset]);
@@ -419,14 +417,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function rewind(): void
     {
-//        $this->keys = array_keys($this->modelData);
         $this->index = 0;
     }
 
     public function valid(): bool
     {
         return $this->hasMultipleItems() ? isset($this->modelData[$this->index]) : count($this->modelData) > 0 && $this->index == 0;
-//        return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
     /**
@@ -522,8 +518,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function getDBStoreInformation()
     {
-        $this->initialize();
-
         return [
             'schema' => $this->schema,
             'table' => $this->table,
@@ -540,7 +534,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function getAdapter()
     {
-        $this->initialize();
         return $this->adapter;
     }
 
@@ -594,7 +587,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         } else {
             $instance = $this;
         }
-        $instance->initialize();
         $instance->setData($data);
         if ($isFromQuery && empty($data)) {
             $this->hasDataBeenSet = false;
