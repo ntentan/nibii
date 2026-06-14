@@ -221,10 +221,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if ($query === null && $this->hasDataBeenSet) {
             return $this->hasMultipleItems() ? count($this->getData()) : (count($this->getData()) > 0 ? 1 : 0);
         }
-        if ($query !== null) {
-            return $this->__call('count', [$query]);
-        }
-        return 0;
+        return $this->__call('count', [$query]);
     }
 
     /**
@@ -419,14 +416,12 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function rewind(): void
     {
-//        $this->keys = array_keys($this->modelData);
         $this->index = 0;
     }
 
     public function valid(): bool
     {
         return $this->hasMultipleItems() ? isset($this->modelData[$this->index]) : count($this->modelData) > 0 && $this->index == 0;
-//        return isset($this->keys[$this->index]) && isset($this->modelData[$this->keys[$this->index]]);
     }
 
     /**

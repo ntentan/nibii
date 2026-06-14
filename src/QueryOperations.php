@@ -136,7 +136,7 @@ class QueryOperations
 
         $parameters = $this->getQueryParameters($instantiate);
 
-        if (is_numeric($arg)) {
+        if (is_numeric($arg) || is_string($arg)) {
             $description = $this->wrapper->getDescription();
             $parameters->addFilter($description->getPrimaryKey()[0], $arg);
             $parameters->setFirstOnly(true);
