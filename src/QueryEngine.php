@@ -15,7 +15,7 @@ class QueryEngine
      * Generates an SQL insert query string for the model based on the fields
      * currently stored in the model.
      *
-     * @param RecordWrapper $model
+     * @param ActiveRecord $model
      *
      * @return string
      */
@@ -55,7 +55,7 @@ class QueryEngine
      * Generates an SQL update query string for the model based on the data
      * currently stored in the model.
      *
-     * @param RecordWrapper $model
+     * @param ActiveRecord $model
      *
      * @return string
      */

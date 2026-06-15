@@ -31,6 +31,6 @@ namespace ntentan\nibii\tests\models\raw;
  *
  * @author ekow
  */
-class ProjectsUsers extends \ntentan\nibii\RecordWrapper
+class ProjectsUsers extends \ntentan\nibii\ActiveRecord
 {
 }

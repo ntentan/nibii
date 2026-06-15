@@ -28,7 +28,7 @@ namespace ntentan\nibii\factories;
 
 use ntentan\nibii\DefaultValidator;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
-use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\ActiveRecord;
 
 /**
  * Description of DefaultModelValidatorFactory.
@@ -37,7 +37,7 @@ use ntentan\nibii\RecordWrapper;
  */
 class DefaultValidatorFactory implements ValidatorFactoryInterface
 {
-    public function createModelValidator(RecordWrapper $model, $mode)
+    public function createModelValidator(ActiveRecord $model, $mode)
     {
         $validator = new DefaultValidator($model, $mode);
         $validator->extractRules();

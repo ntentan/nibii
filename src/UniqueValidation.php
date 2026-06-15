@@ -7,7 +7,7 @@ use ntentan\utils\validator\Validation;
 class UniqueValidation extends Validation
 {
     /**
-     * @var RecordWrapper
+     * @var ActiveRecord
      */
     private $model;
     private $mode;

@@ -72,7 +72,7 @@ class RecordWrapperTest extends RecordWrapperTestBase
             'name' => 'Some test user',
                 ], $role->toArray()
         );
-        $this->assertInstanceOf('\\ntentan\\nibii\\RecordWrapper', $role);
+        $this->assertInstanceOf('\\ntentan\\nibii\\ActiveRecord', $role);
         $this->assertTrue(is_numeric($role->toArray()['id']));
 
         $role = (new Roles())->filterByName('Matches')->fetchFirst();

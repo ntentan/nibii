@@ -8,7 +8,7 @@ use ntentan\utils\Text;
 /**
  * An active record wrapper for database records.
  */
-class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
+class ActiveRecord implements \ArrayAccess, \Countable, \Iterator
 {
     /**
      * An associative array of models to which this model has a one to may relationship.
@@ -586,7 +586,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     /**
      * Return an instance of the model populated with array data.
      */
-    public function fromArray(array $data, bool $isFromQuery = false): RecordWrapper
+    public function fromArray(array $data, bool $isFromQuery = false): ActiveRecord
     {
         // Create a new instance if this model already has data.
         if ($this->hasDataBeenSet) {

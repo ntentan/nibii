@@ -33,9 +33,9 @@ class DefaultValidator extends Validator
     private $model;
 
     /**
-     * @param RecordWrapper
+     * @param ActiveRecord
      */
-    public function __construct(RecordWrapper $model, $mode)
+    public function __construct(ActiveRecord $model, $mode)
     {
         $this->model = $model;
         $this->registerValidation('unique', '\ntentan\nibii\UniqueValidation', ['model' => $model, 'mode' => $mode]);

@@ -13,7 +13,7 @@ use ntentan\utils\Validator;
 class DataOperations
 {
     /**
-     * @var RecordWrapper
+     * @var ActiveRecord
      */
     private $wrapper;
 
@@ -65,13 +65,13 @@ class DataOperations
     /**
      * Create a new instance.
      *
-     * @param \ntentan\nibii\RecordWrapper $wrapper
+     * @param \ntentan\nibii\ActiveRecord $wrapper
      * @param Driver $driver
      * @throws ConnectionException
      * @throws \ReflectionException
      * @throws exceptions\NibiiException
      */
-    public function __construct(RecordWrapper $wrapper, Driver $driver)
+    public function __construct(ActiveRecord $wrapper, Driver $driver)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();

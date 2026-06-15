@@ -31,7 +31,7 @@ namespace ntentan\nibii\tests\models\raw;
  *
  * @author ekow
  */
-class Projects extends \ntentan\nibii\RecordWrapper
+class Projects extends \ntentan\nibii\ActiveRecord
 {
     public $manyHaveMany = ['\ntentan\nibii\tests\models\raw\Users'];
 }

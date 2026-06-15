@@ -2,13 +2,13 @@
 namespace ntentan\nibii\factories;
 
 use ntentan\nibii\interfaces\ModelFactoryInterface;
-use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\ActiveRecord;
 use ntentan\nibii\relationships\RelationshipType;
 use ntentan\utils\Text;
 
 class DefaultModelFactory implements ModelFactoryInterface
 {
-    public function createModel(string $className, RelationshipType $context): RecordWrapper
+    public function createModel(string $className, RelationshipType $context): ActiveRecord
     {
         return new $className();
     }
@@ -18,7 +18,7 @@ class DefaultModelFactory implements ModelFactoryInterface
         return $model;
     }
 
-    public function getModelTable(RecordWrapper $instance): string
+    public function getModelTable(ActiveRecord $instance): string
     {
         $class = new \ReflectionClass($instance);
         $nameParts = explode('\\', $class->getName());

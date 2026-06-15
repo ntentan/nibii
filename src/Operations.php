@@ -5,7 +5,7 @@ use ntentan\nibii\exceptions\NibiiException;
 
 class Operations
 {
-    private RecordWrapper $wrapper;
+    private ActiveRecord $wrapper;
 
     private DriverAdapter $adapter;
 
@@ -22,7 +22,7 @@ class Operations
         'add', 'update', 'validate', 'save'
     ];
 
-    public function __construct(RecordWrapper $wrapper) //, $table)
+    public function __construct(ActiveRecord $wrapper) //, $table)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();

@@ -50,10 +50,10 @@ abstract class Relationship
     /**
      * Gets an instance of the related model accessed through this class.
      *
-     * @return RecordWrapper
+     * @return ActiveRecord
      * @throws exceptions\NibiiException
      */
-    public function getModelInstance(): RecordWrapper
+    public function getModelInstance(): ActiveRecord
     {
         $this->initialize();
         return ORMContext::getInstance()->getModelFactory()->createModel($this->options['model'], $this->type);

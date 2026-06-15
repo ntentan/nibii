@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\nibii\interfaces;
 
-use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\ActiveRecord;
 use ntentan\nibii\relationships\RelationshipType;
 
 interface ModelFactoryInterface
@@ -12,9 +12,9 @@ interface ModelFactoryInterface
      * @param $context
      * @return mixed
      */
-    public function createModel(string $name, RelationshipType $context): RecordWrapper;
+    public function createModel(string $name, RelationshipType $context): ActiveRecord;
 
-    public function getModelTable(RecordWrapper $instance): string;
+    public function getModelTable(ActiveRecord $instance): string;
 
     public function getClassName(string $model): string;
 

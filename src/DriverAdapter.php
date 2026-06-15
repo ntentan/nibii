@@ -136,7 +136,7 @@ abstract class DriverAdapter
     }
 
     /**
-     * @param RecordWrapper $model
+     * @param ActiveRecord $model
      */
     public function setModel($model)
     {

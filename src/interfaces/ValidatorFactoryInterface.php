@@ -26,7 +26,7 @@
 
 namespace ntentan\nibii\interfaces;
 
-use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\ActiveRecord;
 
 /**
  * Description of ModelValidatorFactoryInterface.
@@ -35,5 +35,5 @@ use ntentan\nibii\RecordWrapper;
  */
 interface ValidatorFactoryInterface
 {
-    public function createModelValidator(RecordWrapper $model, $mode);
+    public function createModelValidator(ActiveRecord $model, $mode);
 }

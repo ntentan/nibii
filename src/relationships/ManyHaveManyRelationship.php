@@ -28,7 +28,7 @@ namespace ntentan\nibii\relationships;
 
 use ntentan\nibii\exceptions\NibiiException;
 use ntentan\nibii\ORMContext;
-use ntentan\nibii\RecordWrapper;
+use ntentan\nibii\ActiveRecord;
 use ntentan\nibii\Relationship;
 use ntentan\utils\Text;
 
@@ -36,7 +36,7 @@ class ManyHaveManyRelationship extends Relationship
 {
     protected RelationshipType $type = RelationshipType::MANY_HAVE_MANY;
     private array $tempdata;
-    private RecordWrapper $junctionModelInstance;
+    private ActiveRecord $junctionModelInstance;
 
     public function doprepareQuery($data)
     {

@@ -13,7 +13,7 @@ class QueryOperations
 {
     /**
      * An instance of the record wrapper being used.
-     * @var RecordWrapper
+     * @var ActiveRecord
      */
     private $wrapper;
 
@@ -66,7 +66,7 @@ class QueryOperations
     /**
      * QueryOperations constructor.
      *
-     * @param RecordWrapper $wrapper
+     * @param ActiveRecord $wrapper
      * @param DataOperations $dataOperations
      * @param Driver $driver
      *
@@ -75,7 +75,7 @@ class QueryOperations
      * @throws exceptions\NibiiException
      * @internal param DriverAdapter $adapter
      */
-    public function __construct(RecordWrapper $wrapper, DataOperations $dataOperations, Driver $driver)
+    public function __construct(ActiveRecord $wrapper, DataOperations $dataOperations, Driver $driver)
     {
         $this->wrapper = $wrapper;
         $this->adapter = $wrapper->getAdapter();
@@ -88,7 +88,7 @@ class QueryOperations
      *
      * @param int|array|QueryParameters $query
      *
-     * @return RecordWrapper
+     * @return ActiveRecord
      * @throws \ReflectionException
      * @throws \ntentan\atiaa\exceptions\ConnectionException
      * @throws exceptions\NibiiException
@@ -175,7 +175,7 @@ class QueryOperations
      *
      * @param mixed $id
      *
-     * @return RecordWrapper
+     * @return ActiveRecord
      * @throws \ReflectionException
      * @throws \ntentan\atiaa\exceptions\ConnectionException
      * @throws exceptions\NibiiException
@@ -190,7 +190,7 @@ class QueryOperations
     /**
      * Set the fields that should be returned for each record.
      *
-     * @return RecordWrapper
+     * @return ActiveRecord
      */
     public function doFields(string|array ...$arguments)
     {

@@ -39,7 +39,7 @@ class ORMContext
     /**
      * A helper for loading a method described as a string.
      */
-    public function load($path): RecordWrapper
+    public function load($path): ActiveRecord
     {
         try {
             return $this->modelFactory->createModel($path, RelationshipType::SELF);
@@ -48,7 +48,7 @@ class ORMContext
         }
     }
 
-    public function getModelTable(RecordWrapper $instance): string
+    public function getModelTable(ActiveRecord $instance): string
     {
         return $this->modelFactory->getModelTable($instance);
     }

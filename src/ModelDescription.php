@@ -42,7 +42,7 @@ class ModelDescription
     private $name;
 
     /**
-     * @param RecordWrapper $model
+     * @param ActiveRecord $model
      * @throws \ReflectionException
      * @throws \ntentan\atiaa\exceptions\ConnectionException
      */
