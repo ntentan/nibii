@@ -241,7 +241,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if ($this->hasMultipleItems()) {
             throw new NibiiException('Current model object state contains multiple items. Please index with a numeric key to select a specific item first.');
         }
-        $key = Text::deCamelize($key);
+//        $fieldName = Text::deCamelize($key);
         if (isset($this->modelData[$key])) {
             return $this->modelData[$key];
         }

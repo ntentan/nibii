@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace ntentan\nibii\tests\cases;
+namespace cases\integration;
 
 use ntentan\nibii\exceptions\FilterCompilerException;
 use ntentan\nibii\FilterCompiler;

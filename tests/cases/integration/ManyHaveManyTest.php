@@ -30,7 +30,7 @@
  * @author ekow
  */
 
-namespace ntentan\nibii\tests\cases;
+namespace cases\integration;
 
 use ntentan\nibii\tests\lib\RecordWrapperTestBase;
 
