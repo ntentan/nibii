@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## v0.11.7 - 2026-06-18
+- Updates query parameter handling to accept string arguments when querying.
+
 ## v0.11.6 - 2026-04-04
 - Adds a default sort direction to the sorting function to resolve any built in ambiguities.
 
