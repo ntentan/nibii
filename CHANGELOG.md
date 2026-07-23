@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## v0.11.8 - 2026-07-22
+- Adds a `__isset()` function to allow `empty()` and `isset()` checks on the properties of models. 
+
 ## v0.11.7 - 2026-06-18
 - Updates query parameter handling to accept string arguments when querying.
 
