@@ -197,9 +197,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         $this->initialize();
 
         return $this->context->getCache()->read(
-            "desc:{$this->className}", function () {
-            return $this->context->getModelDescription($this);
-        });
+            "desc:{$this->className}",
+            function () {
+                return $this->context->getModelDescription($this);
+            }
+        );
     }
 
     /**
@@ -290,6 +292,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->retrieveItem($name);
     }
 
+    public function __isset(string $name): bool
+    {
+        return isset($this->modelData[Text::deCamelize($name)]);
+    }
+
     private function performSaveOperation(string $operation): bool
     {
         $return = $this->__call($operation, [$this->hasMultipleItems()]);
@@ -372,7 +379,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
             $newInstance = clone $this;
             $newInstance->setData($this->modelData[$offset]);
             return $newInstance;
-        } else if(!$this->hasMultipleItems() && !empty($this->modelData)) {
+        } else if (!$this->hasMultipleItems() && !empty($this->modelData)) {
             $newInstance = clone $this;
             $newInstance->setData($this->modelData);
             return $newInstance;
@@ -601,7 +608,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
     {
         $mapped = [];
         if ($this->hasMultipleItems()) {
-            foreach($this as $item) {
+            foreach ($this as $item) {
                 $mapped[] = $callback($item);
             }
         } else if ($this->hasDataBeenSet) {
