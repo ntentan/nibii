@@ -138,13 +138,13 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private $wrapperFactory;
 
-    /**
-     * Prevent this constructor from being extended.
-     */
-    public final function __construct()
-    {
-        $this->initialize();
-    }
+//    /**
+//     * Prevent this constructor from being extended.
+//     */
+//    public final function __construct()
+//    {
+//        $this->initialize();
+//    }
 
     /**
      * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
