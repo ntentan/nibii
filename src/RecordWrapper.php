@@ -128,38 +128,14 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     private array $keys = [];
 
-    /**
-     * This flag is set after the model has been properly initialized.
-     * Useful after model is unserialized or accessed through the static interface.
-     *
-     * @var bool
-     */
-    private bool $initialized = false;
 
     private $wrapperFactory;
 
-//    /**
-//     * Prevent this constructor from being extended.
-//     */
-//    public final function __construct()
-//    {
-//        $this->initialize();
-//    }
-
     /**
-     * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
-     * After initialization, this method sets the initialized flag.
-     *
-     * @return void
-     * @throws NibiiException
-     * @throws \ReflectionException
-     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     * Prevent this constructor from being extended.
      */
-    protected function initialize(): void
+    public final function __construct(array $data = [])
     {
-        if ($this->initialized) {
-            return;
-        }
         $this->context = ORMContext::getInstance();
         $this->adapter = $this->context->getDriverAdapter();
         $table = $this->table ?? $this->context->getModelTable($this);
@@ -174,8 +150,22 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         }
         $this->quotedTable = ($this->schema ? "{$driver->quoteIdentifier($this->schema)}." : '') . $driver->quoteIdentifier($this->table);
         $this->unquotedTable = ($this->schema ? "{$this->schema}." : '') . $this->table;
-        $this->adapter->setModel($this, $this->quotedTable);
-        $this->initialized = true;
+        $this->adapter->setModel($this);
+        $this->initialize($data);
+    }
+
+    /**
+     * Initialize the record wrapper and setup the adapters, drivers, tables and schemas.
+     * After initialization, this method sets the initialized flag.
+     *
+     * @return void
+     * @throws NibiiException
+     * @throws \ReflectionException
+     * @throws \ntentan\atiaa\exceptions\ConnectionException
+     */
+    protected function initialize(array $data): void
+    {
+        $this->setData($data);
     }
 
     public function __debugInfo()
@@ -194,8 +184,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function getDescription(): ModelDescription
     {
-        $this->initialize();
-
         return $this->context->getCache()->read(
             "desc:{$this->className}",
             function () {
@@ -267,7 +255,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function __call($name, $arguments)
     {
-        $this->initialize();
         if ($this->dynamicOperations === null) {
             $this->dynamicOperations = new Operations($this, $this->quotedTable);
         }
@@ -374,7 +361,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     private function wrap(string $offset)
     {
-        $this->initialize();
         if ($this->hasMultipleItems() && isset($this->modelData[$offset])) {
             $newInstance = clone $this;
             $newInstance->setData($this->modelData[$offset]);
@@ -524,8 +510,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
 
     public function getDBStoreInformation()
     {
-        $this->initialize();
-
         return [
             'schema' => $this->schema,
             'table' => $this->table,
@@ -542,7 +526,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public function getAdapter()
     {
-        $this->initialize();
         return $this->adapter;
     }
 
@@ -596,7 +579,7 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         } else {
             $instance = $this;
         }
-        $instance->initialize();
+//        $instance->initialize();
         $instance->setData($data);
         if ($isFromQuery && empty($data)) {
             $this->hasDataBeenSet = false;

@@ -14,7 +14,8 @@ use ntentan\kaikai\Cache;
 /**
  * A global class with information and utilities required by the rest of the ORM system.
  */
-class ORMContext
+class
+ORMContext
 {
     private static ORMContext $instance;
     private Cache $cache;

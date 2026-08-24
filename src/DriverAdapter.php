@@ -38,7 +38,6 @@ abstract class DriverAdapter
 
     /**
      * @param QueryParameters $parameters
-     *
      * @return type
      */
     public function select($parameters)
@@ -113,14 +112,14 @@ abstract class DriverAdapter
         );
     }
 
-    public function describe($model, $relationships)
-    {
-        return new ModelDescription(
-            $this->driver->describeTable($table)[$table], $relationships, function ($type) {
-                return $this->mapDataTypes($type);
-            }
-        );
-    }
+    // public function describe($model, $relationships)
+    // {
+    //     return new ModelDescription(
+    //         $this->driver->describeTable($table)[$table], $relationships, function ($type) {
+    //             return $this->mapDataTypes($type);
+    //         }
+    //     );
+    // }
 
     /**
      * @return \ntentan\nibii\QueryEngine
