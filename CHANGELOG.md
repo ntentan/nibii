@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+## v0.11.9 - 2026-08-25
+- Simplifies `RecordWrapper` initialization and allows optional data array initialization via the constructor.
+- Adds testable driver adapters and refactors adapter interfaces.
+
 ## v0.11.8 - 2026-07-22
 - Adds a `__isset()` function to allow `empty()` and `isset()` checks on the properties of models. 
 
