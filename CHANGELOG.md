@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## v0.11.10 - 2026-08-26
+- Updates dependencies.
+
 ## v0.11.9 - 2026-08-25
 - Simplifies `RecordWrapper` initialization and allows optional data array initialization via the constructor.
 - Adds testable driver adapters and refactors adapter interfaces.
