@@ -136,22 +136,27 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
      */
     public final function __construct(array $data = [])
     {
+        $this->connect();
+        $this->initialize($data);
+    }
+
+    protected final function connect()
+    {
         $this->context = ORMContext::getInstance();
-        $this->adapter = $this->context->getDriverAdapter();
         $table = $this->table ?? $this->context->getModelTable($this);
-        $driver = $this->context->getDbContext()->getDriver();
-        $this->adapter->setContext($this->context);
-        $this->className = (new \ReflectionClass($this))->getName();
         if (is_string($table)) {
             $this->table = $this->unquotedTable = $table;
         } else {
             $this->table = $table['table'];
             $this->schema = $table['schema'];
         }
+        $this->adapter = $this->context->getDriverAdapter();
+        $this->adapter->setContext($this->context);
+        $this->className = (new \ReflectionClass($this))->getName();
+        $driver = $this->context->getDbContext()->getDriver();
         $this->quotedTable = ($this->schema ? "{$driver->quoteIdentifier($this->schema)}." : '') . $driver->quoteIdentifier($this->table);
         $this->unquotedTable = ($this->schema ? "{$this->schema}." : '') . $this->table;
         $this->adapter->setModel($this);
-        $this->initialize($data);
     }
 
     /**
@@ -579,7 +584,6 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         } else {
             $instance = $this;
         }
-//        $instance->initialize();
         $instance->setData($data);
         if ($isFromQuery && empty($data)) {
             $this->hasDataBeenSet = false;
