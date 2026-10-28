@@ -28,5 +28,5 @@ namespace ntentan\nibii\tests\models\raw;
 
 class Roles extends \ntentan\nibii\RecordWrapper
 {
-    protected $hasMany = ['\ntentan\nibii\tests\models\raw\Users'];
+    protected array $hasMany = ['\ntentan\nibii\tests\models\raw\Users'];
 }

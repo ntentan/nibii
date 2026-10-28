@@ -37,7 +37,7 @@ use ntentan\nibii\ORMContext;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
-class RecordWrapperTestBase extends TestCase
+abstract class RecordWrapperTestBase extends TestCase
 {
     protected $context;
     private $pdo;

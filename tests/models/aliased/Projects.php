@@ -33,7 +33,7 @@ namespace ntentan\nibii\tests\models\aliased;
  */
 class Projects extends \ntentan\nibii\RecordWrapper
 {
-    public $manyHaveMany = [
+    protected array $manyHaveMany = [
         ['\ntentan\nibii\tests\models\aliased\Users', 'as' => 'users'],
     ];
 }

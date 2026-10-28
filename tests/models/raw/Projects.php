@@ -33,5 +33,5 @@ namespace ntentan\nibii\tests\models\raw;
  */
 class Projects extends \ntentan\nibii\RecordWrapper
 {
-    public $manyHaveMany = ['\ntentan\nibii\tests\models\raw\Users'];
+    protected array $manyHaveMany = ['\ntentan\nibii\tests\models\raw\Users'];
 }
