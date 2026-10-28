@@ -33,7 +33,7 @@ Before querying your models, initialize `DbContext` and `ORMContext`:
 
 ```php
 use ntentan\atiaa\DbContext;
-use ntentan\atiaa\DriverFactory;
+use ntentan\atiaa\DefaultDriverFactory;
 use ntentan\kaikai\Cache;
 use ntentan\kaikai\backends\VolatileCache; // or any PSR-16 cache implementation
 use ntentan\nibii\factories\DefaultModelFactory;
@@ -51,7 +51,7 @@ $config = [
 ];
 
 // Initialize database contexts
-DbContext::initialize(new DriverFactory($config));
+DbContext::initialize(new DefaultDriverFactory($config));
 
 ORMContext::initialize(
     new DefaultModelFactory(),

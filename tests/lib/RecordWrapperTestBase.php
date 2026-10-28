@@ -27,7 +27,7 @@
 namespace ntentan\nibii\tests\lib;
 
 use ntentan\atiaa\DbContext;
-use ntentan\atiaa\DriverFactory;
+use ntentan\atiaa\DefaultDriverFactory;
 use ntentan\kaikai\backends\VolatileCache;
 use ntentan\kaikai\Cache;
 use ntentan\nibii\factories\DefaultModelFactory;
@@ -59,7 +59,7 @@ class RecordWrapperTestBase extends TestCase
         $driverAdapterFactory = new DriverAdapterFactory($config['driver']);
         $modelValidatorFactory = new DefaultValidatorFactory();
         $cache = new Cache(new VolatileCache());
-        DbContext::initialize(new DriverFactory($config));
+        DbContext::initialize(new DefaultDriverFactory($config));
         ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $cache);
         $this->setupDatabase();
     }
