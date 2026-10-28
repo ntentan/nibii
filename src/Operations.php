@@ -34,10 +34,12 @@ class Operations
     public function perform(string $name, array $arguments): mixed
     {
         return match (true) {
-            in_array($name, $this->queryOperationMethods) => 
-                call_user_func_array([$this->queryOperations, "do$name"], $arguments),
+            $name === 'update' && is_array($arguments[0] ?? null) =>
+                call_user_func_array([$this->queryOperations, "doUpdate"], $arguments),
             in_array($name, $this->dataOperationMethods) => 
                 call_user_func_array([$this->dataOperations, "do$name"], $arguments),
+            in_array($name, $this->queryOperationMethods) => 
+                call_user_func_array([$this->queryOperations, "do$name"], $arguments),
             $this->queryOperations->initDynamicMethod($name) => 
                 $this->queryOperations->runDynamicMethod($arguments),
             default => 

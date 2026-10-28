@@ -261,13 +261,14 @@ class QueryOperations
         return $this->wrapper;
     }
 
-    public function doUpdate($data)
+    public function doUpdate($data): bool
     {
         $this->driver->beginTransaction();
         $parameters = $this->getQueryParameters();
         $this->adapter->bulkUpdate($data, $parameters);
         $this->driver->commit();
         $this->resetQueryParameters();
+        return true;
     }
 
     public function doDelete($args = null)

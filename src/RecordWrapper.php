@@ -236,14 +236,21 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         if ($this->hasMultipleItems()) {
             throw new NibiiException('Current model object state contains multiple items. Please index with a numeric key to select a specific item first.');
         }
-        $key = Text::deCamelize($key);
+        $decamelizedKey = Text::deCamelize($key);
+        if (isset($this->modelData[$decamelizedKey])) {
+            return $this->modelData[$decamelizedKey];
+        }
         if (isset($this->modelData[$key])) {
             return $this->modelData[$key];
         }
         $relationships = $this->getDescription()->getRelationships();
-        if (isset($relationships[$key]) && !isset($this->modelData[$key])) {
+        if (isset($relationships[$key])) {
             $this->modelData[$key] = $this->fetchRelatedFields($relationships[$key]);
             return $this->modelData[$key];
+        }
+        if (isset($relationships[$decamelizedKey])) {
+            $this->modelData[$decamelizedKey] = $this->fetchRelatedFields($relationships[$decamelizedKey]);
+            return $this->modelData[$decamelizedKey];
         }
         return null;
     }
@@ -306,8 +313,11 @@ class RecordWrapper implements \ArrayAccess, \Countable, \Iterator
         return $this->performSaveOperation('add');
     }
 
-    public function update(): bool
+    public function update(?array $data = null): bool
     {
+        if ($data !== null) {
+            return $this->__call('update', [$data]);
+        }
         return $this->performSaveOperation('update');
     }
 

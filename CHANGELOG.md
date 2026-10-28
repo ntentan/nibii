@@ -2,6 +2,8 @@ CHANGELOG
 =========
 ## v0.11.11 - 2026-10-27
 - Splits out `RecordWrapper` connection and adapter setup into a separate `connect()` method.
+- Fixes lazy-loading of unaliased relationships by preserving original relationship keys alongside decamelized keys in `RecordWrapper::retrieveItem()`.
+- Fixes `RecordWrapper::update()` and `Operations::perform()` to support both bulk query updates and single-record updates.
 - Updates test base and documentation to use `DefaultDriverFactory` from `ntentan/atiaa`.
 
 ## v0.11.10 - 2026-08-26
